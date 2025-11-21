@@ -23,7 +23,7 @@ def crear_cliente(cliente: ClienteCreate, db: Session = Depends(get_db)):
     if existe:
         raise HTTPException(status_code=409, detail="Cliente duplicado")
 
-    db_cliente = Cliente(**cliente.dict())
+    db_cliente = Cliente(**cliente.model_dump())
     db.add(db_cliente)
     db.commit()
     db.refresh(db_cliente)
