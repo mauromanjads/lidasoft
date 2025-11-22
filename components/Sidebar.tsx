@@ -40,25 +40,25 @@ export default function Sidebar() {
             <nav className="space-y-4">
               <a href="/dashboard" className="block hover:bg-indigo-600 p-2 rounded-lg">🏠 Inicio</a>
 
-              {/* SUBMENÚ CLIENTES */}
+              {/* SUBMENÚ CONFIGURACIÓN */}
               <div>
                 <div
                   className="flex justify-between hover:bg-indigo-600 p-2 rounded-lg cursor-pointer"
-                  onClick={() => toggleSubMenu("clientes")}
+                  onClick={() => toggleSubMenu("configuracion")}
                 >
-                  👥 Clientes
-                  <span>{subMenuOpen === "clientes" ? "▲" : "▼"}</span>
+                  👥 Configuración
+                  <span>{subMenuOpen === "configuracion" ? "▲" : "▼"}</span>
                 </div>
 
                 <AnimatePresence>
-                  {subMenuOpen === "clientes" && (
+                  {subMenuOpen === "configuracion" && (
                     <motion.div
                       initial={{ height: 0, opacity: 0 }}
                       animate={{ height: "auto", opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}
                       className="pl-4 mt-2 space-y-2"
                     >
-                      <a href="/dashboard/clientes" className="block hover:bg-indigo-600 p-2 rounded-lg">📋 Listar</a>
+                      <a href="/dashboard/clientes" className="block hover:bg-indigo-600 p-2 rounded-lg">📋 Clientes</a>
                       <a href="/dashboard/clientes/nuevo" className="block hover:bg-indigo-600 p-2 rounded-lg">➕ Nuevo</a>
                     </motion.div>
                   )}

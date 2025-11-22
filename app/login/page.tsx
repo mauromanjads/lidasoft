@@ -24,7 +24,12 @@ export default function LoginPage() {
         body: JSON.stringify({ usuario, password }),
       });
 
-      if (res.ok) router.push("/dashboard");
+      if (res.ok) {
+        const data = await res.json();        
+        sessionStorage.setItem("usuario", JSON.stringify(data));
+        document.cookie = `usuario=${data.usuario}; path=/;`;
+        router.push("/dashboard");
+      } 
       else alert("Credenciales incorrectas");
     } catch (error) {
       alert("Error de conexión con el servidor");
