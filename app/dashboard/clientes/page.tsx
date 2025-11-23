@@ -22,6 +22,7 @@ export default function ClientesPage() {
     fetchClientes();
   }, []);
 
+  
   return (
     <div >
       <h1 className="flex items-center gap-2 text-lg font-semibold"> {/* altura más baja */}        

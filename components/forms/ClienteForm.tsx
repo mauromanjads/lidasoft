@@ -7,10 +7,11 @@ import { guardarCliente } from "@/lib/api/clientes";
 
 interface ClienteFormProps {
   onSubmit: (data: { nit: string; nombre: string; telefono: string; direccion: string }) => Promise<void>;
-  onClose?: () => void;  
+  onClose?: () => void;
+  onSaved?: () => void;  
 }
 
-export default function ClienteForm({ onClose }: ClienteFormProps) {
+export default function ClienteForm({ onClose,onSaved }: ClienteFormProps) {
   const [formData, setFormData] = useState({ nit: "", nombre: "", telefono: "", direccion: "" });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -32,7 +33,8 @@ export default function ClienteForm({ onClose }: ClienteFormProps) {
     setLoading(true);
 
     try {
-      await guardarCliente(formData); // Llamada al endpoint      
+      await guardarCliente(formData); // Llamada al endpoint  
+      if (onSaved) onSaved();    
       if (onClose) onClose();  
      
     } catch (err) {

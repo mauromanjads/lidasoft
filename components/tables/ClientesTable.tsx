@@ -16,6 +16,8 @@ import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import ClienteForm from "@/components/forms/ClienteForm";
+import { obtenerClientes } from "@/lib/api/clientes";
+
 
 
 interface Cliente {
@@ -37,7 +39,10 @@ export default function ClientesTable({ clientes, onEdit, onDelete }: Props) {
   const [pageSize, setPageSize] = useState(5);
   const [pageIndex, setPageIndex] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
+ 
   
+  
+
   const columns = useMemo<ColumnDef<Cliente>[]>(() => [
     { accessorKey: "nit", header: "NIT" },
     { accessorKey: "nombre", header: "Nombre" },
@@ -104,6 +109,8 @@ export default function ClientesTable({ clientes, onEdit, onDelete }: Props) {
     doc.save("clientes.pdf");
   };
 
+ 
+
   return (
     <div className="p-4 bg-white rounded-xl shadow-lg">
 
@@ -128,7 +135,7 @@ export default function ClientesTable({ clientes, onEdit, onDelete }: Props) {
           </div>
         </Button>
 
-        <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
+         <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
           <h2 className="text-xl font-semibold mb-4">Crear Nuevo Cliente</h2>
           <ClienteForm
             onSubmit={async (data) => {
@@ -139,9 +146,12 @@ export default function ClientesTable({ clientes, onEdit, onDelete }: Props) {
               setIsOpen(false); // Cierra el modal después de guardar
             }}
             onClose={() => setIsOpen(false)} // Permite cerrar con el botón "Cancelar"
+            //onSaved={handleClienteSaved}
+            
           />
         </Modal>
 
+        
 
         {/* Exportar */}
         <div className="flex gap-3">
