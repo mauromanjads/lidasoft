@@ -1,28 +1,18 @@
 "use client"; 
 
-import Image from "next/image";
-
 import { useEffect, useState } from "react";
 import ClientesTable from "@/components/tables/ClientesTable";
+import { Clientes, obtenerClientes } from "@/lib/api/clientes";
 
-interface Cliente {
-  id: number;
-  nit: string;
-  nombre: string;
-  telefono: string;
-  direccion: string;
-}
 
 export default function ClientesPage() {
-  const [clientes, setClientes] = useState<Cliente[]>([]);
+  const [clientes, setClientes] = useState<Clientes[]>([]);
 
   // 🚀 Cargar clientes desde FastAPI
   useEffect(() => {
     const fetchClientes = async () => {
       try {
-        const res = await fetch("http://localhost:8000/clientes"); 
-        if (!res.ok) throw new Error(`Error: ${res.status}`);
-        const data = await res.json();
+       const data = await obtenerClientes();
         setClientes(data);
       } catch (error) {
         console.error("Error cargando clientes:", error);

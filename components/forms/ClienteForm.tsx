@@ -3,14 +3,15 @@
 import { useState } from "react";
 import Button from "@/components/ui/button";
 import Input from "@/components/ui/input";
+import { guardarCliente } from "@/lib/api/clientes";
 
 interface ClienteFormProps {
-  onSubmit: (data: { nombre: string; nit: string; telefono: string }) => Promise<void>;
-  onClose?: () => void;
+  onSubmit: (data: { nit: string; nombre: string; telefono: string; direccion: string }) => Promise<void>;
+  onClose?: () => void;  
 }
 
-export default function ClienteForm({ onSubmit, onClose }: ClienteFormProps) {
-  const [formData, setFormData] = useState({ nombre: "", nit: "", telefono: "" });
+export default function ClienteForm({ onClose }: ClienteFormProps) {
+  const [formData, setFormData] = useState({ nit: "", nombre: "", telefono: "", direccion: "" });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -22,7 +23,6 @@ export default function ClienteForm({ onSubmit, onClose }: ClienteFormProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Validación simple
     if (!formData.nombre || !formData.nit) {
       setError("Nombre y NIT son obligatorios.");
       return;
@@ -32,8 +32,9 @@ export default function ClienteForm({ onSubmit, onClose }: ClienteFormProps) {
     setLoading(true);
 
     try {
-      await onSubmit(formData); // Envía los datos al endpoint
-      if (onClose) onClose();   // Cierra el modal
+      await guardarCliente(formData); // Llamada al endpoint      
+      if (onClose) onClose();  
+     
     } catch (err) {
       console.error(err);
       setError("Ocurrió un error al guardar el cliente.");
@@ -44,6 +45,18 @@ export default function ClienteForm({ onSubmit, onClose }: ClienteFormProps) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
+     
+      <div>
+        <label className="block mb-1 font-medium">NIT</label>
+        <Input
+          name="nit"
+          value={formData.nit}
+          onChange={handleChange}
+          placeholder="NIT"
+          required
+        />
+      </div>     
+     
       <div>
         <label className="block mb-1 font-medium">Nombre</label>
         <Input
@@ -54,16 +67,7 @@ export default function ClienteForm({ onSubmit, onClose }: ClienteFormProps) {
           required
         />
       </div>
-      <div>
-        <label className="block mb-1 font-medium">NIT</label>
-        <Input
-          name="nit"
-          value={formData.nit}
-          onChange={handleChange}
-          placeholder="NIT"
-          required
-        />
-      </div>
+
       <div>
         <label className="block mb-1 font-medium">Teléfono</label>
         <Input
@@ -71,6 +75,16 @@ export default function ClienteForm({ onSubmit, onClose }: ClienteFormProps) {
           value={formData.telefono}
           onChange={handleChange}
           placeholder="Teléfono"
+        />
+      </div>
+
+      <div>
+        <label className="block mb-1 font-medium">Dirección</label>
+        <Input
+          name="direccion"
+          value={formData.direccion}
+          onChange={handleChange}
+          placeholder="Dirección"
         />
       </div>
 
