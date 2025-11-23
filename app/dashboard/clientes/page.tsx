@@ -10,6 +10,7 @@ interface Cliente {
   nit: string;
   nombre: string;
   telefono: string;
+  direccion: string;
 }
 
 export default function ClientesPage() {

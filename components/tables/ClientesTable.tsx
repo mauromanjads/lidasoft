@@ -11,15 +11,19 @@ import {
 } from "@tanstack/react-table";
 import { Pencil, Trash2, FileSpreadsheet, FileText } from "lucide-react";
 import Button from "@/components/ui/button";
+import Modal from "@/components/ui/modal";
 import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import ClienteForm from "@/components/forms/ClienteForm";
+
 
 interface Cliente {
   id: number;
   nit: string;
   nombre: string;
   telefono: string;
+  direccion: string;
 }
 
 interface Props {
@@ -32,11 +36,13 @@ export default function ClientesTable({ clientes, onEdit, onDelete }: Props) {
   const [filter, setFilter] = useState("");
   const [pageSize, setPageSize] = useState(5);
   const [pageIndex, setPageIndex] = useState(0);
-
+  const [isOpen, setIsOpen] = useState(false);
+  
   const columns = useMemo<ColumnDef<Cliente>[]>(() => [
     { accessorKey: "nit", header: "NIT" },
     { accessorKey: "nombre", header: "Nombre" },
     { accessorKey: "telefono", header: "Teléfono" },
+    { accessorKey: "direccion", header: "Dirección" },
     {
       id: "acciones",
       header: "Acciones",
@@ -111,6 +117,31 @@ export default function ClientesTable({ clientes, onEdit, onDelete }: Props) {
           placeholder="Buscar..."
           className="border px-3 py-2 rounded-lg shadow-sm w-1/3"
         />
+
+         {/* Crear Cliente */}
+        <Button
+          onClick={() => setIsOpen(true)} // <-- Aquí podrías abrir modal o ir a formulario
+          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 shadow-md"
+        >  <div className="flex items-center gap-2">
+            <img src="/icons/plus.png" alt="Pdf" className="w-6 h-6" />
+            <span>Nuevo Cliente</span>
+          </div>
+        </Button>
+
+        <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
+          <h2 className="text-xl font-semibold mb-4">Crear Nuevo Cliente</h2>
+          <ClienteForm
+            onSubmit={async (data) => {
+              console.log("Datos del cliente:", data);
+              // Llamada a tu API para guardar el cliente
+              // await guardarCliente(data);
+
+              setIsOpen(false); // Cierra el modal después de guardar
+            }}
+            onClose={() => setIsOpen(false)} // Permite cerrar con el botón "Cancelar"
+          />
+        </Modal>
+
 
         {/* Exportar */}
         <div className="flex gap-3">
