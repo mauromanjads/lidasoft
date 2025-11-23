@@ -11,7 +11,6 @@ export default function Sidebar() {
     setSubMenuOpen(subMenuOpen === menu ? null : menu);
   };
 
-  // 👉 ESCRITORIO -> menú abierto por defecto
   useEffect(() => {
     if (window.innerWidth >= 768) {
       setOpen(true);
@@ -27,27 +26,41 @@ export default function Sidebar() {
             animate={{ x: 0 }}
             exit={{ x: -300 }}
             transition={{ duration: 0.3 }}
-            className="fixed md:static top-0 left-0 h-screen w-64 bg-indigo-700 text-white p-5 shadow-xl"
+            className="fixed md:static top-0 left-0 h-screen w-64 
+            bg-gradient-to-b from-[#0B2B55] via-[#12366D] to-[#1D4E89]
+            text-white p-5 shadow-2xl border-r border-gray-700/30"
           >
-            {/* 🔻 TÍTULO -> ABRE / CIERRA */}
-            <h2
-              className="text-2xl font-bold mb-6 cursor-pointer hover:text-indigo-300 transition"
-              onClick={() => setOpen(false)}   // ← Oculta el menú
+            {/* 🔻 HEADER */}
+            <h3
+              className="text-2xl font-bold mb-8 cursor-pointer 
+              hover:text-indigo-400 transition-all tracking-wide
+              text-center w-full uppercase"
+              onClick={() => setOpen(false)}
             >
-              📌 Admin Panel
-            </h2>
+              📌 Lidasoft
+            </h3>
 
             <nav className="space-y-4">
-              <a href="/dashboard" className="block hover:bg-indigo-600 p-2 rounded-lg">🏠 Inicio</a>
+              {/* ITEM INICIO */}
+              <a
+                href="/dashboard"
+                className="block bg-[#0d2f5a]/70 hover:bg-[#103766]/90 
+                p-2 rounded-lg transition-all shadow-md"
+              >
+                🏠 Inicio
+              </a>
 
               {/* SUBMENÚ CONFIGURACIÓN */}
               <div>
                 <div
-                  className="flex justify-between hover:bg-indigo-600 p-2 rounded-lg cursor-pointer"
+                  className="flex justify-between items-center bg-[#0d2f5a]/70 hover:bg-[#103766]/90 
+                  p-2 rounded-lg cursor-pointer transition-all shadow-md"
                   onClick={() => toggleSubMenu("configuracion")}
                 >
                   👥 Configuración
-                  <span>{subMenuOpen === "configuracion" ? "▲" : "▼"}</span>
+                  <span className="text-sm">
+                    {subMenuOpen === "configuracion" ? "▲" : "▼"}
+                  </span>
                 </div>
 
                 <AnimatePresence>
@@ -58,8 +71,20 @@ export default function Sidebar() {
                       exit={{ height: 0, opacity: 0 }}
                       className="pl-4 mt-2 space-y-2"
                     >
-                      <a href="/dashboard/clientes" className="block hover:bg-indigo-600 p-2 rounded-lg">📋 Clientes</a>
-                      <a href="/dashboard/clientes/nuevo" className="block hover:bg-indigo-600 p-2 rounded-lg">➕ Nuevo</a>
+                      <a
+                        href="/dashboard/clientes"
+                        className="block bg-[#0d2f5a]/70 hover:bg-[#103766]/90 
+                        p-2 rounded-lg transition-all shadow-md"
+                      >
+                        📋 Clientes
+                      </a>
+                      <a
+                        href="/dashboard/clientes/nuevo"
+                        className="block bg-[#0d2f5a]/70 hover:bg-[#103766]/90 
+                        p-2 rounded-lg transition-all shadow-md"
+                      >
+                        ➕ Nuevo
+                      </a>
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -68,11 +93,14 @@ export default function Sidebar() {
               {/* SUBMENÚ PRODUCTOS */}
               <div>
                 <div
-                  className="flex justify-between hover:bg-indigo-600 p-2 rounded-lg cursor-pointer"
+                  className="flex justify-between items-center bg-[#0d2f5a]/70 hover:bg-[#103766]/90 
+                  p-2 rounded-lg cursor-pointer transition-all shadow-md"
                   onClick={() => toggleSubMenu("productos")}
                 >
                   📦 Productos
-                  <span>{subMenuOpen === "productos" ? "▲" : "▼"}</span>
+                  <span className="text-sm">
+                    {subMenuOpen === "productos" ? "▲" : "▼"}
+                  </span>
                 </div>
 
                 <AnimatePresence>
@@ -83,8 +111,20 @@ export default function Sidebar() {
                       exit={{ height: 0, opacity: 0 }}
                       className="pl-4 mt-2 space-y-2"
                     >
-                      <a href="/dashboard/productos" className="block hover:bg-indigo-600 p-2 rounded-lg">📋 Listar</a>
-                      <a href="/dashboard/productos/nuevo" className="block hover:bg-indigo-600 p-2 rounded-lg">➕ Nuevo</a>
+                      <a
+                        href="/dashboard/productos"
+                        className="block bg-[#0d2f5a]/70 hover:bg-[#103766]/90 
+                        p-2 rounded-lg transition-all shadow-md"
+                      >
+                        📋 Listar
+                      </a>
+                      <a
+                        href="/dashboard/productos/nuevo"
+                        className="block bg-[#0d2f5a]/70 hover:bg-[#103766]/90 
+                        p-2 rounded-lg transition-all shadow-md"
+                      >
+                        ➕ Nuevo
+                      </a>
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -94,13 +134,13 @@ export default function Sidebar() {
         )}
       </AnimatePresence>
 
-      {/* SOLO SI EL MENÚ ESTÁ CERRADO → MOSTRAR TÍTULO ARRIBA */}
       {!open && (
         <h2
-          className="fixed top-4 left-4 text-xl font-bold z-50 cursor-pointer bg-indigo-600 text-white p-2 rounded-lg shadow-lg"
-          onClick={() => setOpen(true)}    // ← Muestra el menú
+          className="fixed top-4 left-4 text-xl font-bold z-50 cursor-pointer 
+          bg-indigo-600 text-white p-2 rounded-lg shadow-lg hover:bg-indigo-700 transition"
+          onClick={() => setOpen(true)}
         >
-          📌 Admin Panel
+          📌 Menú
         </h2>
       )}
     </>
