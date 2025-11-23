@@ -32,10 +32,11 @@ export default function ClientesPage() {
   }, []);
 
   return (
-    <div className="p-6">
-      <h1 className="text-xl font-bold">Listado de Clientes</h1>
+    <div >
+      <h1 className="flex items-center gap-2 text-lg font-semibold"> {/* altura más baja */}        
+        🧑‍💼Listado de Clientes
+      </h1>
 
-      {/* 👇 Le pasas los clientes al componente */}
       <ClientesTable
         clientes={clientes}
         onEdit={(id) => console.log("Editar", id)}

@@ -1,40 +1,197 @@
-
-
 "use client";
+import { useState, useMemo } from "react";
+import {
+  useReactTable,
+  getCoreRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  getFilteredRowModel,
+  flexRender,
+  ColumnDef,
+} from "@tanstack/react-table";
+import { Pencil, Trash2, FileSpreadsheet, FileText } from "lucide-react";
 import Button from "@/components/ui/button";
+import * as XLSX from "xlsx";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
+
+interface Cliente {
+  id: number;
+  nit: string;
+  nombre: string;
+  telefono: string;
+}
 
 interface Props {
-  clientes: Array<{ id: number; nit: string; nombre: string; telefono: string }>;
+  clientes: Cliente[];
   onEdit?: (id: number) => void;
   onDelete?: (id: number) => void;
 }
 
 export default function ClientesTable({ clientes, onEdit, onDelete }: Props) {
+  const [filter, setFilter] = useState("");
+  const [pageSize, setPageSize] = useState(5);
+  const [pageIndex, setPageIndex] = useState(0);
+
+  const columns = useMemo<ColumnDef<Cliente>[]>(() => [
+    { accessorKey: "nit", header: "NIT" },
+    { accessorKey: "nombre", header: "Nombre" },
+    { accessorKey: "telefono", header: "Teléfono" },
+    {
+      id: "acciones",
+      header: "Acciones",
+      cell: ({ row }) => (
+        <div className="flex justify-center gap-2">
+          <Button
+            className="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded-lg"
+            onClick={() => onEdit?.(row.original.id)}
+          >
+            <Pencil size={16} />
+          </Button>
+          <Button
+            className="bg-red-600 hover:bg-red-700 text-white px-2 py-1 rounded-lg"
+            onClick={() => onDelete?.(row.original.id)}
+          >
+            <Trash2 size={16} />
+          </Button>
+        </div>
+      ),
+    },
+  ], [onEdit, onDelete]);
+
+  const table = useReactTable({
+    data: clientes,
+    columns,
+    state: { globalFilter: filter, pagination: { pageIndex, pageSize } },
+    onGlobalFilterChange: setFilter,
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    onPaginationChange: (updater) => {
+      const newState = typeof updater === "function" ? updater({ pageIndex, pageSize }) : updater;
+      setPageIndex(newState.pageIndex);
+      setPageSize(newState.pageSize);
+    },
+  });
+
+  // 📤 Exportar Excel
+  const exportToExcel = () => {
+    const data = table.getFilteredRowModel().rows.map((row) => row.original);
+    const ws = XLSX.utils.json_to_sheet(data);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Clientes");
+    XLSX.writeFile(wb, "clientes.xlsx");
+  };
+
+  // 📄 Exportar PDF
+  const exportToPDF = () => {
+    const doc = new jsPDF();
+    const data = table.getFilteredRowModel().rows.map((row) => Object.values(row.original));
+
+    const headers = table
+      .getAllColumns()
+      .filter((col) => typeof col.columnDef.header === "string" && col.id !== "acciones")
+      .map((col) => String(col.columnDef.header));
+
+    autoTable(doc, { head: [headers], body: data });
+    doc.save("clientes.pdf");
+  };
+
   return (
-    <table className="w-full border mt-6">
-      <thead className="bg-gray-200">
-        <tr>
-          <th className="p-2">NIT</th>
-          <th className="p-2">Nombre</th>
-          <th className="p-2">Teléfono</th>
-          <th className="p-2">Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        {clientes?.map((c) => (
-          <tr key={c.id} className="border text-center">
-            <td className="p-2">{c.nit}</td>
-            <td className="p-2">{c.nombre}</td>
-            <td className="p-2">{c.telefono}</td>
-            <td className="p-2 space-x-2">
-              <Button onClick={() => onEdit?.(c.id)}>Editar</Button>
-              <Button onClick={() => onDelete?.(c.id)} className="bg-red-600">
-                Eliminar
-              </Button>
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
+    <div className="p-4 bg-white rounded-xl shadow-lg">
+
+      {/* 🔎 BUSCAR + EXPORTAR ARRIBA */}
+      <div className="flex justify-between items-center mb-4">
+
+        {/* Buscar */}
+        <input
+          value={filter}
+          onChange={(e) => { setFilter(e.target.value); setPageIndex(0); }}
+          placeholder="Buscar..."
+          className="border px-3 py-2 rounded-lg shadow-sm w-1/3"
+        />
+
+        {/* Exportar */}
+        <div className="flex gap-3">
+          <Button onClick={exportToExcel} className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 shadow-md">
+             <img src="/icons/excel.png" alt="Excel" className="w- h-6" />
+          </Button>
+           
+          <Button onClick={exportToPDF} className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 shadow-md">
+             <img src="/icons/pdf.svg" alt="Pdf" className="w- h-6" />
+          </Button>
+        </div>
+      </div>
+
+      {/* 📌 TABLA */}
+      <table className="w-full border rounded-xl overflow-hidden">
+        <thead className="bg-gradient-to-r from-[#1d4e89] to-blue-800 text-white">
+          {table.getHeaderGroups().map((headerGroup) => (
+            <tr key={headerGroup.id}>
+              {headerGroup.headers.map((header) => (
+                <th
+                  key={header.id}
+                  className="p-3 cursor-pointer hover:bg-blue-700 transition"
+                  onClick={header.column.getToggleSortingHandler()}
+                >
+                  {flexRender(header.column.columnDef.header, header.getContext())}
+                  {header.column.getIsSorted() === "asc" && " ▲"}
+                  {header.column.getIsSorted() === "desc" && " ▼"}
+                </th>
+              ))}
+            </tr>
+          ))}
+        </thead>
+        <tbody>
+          {table.getRowModel().rows.map((row, i) => (
+            <tr key={row.id} className={`${i % 2 === 0 ? "bg-white" : "bg-gray-100"} text-center hover:bg-blue-50 transition`}>
+              {row.getVisibleCells().map((cell) => (
+                <td key={cell.id} className="p-2">
+                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      {/* 📄 PAGINACIÓN */}
+      <div className="flex justify-between items-center mt-4">
+        {/* Botones paginación */}
+        <div className="flex items-center gap-2">
+          <Button onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}
+            className="px-3 py-1 rounded-lg bg-gray-200 hover:bg-gray-300 disabled:opacity-50">◀</Button>
+
+          {Array.from({ length: table.getPageCount() }).map((_, i) => (
+            <button key={i} onClick={() => setPageIndex(i)}
+              className={`px-3 py-1 rounded-lg transition ${i === pageIndex ? "bg-green-600 text-white font-bold" : "bg-gray-200 hover:bg-gray-300"}`}>
+              {i + 1}
+            </button>
+          ))}
+
+          <Button onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}
+            className="px-3 py-1 rounded-lg bg-gray-200 hover:bg-gray-300 disabled:opacity-50">▶</Button>
+        </div>
+
+        {/* Info */}
+        <span className="text-sm text-gray-600">
+          Mostrando {table.getRowModel().rows.length} de {table.getFilteredRowModel().rows.length} registros
+        </span>
+
+        {/* Registros por página */}
+        <div className="flex items-center gap-2">
+          <span>Registros por página:</span>
+          <select
+            value={pageSize}
+            onChange={(e) => table.setPageSize(Number(e.target.value))}
+            className="border rounded-lg px-2 py-1"
+          >
+            {[5, 10, 20, 50].map((n) => <option key={n} value={n}>{n}</option>)}
+          </select>
+        </div>
+      </div>
+
+    </div>
   );
 }
