@@ -6,15 +6,113 @@ import Input from "@/components/ui/input";
 import { guardarCliente,actualizarCliente } from "@/lib/api/clientes";
 
 interface ClienteFormProps {
-  cliente?: {id:string; nit: string; nombre: string; telefono: string; direccion: string };
-  onSubmit: (data: { nit: string; nombre: string; telefono: string; direccion: string }) => Promise<void>;
+  cliente?: {
+    id: string;
+    tipo_persona: string;
+    tipo_documento_id: number;
+    nit: string;
+    dv: string;
+    nombre: string;
+    primer_nombre: string;
+    segundo_nombre: string;
+    primer_apellido: string;
+    segundo_apellido: string;
+    fecha_nacimiento: string;
+    genero_id: number;
+    razon_social: string;
+    nombre_comercial: string;
+    regimen_id: number;
+    tipo_responsable_id: number;
+    gran_contribuyente: boolean;
+    autoretenedor: boolean;
+    ciiu_id: number;
+    direccion: string;
+    municipio_id?: number;
+    telefono: string;
+    celular: string;
+    whatsapp: string;
+    correo: string;
+    pagina_web: string;
+    pais_id: number;
+    lista_precio_id: number;
+    vendedor_id: number;
+    tiene_cupo: boolean;
+    cupo_credito: number;
+    plazo_dias: number;
+    acepta_factura_electronica: boolean;
+    recibe_correo: boolean;
+    estado: string;
+    notas: string;
+    usuario_creacion: string;
+    fecha_creacion: string;
+    usuario_modifico: string;
+    fecha_modificacion: string;
+  };
+  onSubmit: (data: { 
+    tipo_persona: string;
+    tipo_documento_id: number;
+    nit: string;  
+     dv: string;
+    nombre: string;
+    primer_nombre: string;
+    segundo_nombre: string;
+    primer_apellido: string;
+    segundo_apellido: string;
+    fecha_nacimiento: string;
+    genero_id: number;
+    razon_social: string;
+    nombre_comercial: string;
+    regimen_id: number;
+    tipo_responsable_id: number;
+    gran_contribuyente: boolean;
+    autoretenedor: boolean;
+    ciiu_id: number;
+    direccion: string;
+    municipio_id: number;
+    telefono: string;
+    celular: string;
+    whatsapp: string;
+    correo: string;
+    pagina_web: string;
+    pais_id: number;
+    lista_precio_id: number;
+    vendedor_id: number;
+    tiene_cupo: boolean;
+    cupo_credito: number;
+    plazo_dias: number;
+    acepta_factura_electronica: boolean;
+    recibe_correo: boolean;
+    estado: string;
+    notas: string;
+    usuario_creacion: string;
+    fecha_creacion: string;
+    usuario_modifico: string;
+    fecha_modificacion: string;
+   
+  }) => Promise<void>;
   onClose?: () => void;
   onSaved?: () => void;  
 }
 
 export default function ClienteForm({cliente, onClose,onSaved }: ClienteFormProps) {  
   
-  const [formData, setFormData] = useState( cliente || { nit: "", nombre: "", telefono: "", direccion: "" });
+  const [formData, setFormData] = useState( cliente || { 
+    tipo_persona: "",   
+    nit: "",
+    dv: "",
+    nombre: "",
+    primer_nombre: "",
+    segundo_nombre: "",
+    primer_apellido: "",
+    segundo_apellido: "",      
+    razon_social: "",
+    nombre_comercial: "",  
+    direccion: "",   
+    telefono: "",
+    celular: "",
+    whatsapp: ""    
+    
+  });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -57,60 +155,160 @@ export default function ClienteForm({cliente, onClose,onSaved }: ClienteFormProp
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-     
-      <div>
-        <label className="block mb-1 font-medium">NIT</label>
-        <Input
-          name="nit"
-          value={formData.nit}
-          onChange={handleChange}
-          placeholder="NIT"
-          required
-        />
-      </div>     
-     
-      <div>
-        <label className="block mb-1 font-medium">Nombre</label>
-        <Input
-          name="nombre"
-          value={formData.nombre}
-          onChange={handleChange}
-          placeholder="Nombre del cliente"
-          required
-        />
-      </div>
+   
+   <form onSubmit={handleSubmit} className="space-y-4">
 
-      <div>
-        <label className="block mb-1 font-medium">Teléfono</label>
-        <Input
-          name="telefono"
-          value={formData.telefono}
-          onChange={handleChange}
-          placeholder="Teléfono"
-        />
-      </div>
+  {/* Bloque 1: Tipo Documento, Tipo Persona, NIT */}
+  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+    
+    <div>
+      <label className="block mb-1 font-medium">Tipo de Persona</label>
+      <Input
+        name="tipo_persona"
+        value={formData.tipo_persona || ""}
+        onChange={handleChange}
+        placeholder="Tipo de Persona"
+      />
+    </div>
+    <div>
+      <label className="block mb-1 font-medium">NIT</label>
+      <Input
+        name="nit"
+        value={formData.nit || ""}
+        onChange={handleChange}
+        placeholder="NIT"
+        required
+      />
+    </div>
+  </div>
 
-      <div>
-        <label className="block mb-1 font-medium">Dirección</label>
-        <Input
-          name="direccion"
-          value={formData.direccion}
-          onChange={handleChange}
-          placeholder="Dirección"
-        />
-      </div>
+  {/* Bloque 2: DV, Nombre, Primer Nombre */}
+  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div>
+      <label className="block mb-1 font-medium">DV</label>
+      <Input
+        name="dv"
+        value={formData.dv || ""}
+        onChange={handleChange}
+        placeholder="DV"
+      />
+    </div>
+    <div>
+      <label className="block mb-1 font-medium">Nombre</label>
+      <Input
+        name="nombre"
+        value={formData.nombre || ""}
+        onChange={handleChange}
+        placeholder="Nombre"
+        required
+      />
+    </div>
+    <div>
+      <label className="block mb-1 font-medium">Primer Nombre</label>
+      <Input
+        name="primer_nombre"
+        value={formData.primer_nombre || ""}
+        onChange={handleChange}
+        placeholder="Primer Nombre"
+      />
+    </div>
+  </div>
 
-      {error && <p className="text-red-500">{error}</p>}
+  {/* Bloque 3: Segundo Nombre, Primer Apellido, Segundo Apellido */}
+  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div>
+      <label className="block mb-1 font-medium">Segundo Nombre</label>
+      <Input
+        name="segundo_nombre"
+        value={formData.segundo_nombre || ""}
+        onChange={handleChange}
+        placeholder="Segundo Nombre"
+      />
+    </div>
+    <div>
+      <label className="block mb-1 font-medium">Primer Apellido</label>
+      <Input
+        name="primer_apellido"
+        value={formData.primer_apellido || ""}
+        onChange={handleChange}
+        placeholder="Primer Apellido"
+      />
+    </div>
+    <div>
+      <label className="block mb-1 font-medium">Segundo Apellido</label>
+      <Input
+        name="segundo_apellido"
+        value={formData.segundo_apellido || ""}
+        onChange={handleChange}
+        placeholder="Segundo Apellido"
+      />
+    </div>
+  </div>
 
-      <div className="flex justify-end gap-2">
-        <Button type="button" onClick={onClose} disabled={loading}>
-          ❌Cancelar
-        </Button>
-        <Button type="submit" disabled={loading}>
-           {loading ? (cliente ? "Actualizando..." : "Guardando...") : (cliente ? "💾Actualizar" : "💾Guardar")}
-        </Button>
-      </div>
-    </form>
+  {/* Bloque 4: Fecha Nacimiento, Teléfono, Celular */}
+  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+    
+    <div>
+      <label className="block mb-1 font-medium">Teléfono</label>
+      <Input
+        name="telefono"
+        value={formData.telefono || ""}
+        onChange={handleChange}
+        placeholder="Teléfono"
+      />
+    </div>
+    <div>
+      <label className="block mb-1 font-medium">Celular</label>
+      <Input
+        name="celular"
+        value={formData.celular || ""}
+        onChange={handleChange}
+        placeholder="Celular"
+      />
+    </div>
+  </div>
+
+  {/* Bloque 5: WhatsApp, Correo, Dirección */}
+  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div>
+      <label className="block mb-1 font-medium">WhatsApp</label>
+      <Input
+        name="whatsapp"
+        value={formData.whatsapp || ""}
+        onChange={handleChange}
+        placeholder="WhatsApp"
+      />
+    </div>
+   
+    <div>
+      <label className="block mb-1 font-medium">Dirección</label>
+      <Input
+        name="direccion"
+        value={formData.direccion || ""}
+        onChange={handleChange}
+        placeholder="Dirección"
+      />
+    </div>
+  </div>
+
+  {/* Bloque 6: Página Web, Gran Contribuyente, Autoretenedor */}
+  
+
+ 
+
+  {error && <p className="text-red-500">{error}</p>}
+
+  <div className="flex justify-end gap-2">
+    <Button type="button" onClick={onClose} disabled={loading}>
+      ❌Cancelar
+    </Button>
+    <Button type="submit" disabled={loading}>
+      {loading ? (cliente ? "Actualizando..." : "Guardando...") : (cliente ? "💾Actualizar" : "💾Guardar")}
+    </Button>
+  </div>
+</form>
+
+
+
   );
 }
