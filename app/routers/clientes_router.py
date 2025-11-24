@@ -64,17 +64,20 @@ def obtener_cliente(cliente_id: int, db: Session = Depends(get_db)):
 # 👉 Actualizar
 @router.put("/{cliente_id}", response_model=ClienteResponse)
 def actualizar_cliente(cliente_id: int, cliente_data: ClienteCreate, db: Session = Depends(get_db)):
-    cliente = db.query(Cliente).filter(Cliente.id == cliente_id).first()
-    if not cliente:
-        raise HTTPException(status_code=404, detail="Cliente no existe")
+    try:
+        cliente = db.query(Cliente).filter(Cliente.id == cliente_id).first()
+        if not cliente:
+            raise HTTPException(status_code=404, detail="Cliente no existe")
 
-    for key, value in cliente_data.items():
-        setattr(cliente, key, value)
+        for key, value in cliente_data.model_dump().items():
+            setattr(cliente, key, value)
 
-    db.commit()
-    db.refresh(cliente)
-    return cliente
-
+        db.commit()
+        db.refresh(cliente)
+        return cliente
+    except Exception as e:
+        print("❌ ERROR EN ENDPOINT:", e)  # 👈 muy importante
+        raise HTTPException(status_code=500, detail=str(e))
 
 # 👉 Eliminar
 @router.delete("/{cliente_id}")
