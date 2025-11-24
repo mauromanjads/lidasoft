@@ -32,9 +32,10 @@ interface Props {
   clientes: Cliente[];
   onEdit?: (id: number) => void;
   onDelete?: (id: number) => void;
+  onSaved?: () => void; 
 }
 
-export default function ClientesTable({ clientes, onEdit, onDelete }: Props) {
+export default function ClientesTable({ clientes, onEdit, onDelete,onSaved }: Props) {
   const [filter, setFilter] = useState("");
   const [pageSize, setPageSize] = useState(5);
   const [pageIndex, setPageIndex] = useState(0);
@@ -139,14 +140,12 @@ export default function ClientesTable({ clientes, onEdit, onDelete }: Props) {
           <h2 className="text-xl font-semibold mb-4">Crear Nuevo Cliente</h2>
           <ClienteForm
             onSubmit={async (data) => {
-              console.log("Datos del cliente:", data);
-              // Llamada a tu API para guardar el cliente
-              // await guardarCliente(data);
+              console.log("Datos del cliente:", data);           
 
               setIsOpen(false); // Cierra el modal después de guardar
             }}
             onClose={() => setIsOpen(false)} // Permite cerrar con el botón "Cancelar"
-            //onSaved={handleClienteSaved}
+            onSaved={onSaved}  // 
             
           />
         </Modal>

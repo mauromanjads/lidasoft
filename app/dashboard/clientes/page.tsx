@@ -22,7 +22,16 @@ export default function ClientesPage() {
     fetchClientes();
   }, []);
 
-  
+  const handleClienteSaved = async () => {
+      try {
+        const data = await obtenerClientes(); // Reutilizamos tu función fetch
+        setClientes(data); // Actualizamos la tabla
+      } catch (error) {
+        console.error("Error refrescando clientes:", error);
+      }
+    };
+
+
   return (
     <div >
       <h1 className="flex items-center gap-2 text-lg font-semibold"> {/* altura más baja */}        
@@ -33,6 +42,8 @@ export default function ClientesPage() {
         clientes={clientes}
         onEdit={(id) => console.log("Editar", id)}
         onDelete={(id) => console.log("Eliminar", id)}
+        onSaved={handleClienteSaved}       
+        
       />
     </div>
   );

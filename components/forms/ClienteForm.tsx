@@ -33,10 +33,9 @@ export default function ClienteForm({ onClose,onSaved }: ClienteFormProps) {
     setLoading(true);
 
     try {
-      await guardarCliente(formData); // Llamada al endpoint  
-      if (onSaved) onSaved();    
+      await guardarCliente(formData); // Llamada al endpoint        
       if (onClose) onClose();  
-     
+      if (onSaved) onSaved();
     } catch (err) {
       console.error(err);
       setError("Ocurrió un error al guardar el cliente.");
