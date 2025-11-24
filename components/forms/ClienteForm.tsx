@@ -105,10 +105,10 @@ export default function ClienteForm({cliente, onClose,onSaved }: ClienteFormProp
 
       <div className="flex justify-end gap-2">
         <Button type="button" onClick={onClose} disabled={loading}>
-          Cancelar
+          ❌Cancelar
         </Button>
         <Button type="submit" disabled={loading}>
-           {loading ? (cliente ? "Actualizando..." : "Guardando...") : (cliente ? "Actualizar" : "Guardar")}
+           {loading ? (cliente ? "Actualizando..." : "Guardando...") : (cliente ? "💾Actualizar" : "💾Guardar")}
         </Button>
       </div>
     </form>
