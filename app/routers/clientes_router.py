@@ -68,7 +68,7 @@ def actualizar_cliente(cliente_id: int, cliente_data: ClienteCreate, db: Session
     if not cliente:
         raise HTTPException(status_code=404, detail="Cliente no existe")
 
-    for key, value in cliente_data.model_dupm().items():
+    for key, value in cliente_data.items():
         setattr(cliente, key, value)
 
     db.commit()

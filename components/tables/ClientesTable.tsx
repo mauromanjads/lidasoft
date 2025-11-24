@@ -9,14 +9,13 @@ import {
   flexRender,
   ColumnDef,
 } from "@tanstack/react-table";
-import { Pencil, Trash2, FileSpreadsheet, FileText } from "lucide-react";
+import { Pencil, Trash2} from "lucide-react";
 import Button from "@/components/ui/button";
 import Modal from "@/components/ui/modal";
 import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import ClienteForm from "@/components/forms/ClienteForm";
-import { obtenerClientes } from "@/lib/api/clientes";
 
 
 
@@ -41,8 +40,7 @@ export default function ClientesTable({ clientes, onEdit, onDelete,onSaved }: Pr
   const [pageIndex, setPageIndex] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
  
-  
-  
+   const [clienteEdit, setClienteEdit] = useState<any | null>(null);
 
   const columns = useMemo<ColumnDef<Cliente>[]>(() => [
     { accessorKey: "nit", header: "NIT" },
@@ -56,7 +54,10 @@ export default function ClientesTable({ clientes, onEdit, onDelete,onSaved }: Pr
         <div className="flex justify-center gap-2">
           <Button
             className="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded-lg"
-            onClick={() => onEdit?.(row.original.id)}
+            onClick={() => {
+            setClienteEdit(row.original);   // cliente viene de la fila de la tabla
+            setIsOpen(true);  
+        }}
           >
             <Pencil size={16} />
           </Button>
@@ -110,8 +111,6 @@ export default function ClientesTable({ clientes, onEdit, onDelete,onSaved }: Pr
     doc.save("clientes.pdf");
   };
 
- 
-
   return (
     <div className="p-4 bg-white rounded-xl shadow-lg">
 
@@ -136,19 +135,32 @@ export default function ClientesTable({ clientes, onEdit, onDelete,onSaved }: Pr
           </div>
         </Button>
 
-         <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
-          <h2 className="text-xl font-semibold mb-4">Crear Nuevo Cliente</h2>
-          <ClienteForm
-            onSubmit={async (data) => {
-              console.log("Datos del cliente:", data);           
-
-              setIsOpen(false); // Cierra el modal después de guardar
+         <Modal 
+            isOpen={isOpen} 
+            onClose={() => {
+              setIsOpen(false);
+              setClienteEdit(null);   // 👈 Ahora sí se limpia
             }}
-            onClose={() => setIsOpen(false)} // Permite cerrar con el botón "Cancelar"
-            onSaved={onSaved}  // 
-            
-          />
-        </Modal>
+          >
+            <h2 className="text-xl font-semibold mb-4">
+              {clienteEdit ? "Editar Cliente" : "Crear Nuevo Cliente"}
+            </h2>
+
+            <ClienteForm
+              cliente={clienteEdit}
+              onSubmit={async (data) => {
+                console.log("Datos del cliente:", data);  
+                setIsOpen(false);
+                setClienteEdit(null);   // 👈 también al guardar
+              }}
+              onClose={() => {
+                setIsOpen(false);
+                setClienteEdit(null);
+              }}
+              onSaved={onSaved}
+            />
+          </Modal>
+
 
         
 

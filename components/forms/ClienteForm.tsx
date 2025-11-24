@@ -3,16 +3,18 @@
 import { useState } from "react";
 import Button from "@/components/ui/button";
 import Input from "@/components/ui/input";
-import { guardarCliente } from "@/lib/api/clientes";
+import { guardarCliente,actualizarCliente } from "@/lib/api/clientes";
 
 interface ClienteFormProps {
+  cliente?: {id:string; nit: string; nombre: string; telefono: string; direccion: string };
   onSubmit: (data: { nit: string; nombre: string; telefono: string; direccion: string }) => Promise<void>;
   onClose?: () => void;
   onSaved?: () => void;  
 }
 
-export default function ClienteForm({ onClose,onSaved }: ClienteFormProps) {
-  const [formData, setFormData] = useState({ nit: "", nombre: "", telefono: "", direccion: "" });
+export default function ClienteForm({cliente, onClose,onSaved }: ClienteFormProps) {  
+  
+  const [formData, setFormData] = useState( cliente || { nit: "", nombre: "", telefono: "", direccion: "" });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -32,13 +34,23 @@ export default function ClienteForm({ onClose,onSaved }: ClienteFormProps) {
     setError(null);
     setLoading(true);
 
-    try {
-      await guardarCliente(formData); // Llamada al endpoint        
+    try {        
+       if (cliente) {
+          await actualizarCliente(cliente.id, formData); // EDITAR
+        } else {
+          await guardarCliente(formData); // CREAR
+        }
+      
       if (onClose) onClose();  
       if (onSaved) onSaved();
-    } catch (err) {
+    } catch (err:any) {
       console.error(err);
-      setError("Ocurrió un error al guardar el cliente.");
+      const mensajeError =
+        err.response?.data?.detail ||
+        err.response?.data?.message ||
+        err.message ||
+        "Error desconocido";
+      setError(mensajeError);
     } finally {
       setLoading(false);
     }
@@ -96,7 +108,7 @@ export default function ClienteForm({ onClose,onSaved }: ClienteFormProps) {
           Cancelar
         </Button>
         <Button type="submit" disabled={loading}>
-          {loading ? "Guardando..." : "Guardar"}
+           {loading ? (cliente ? "Actualizando..." : "Guardando...") : (cliente ? "Actualizar" : "Guardar")}
         </Button>
       </div>
     </form>

@@ -40,3 +40,17 @@ export async function guardarCliente(data: ClienteData) {
     throw err;
   }
 }
+
+export async function actualizarCliente(id: string, data: any) {
+  const res = await fetch(`http://localhost:8000/clientes/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+
+  if (!res.ok) {
+    throw new Error("Error actualizando cliente");
+  }
+
+  return res.json();
+}
