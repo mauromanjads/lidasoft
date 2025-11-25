@@ -47,6 +47,7 @@ class ClienteBase(BaseModel):
 
     direccion: Annotated[str | None, StringConstraints(max_length=200)] = None
     municipio_id: Optional[int] = None
+    departamento_id: Optional[int] = None
 
     telefono: Annotated[str | None, StringConstraints(max_length=50)] = None
     celular: Annotated[str | None, StringConstraints(max_length=50)] = None

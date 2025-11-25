@@ -26,6 +26,7 @@ class Cliente(Base):
     ciiu_id = Column(Integer, nullable=True)
     direccion = Column(String(200), nullable=True)
     municipio_id = Column(Integer, nullable=True)
+    departamento_id = Column(Integer, nullable=True)
     telefono = Column(String(50), nullable=True)
     celular = Column(String(50), nullable=True)
     whatsapp = Column(String(50), nullable=True)
@@ -45,3 +46,4 @@ class Cliente(Base):
     fecha_creacion = Column(DateTime, nullable=True)
     usuario_modifico = Column(String(100), nullable=True)
     fecha_modificacion = Column(DateTime, nullable=True)
+    

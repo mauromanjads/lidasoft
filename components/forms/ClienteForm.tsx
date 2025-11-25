@@ -29,6 +29,7 @@ interface ClienteFormProps {
     ciiu_id: number;
     direccion: string;
     municipio_id?: number;
+    departamento_id?: number;
     telefono: string;
     celular: string;
     whatsapp: string;
