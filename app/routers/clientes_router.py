@@ -2,19 +2,11 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from sqlalchemy import or_
-from app.database import SessionLocal
+from app.database import get_db
 from app.models.clientes import Cliente
 from app.schemas.clientes_schema import ClienteCreate, ClienteResponse
 
 router = APIRouter(prefix="/clientes", tags=["Clientes"])
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
 
 # 👉 Crear cliente (con validación de NIT duplicado)
 @router.post("/", response_model=ClienteResponse)

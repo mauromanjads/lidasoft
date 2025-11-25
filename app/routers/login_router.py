@@ -1,21 +1,11 @@
 from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
-from app.database import SessionLocal
+from app.database import get_db
 from app.models.usuario import Usuario
 import bcrypt   # 👈 PARA VERIFICAR HASH DE PASSWORD
 
 router = APIRouter(prefix="/login", tags=["Login"])
-
-# ---------------------------
-# DEPENDENCIA DE BD
-# ---------------------------
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 # ---------------------------
 # MODELO REQUEST
