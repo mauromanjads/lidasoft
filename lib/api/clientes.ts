@@ -13,11 +13,23 @@ export interface ClienteData {
   direccion?: string;
 }
 
-export const obtenerClientes = async (): Promise<Clientes[]> => {
-  const res = await fetch("http://localhost:8000/clientes");
-  if (!res.ok) throw new Error(`Error al cargar clientes: ${res.status}`);
-  return res.json();
+export const obtenerClientes = async (): Promise<Clientes[] | null> => {
+  try {
+    const res = await fetch("http://localhost:8000/clientes");
+
+    if (!res.ok) {
+      throw new Error(`Error al cargar clientes: ${res.status}`);
+    }
+
+    const data = await res.json();
+    return data;
+
+  } catch (error) {
+    console.error("Error obteniendo clientes:", error);
+    return null;  // ← importante para que no explote tu app
+  }
 };
+
 
 export async function guardarCliente(data: ClienteData) {
   try {

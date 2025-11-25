@@ -3,7 +3,7 @@ from sqlalchemy import Column, Integer, String, Date, DateTime, Boolean, DECIMAL
 from app.database import Base
 
 class Cliente(Base):
-    __tablename__ = "Clientes"
+    __tablename__ = "clientes"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     tipo_persona = Column(String(1), nullable=True)
