@@ -107,7 +107,7 @@ export default function ClienteForm({cliente, onClose,onSaved }: ClienteFormProp
     primer_nombre: "",
     segundo_nombre: "",
     primer_apellido: "",
-    segundo_apellido: "",      
+    segundo_apellido: "",              
     razon_social: "",
     nombre_comercial: "",  
     direccion: "",   
@@ -277,6 +277,7 @@ export default function ClienteForm({cliente, onClose,onSaved }: ClienteFormProp
 
   {/* Bloque 4: Fecha Nacimiento, Teléfono, Celular */}
   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+    
     
     <div>
       <label className="block mb-1 font-medium">Teléfono</label>
