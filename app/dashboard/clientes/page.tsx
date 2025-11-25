@@ -13,7 +13,7 @@ export default function ClientesPage() {
     const fetchClientes = async () => {
       try {
        const data = await obtenerClientes();
-        setClientes(data);
+        setClientes(data || []);
       } catch (error) {
         console.error("Error cargando clientes:", error);
       }
@@ -25,7 +25,7 @@ export default function ClientesPage() {
   const handleClienteSaved = async () => {
       try {
         const data = await obtenerClientes(); // Reutilizamos tu función fetch
-        setClientes(data); // Actualizamos la tabla
+        setClientes(data || []);; // Actualizamos la tabla
       } catch (error) {
         console.error("Error refrescando clientes:", error);
       }

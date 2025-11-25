@@ -2,6 +2,7 @@
 from fastapi import FastAPI
 from app.routers import clientes_router
 from app.routers import usuarios_router
+from app.routers import tipo_documentos
 from fastapi.middleware.cors import CORSMiddleware
 from app.routers import login_router
 
@@ -20,6 +21,7 @@ app.add_middleware(
 app.include_router(clientes_router.router)
 app.include_router(usuarios_router.router)
 app.include_router(login_router.router)
+app.include_router(tipo_documentos.router)
 
 @app.get("/")
 def home():

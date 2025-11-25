@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Button from "@/components/ui/button";
 import Input from "@/components/ui/input";
+import SelectTipoDocumento from "@/components/ui/selects/TipoDocumentoSelect";
 import { guardarCliente,actualizarCliente } from "@/lib/api/clientes";
 
 interface ClienteFormProps {
@@ -97,7 +98,8 @@ interface ClienteFormProps {
 export default function ClienteForm({cliente, onClose,onSaved }: ClienteFormProps) {  
   
   const [formData, setFormData] = useState( cliente || { 
-    tipo_persona: "",   
+    tipo_persona: "",  
+    tipo_documento_id:0, 
     nit: "",
     dv: "",
     nombre: "",
@@ -116,10 +118,28 @@ export default function ClienteForm({cliente, onClose,onSaved }: ClienteFormProp
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
+  const handleChange = (
+      e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    ) => {
+      const target = e.target;  // 👈 guardamos la referencia
+
+      let val: any;
+
+      if (target instanceof HTMLInputElement && target.type === "checkbox") {
+        val = target.checked;  // 👌 ya no da error
+      } 
+      else if (target instanceof HTMLInputElement && target.type === "number") {
+        val = target.value === "" ? undefined : Number(target.value);
+      } 
+      else {
+        val = target.value; // Para select y text
+      }
+
+      setFormData((prev: any) => ({
+        ...prev,
+        [target.name]: val,
+      }));
+    };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -163,13 +183,21 @@ export default function ClienteForm({cliente, onClose,onSaved }: ClienteFormProp
     
     <div>
       <label className="block mb-1 font-medium">Tipo de Persona</label>
-      <Input
+      <select
         name="tipo_persona"
-        value={formData.tipo_persona || ""}
+        value={formData.tipo_persona || ""}        
+        required
+        className="w-full border rounded-md p-2"
         onChange={handleChange}
-        placeholder="Tipo de Persona"
-      />
+      >
+        <option value="">Seleccione...</option>
+        <option value="N">Natural</option>
+        <option value="J">Jurídica</option>
+      </select>
     </div>
+    
+   <SelectTipoDocumento formData={formData} handleChange={handleChange} />
+       
     <div>
       <label className="block mb-1 font-medium">NIT</label>
       <Input
