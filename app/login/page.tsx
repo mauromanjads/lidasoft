@@ -1,5 +1,5 @@
 "use client";
-
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -21,7 +21,7 @@ export default function LoginPage() {
 
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:8000/login", {
+      const res = await fetch(`${API_URL}/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ usuario, password }),

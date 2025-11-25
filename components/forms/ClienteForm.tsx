@@ -204,7 +204,7 @@ export default function ClienteForm({cliente, onClose,onSaved }: ClienteFormProp
         name="nit"
         value={formData.nit || ""}
         onChange={handleChange}
-        placeholder="NIT"
+        placeholder="NIT"        
         required
       />
     </div>
@@ -219,6 +219,7 @@ export default function ClienteForm({cliente, onClose,onSaved }: ClienteFormProp
         value={formData.dv || ""}
         onChange={handleChange}
         placeholder="DV"
+        maxLength={1}
       />
     </div>
     <div>

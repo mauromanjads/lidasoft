@@ -1,3 +1,4 @@
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 export interface Clientes {
   id: number;       
   nit: string;
@@ -15,7 +16,7 @@ export interface ClienteData {
 
 export const obtenerClientes = async (): Promise<Clientes[] | null> => {
   try {
-    const res = await fetch("http://localhost:8000/clientes");
+    const res = await fetch(`${API_URL}/clientes`);
 
     if (!res.ok) {
       throw new Error(`Error al cargar clientes: ${res.status}`);
@@ -33,7 +34,7 @@ export const obtenerClientes = async (): Promise<Clientes[] | null> => {
 
 export async function guardarCliente(data: ClienteData) {
   try {
-    const response = await fetch("http://localhost:8000/clientes", {
+    const response = await fetch(`${API_URL}/clientes`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -54,7 +55,7 @@ export async function guardarCliente(data: ClienteData) {
 }
 
 export async function actualizarCliente(id: string, data: any) {
-  const res = await fetch(`http://localhost:8000/clientes/${id}`, {
+  const res = await fetch(`${API_URL}/clientes/${id}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
