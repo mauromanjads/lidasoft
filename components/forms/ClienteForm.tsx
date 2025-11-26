@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Button from "@/components/ui/button";
 import Input from "@/components/ui/input";
+import Collapsible from "@/components/ui/collapsible";
 import SelectTipoDocumento from "@/components/ui/selects/TipoDocumentoSelect";
 import SelectGeneros from "@/components/ui/selects/GeneroSelect";
 import SelectRegimenes from "@/components/ui/selects/RegimenesSelect";
@@ -118,7 +119,8 @@ export default function ClienteForm({cliente, onClose,onSaved }: ClienteFormProp
     direccion: "",   
     telefono: "",
     celular: "",
-    whatsapp: ""    
+    whatsapp: "" ,
+    correo : "" 
     
   });
   const [loading, setLoading] = useState(false);
@@ -187,177 +189,182 @@ export default function ClienteForm({cliente, onClose,onSaved }: ClienteFormProp
   return (
    
    <form onSubmit={handleSubmit} className="space-y-4">
+  {/* 🧾 DATOS GENERALES */}
+  <Collapsible title="📌 Datos Generales">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div>
+        <label className="block mb-1 font-medium">Tipo de Persona</label>
+        <select
+          name="tipo_persona"
+          value={formData.tipo_persona || ""}
+          className="w-full border rounded-md p-2"
+          required
+          onChange={handleChange}
+        >
+          <option value="">Seleccione...</option>
+          <option value="N">Natural</option>
+          <option value="J">Jurídica</option>
+        </select>
+      </div>
 
-  {/* Bloque 1: Tipo Documento, Tipo Persona, NIT */}
-  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-    
-    <div>
-      <label className="block mb-1 font-medium">Tipo de Persona</label>
-      <select
-        name="tipo_persona"
-        value={formData.tipo_persona || ""}        
-        required
-        className="w-full border rounded-md p-2"
-        onChange={handleChange}
-      >
-        <option value="">Seleccione...</option>
-        <option value="N">Natural</option>
-        <option value="J">Jurídica</option>
-      </select>
-    </div>
-    
-   <SelectTipoDocumento formData={formData} handleChange={handleChange} />
-   <SelectGeneros formData={formData} handleChange={handleChange} />  
-   <SelectRegimenes formData={formData} handleChange={handleChange} />  
-   <SelectTipoResponsable formData={formData} handleChange={handleChange} /> 
-   <SelectCiiu formData={formData} handleChange={handleChange} />  
+      <SelectTipoDocumento formData={formData} handleChange={handleChange} />
+      <SelectGeneros formData={formData} handleChange={handleChange} />
+      <SelectRegimenes formData={formData} handleChange={handleChange} />
+      <SelectTipoResponsable formData={formData} handleChange={handleChange} />
+      <SelectCiiu formData={formData} handleChange={handleChange} />
 
-    <div>
-      <label className="block mb-1 font-medium">NIT</label>
-      <Input
-        name="nit"
-        value={formData.nit || ""}
-        onChange={handleChange}
-        placeholder="NIT"        
-        required
-      />
+      <div>
+        <label className="block mb-1 font-medium">NIT</label>
+        <Input
+          name="nit"
+          value={formData.nit || ""}
+          onChange={handleChange}
+          placeholder="NIT"
+          required
+        />
+      </div>
     </div>
-  </div>
+  </Collapsible>
 
-  {/* Bloque 2: DV, Nombre, Primer Nombre */}
-  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-    <div>
-      <label className="block mb-1 font-medium">DV</label>
-      <Input
-        name="dv"
-        value={formData.dv || ""}
-        onChange={handleChange}
-        placeholder="DV"
-        maxLength={1}
-      />
-    </div>
-    <div>
-      <label className="block mb-1 font-medium">Nombre</label>
-      <Input
-        name="nombre"
-        value={formData.nombre || ""}
-        onChange={handleChange}
-        placeholder="Nombre"
-        required
-      />
-    </div>
-    <div>
-      <label className="block mb-1 font-medium">Primer Nombre</label>
-      <Input
-        name="primer_nombre"
-        value={formData.primer_nombre || ""}
-        onChange={handleChange}
-        placeholder="Primer Nombre"
-      />
-    </div>
-  </div>
+  {/* 🧑 DATOS PERSONALES */}
+  <Collapsible title="🧑 Datos Personales">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div>
+        <label className="block mb-1 font-medium">DV</label>
+        <Input
+          name="dv"
+          value={formData.dv || ""}
+          onChange={handleChange}
+          maxLength={1}
+        />
+      </div>
 
-  {/* Bloque 3: Segundo Nombre, Primer Apellido, Segundo Apellido */}
-  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-    <div>
-      <label className="block mb-1 font-medium">Segundo Nombre</label>
-      <Input
-        name="segundo_nombre"
-        value={formData.segundo_nombre || ""}
-        onChange={handleChange}
-        placeholder="Segundo Nombre"
-      />
-    </div>
-    <div>
-      <label className="block mb-1 font-medium">Primer Apellido</label>
-      <Input
-        name="primer_apellido"
-        value={formData.primer_apellido || ""}
-        onChange={handleChange}
-        placeholder="Primer Apellido"
-      />
-    </div>
-    <div>
-      <label className="block mb-1 font-medium">Segundo Apellido</label>
-      <Input
-        name="segundo_apellido"
-        value={formData.segundo_apellido || ""}
-        onChange={handleChange}
-        placeholder="Segundo Apellido"
-      />
-    </div>
-  </div>
+      <div>
+        <label className="block mb-1 font-medium">Nombre</label>
+        <Input
+          name="nombre"
+          value={formData.nombre || ""}
+          onChange={handleChange}
+          required
+        />
+      </div>
 
-  {/* Bloque 4: Fecha Nacimiento, Teléfono, Celular */}
-  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-    
-    <div>
-      <label className="block mb-1 font-medium">Fecha Naciemiento</label>
-      <Input
-        type="date"
-        name="fecha_nacimiento"
-        value={formData.fecha_nacimiento || ""}
-        onChange={handleChange}
-        placeholder="Fecha de Nacimiento"
-      />
+      <div>
+        <label className="block mb-1 font-medium">Primer Nombre</label>
+        <Input
+          name="primer_nombre"
+          value={formData.primer_nombre || ""}
+          onChange={handleChange}
+        />
+      </div>
     </div>
 
-    <div>
-      <label className="block mb-1 font-medium">Teléfono</label>
-      <Input
-        name="telefono"
-        value={formData.telefono || ""}
-        onChange={handleChange}
-        placeholder="Teléfono"
-      />
-    </div>
-    <div>
-      <label className="block mb-1 font-medium">Celular</label>
-      <Input
-        name="celular"
-        value={formData.celular || ""}
-        onChange={handleChange}
-        placeholder="Celular"
-      />
-    </div>
-  </div>
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+      <div>
+        <label className="block mb-1 font-medium">Segundo Nombre</label>
+        <Input
+          name="segundo_nombre"
+          value={formData.segundo_nombre || ""}
+          onChange={handleChange}
+        />
+      </div>
 
-  {/* Bloque 5: WhatsApp, Correo, Dirección */}
-  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-    <div>
-      <label className="block mb-1 font-medium">WhatsApp</label>
-      <Input
-        name="whatsapp"
-        value={formData.whatsapp || ""}
-        onChange={handleChange}
-        placeholder="WhatsApp"
-      />
+      <div>
+        <label className="block mb-1 font-medium">Primer Apellido</label>
+        <Input
+          name="primer_apellido"
+          value={formData.primer_apellido || ""}
+          onChange={handleChange}
+          required
+        />
+      </div>
+
+      <div>
+        <label className="block mb-1 font-medium">Segundo Apellido</label>
+        <Input
+          name="segundo_apellido"
+          value={formData.segundo_apellido || ""}
+          onChange={handleChange}
+        />
+      </div>
     </div>
-   
-    <div>
-      <label className="block mb-1 font-medium">Dirección</label>
-      <Input
-        name="direccion"
-        value={formData.direccion || ""}
-        onChange={handleChange}
-        placeholder="Dirección"
-      />
+  </Collapsible>
+
+  {/* 📅 CONTACTO */}
+  <Collapsible title="📅 Contacto">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div>
+        <label className="block mb-1 font-medium">Fecha Nacimiento</label>
+        <Input
+          type="date"
+          name="fecha_nacimiento"
+          value={formData.fecha_nacimiento || ""}
+          onChange={handleChange}
+        />
+      </div>
+
+      <div>
+        <label className="block mb-1 font-medium">Teléfono</label>
+        <Input
+          name="telefono"
+          value={formData.telefono || ""}
+          onChange={handleChange}
+        />
+      </div>
+
+      <div>
+        <label className="block mb-1 font-medium">Celular</label>
+        <Input
+          name="celular"
+          value={formData.celular || ""}
+          onChange={handleChange}
+        />
+      </div>
     </div>
-  </div>
+  </Collapsible>
 
-  {/* Bloque 6: Página Web, Gran Contribuyente, Autoretenedor */}
-  
+  {/* 📬 CONTACTO */}
+  <Collapsible title="📬 Dirección y Comunicación">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div>
+        <label className="block mb-1 font-medium">WhatsApp</label>
+        <Input
+          name="whatsapp"
+          value={formData.whatsapp || ""}
+          onChange={handleChange}
+        />
+      </div>
 
- 
+      <div>
+        <label className="block mb-1 font-medium">Correo</label>
+        <Input
+          name="correo"
+          value={formData.correo || ""}
+          onChange={handleChange}
+        />
+      </div>
 
+      <div>
+        <label className="block mb-1 font-medium">Dirección</label>
+        <Input
+          name="direccion"
+          value={formData.direccion || ""}
+          onChange={handleChange}
+        />
+      </div>
+    </div>
+  </Collapsible>
+
+  {/* ⚠️ ERRORES */}
   {error && <p className="text-red-500">{error}</p>}
 
+  {/* BOTONES */}
   <div className="flex justify-end gap-2">
     <Button type="button" onClick={onClose} disabled={loading}>
-      ❌Cancelar
+      ❌ Cancelar
     </Button>
     <Button type="submit" disabled={loading}>
-      {loading ? (cliente ? "Actualizando..." : "Guardando...") : (cliente ? "💾Actualizar" : "💾Guardar")}
+      {loading ? (cliente ? "Actualizando..." : "Guardando...") : (cliente ? "💾 Actualizar" : "💾 Guardar")}
     </Button>
   </div>
 </form>
