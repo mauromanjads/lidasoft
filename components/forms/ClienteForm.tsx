@@ -188,7 +188,7 @@ export default function ClienteForm({cliente, onClose,onSaved }: ClienteFormProp
 
   return (
    
-   <form onSubmit={handleSubmit} className="space-y-4">
+   <form onSubmit={handleSubmit} className="space-y-4 ">
   {/* 🧾 DATOS GENERALES */}
   <Collapsible title="📌 Datos Generales">
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -368,9 +368,7 @@ export default function ClienteForm({cliente, onClose,onSaved }: ClienteFormProp
       {loading ? (cliente ? "Actualizando..." : "Guardando...") : (cliente ? "💾 Actualizar" : "💾 Guardar")}
     </Button>
   </div>
-</form>
-
-
+   </form>
 
   );
 }

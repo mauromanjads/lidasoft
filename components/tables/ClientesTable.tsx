@@ -139,7 +139,7 @@ export default function ClientesTable({ clientes, onEdit, onDelete,onSaved }: Pr
             isOpen={isOpen} 
             onClose={() => {
               setIsOpen(false);
-              setClienteEdit(null);   // 👈 Ahora sí se limpia
+              setClienteEdit(null);   // 👈 Ahora sí se limpia              
             }}
           >
             <h2 className="text-xl font-semibold mb-4">

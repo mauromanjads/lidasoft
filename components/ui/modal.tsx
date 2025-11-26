@@ -9,7 +9,7 @@ interface ModalProps {
   maxWidth?: string; // opcional, para controlar ancho
 }
 
-export default function Modal({ isOpen, onClose, children, maxWidth = "max-w-lg" }: ModalProps) {
+export default function Modal({ isOpen, onClose, children, maxWidth = "max-w-4xl w-full" }: ModalProps) {
   if (!isOpen) return null;
 
   return (
