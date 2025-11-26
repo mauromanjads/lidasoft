@@ -4,6 +4,7 @@ import { useState } from "react";
 import Button from "@/components/ui/button";
 import Input from "@/components/ui/input";
 import SelectTipoDocumento from "@/components/ui/selects/TipoDocumentoSelect";
+import SelectGeneros from "@/components/ui/selects/GeneroSelect";
 import { guardarCliente,actualizarCliente } from "@/lib/api/clientes";
 
 interface ClienteFormProps {
@@ -178,9 +179,7 @@ export default function ClienteForm({cliente, onClose,onSaved }: ClienteFormProp
       setLoading(false);
     }
   };
-console.log("Fecha en formData:", formData.fecha_nacimiento, typeof formData.fecha_nacimiento);
-console.log("DV:", formData.dv, typeof formData.dv);
-console.log("telefono:", formData.telefono, typeof formData.telefono);
+
 
   return (
    
@@ -205,7 +204,7 @@ console.log("telefono:", formData.telefono, typeof formData.telefono);
     </div>
     
    <SelectTipoDocumento formData={formData} handleChange={handleChange} />
-       
+   <SelectGeneros formData={formData} handleChange={handleChange} />  
     <div>
       <label className="block mb-1 font-medium">NIT</label>
       <Input

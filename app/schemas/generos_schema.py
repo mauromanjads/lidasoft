@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-class GenerosModel(BaseModel):
+class GeneroBase(BaseModel):
     id: int
     codigo: str   
     descripcion: str
