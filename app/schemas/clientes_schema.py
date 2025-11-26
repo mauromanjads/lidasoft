@@ -1,5 +1,6 @@
 from datetime import date, datetime
 from typing import Optional, Annotated
+from pydantic import field_validator
 
 from pydantic import BaseModel, EmailStr, Field, StringConstraints
 
@@ -10,7 +11,7 @@ from pydantic import BaseModel, EmailStr, Field, StringConstraints
 class ClienteBase(BaseModel):
     tipo_persona: Annotated[
         str | None,
-        StringConstraints(min_length=1, max_length=1)
+        StringConstraints(min_length=1, max_length=5)
     ] = None
 
     tipo_documento_id: Optional[int] = None
@@ -22,7 +23,7 @@ class ClienteBase(BaseModel):
 
     dv: Annotated[
         str | None,
-        StringConstraints(min_length=1, max_length=1)
+        StringConstraints(max_length=1)
     ] = None
 
     nombre: Annotated[str | None, StringConstraints(max_length=150)] = None
@@ -67,7 +68,7 @@ class ClienteBase(BaseModel):
     acepta_factura_electronica: Optional[bool] = None
     recibe_correo: Optional[bool] = None
 
-    estado: Annotated[str | None, StringConstraints(min_length=1, max_length=1)] = None
+    estado: Annotated[str | None, StringConstraints(max_length=1)] = None
     notas: Annotated[str | None, StringConstraints(max_length=1000)] = None
 
 
@@ -75,8 +76,11 @@ class ClienteBase(BaseModel):
 # 🟢 2. CREATE (Validación adicional)
 # ====================================================
 class ClienteCreate(ClienteBase):
-    pass  # Si deseas validaciones extra, se agregan aquí
-
+    @field_validator("fecha_nacimiento", mode="before")
+    def vacio_a_null(cls, value):
+        if value in ("", None):
+            return None  # 👈 Se convierte a null en Python
+        return value
 
 # ====================================================
 # ✏️ 3. UPDATE (Todos opcionales)

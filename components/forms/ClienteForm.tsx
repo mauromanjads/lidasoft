@@ -54,7 +54,7 @@ interface ClienteFormProps {
     tipo_persona: string;
     tipo_documento_id: number;
     nit: string;  
-     dv: string;
+    dv: string;
     nombre: string;
     primer_nombre: string;
     segundo_nombre: string;
@@ -107,7 +107,8 @@ export default function ClienteForm({cliente, onClose,onSaved }: ClienteFormProp
     primer_nombre: "",
     segundo_nombre: "",
     primer_apellido: "",
-    segundo_apellido: "",              
+    segundo_apellido: "",     
+    fecha_nacimiento: "",         
     razon_social: "",
     nombre_comercial: "",  
     direccion: "",   
@@ -132,8 +133,11 @@ export default function ClienteForm({cliente, onClose,onSaved }: ClienteFormProp
       else if (target instanceof HTMLInputElement && target.type === "number") {
         val = target.value === "" ? undefined : Number(target.value);
       } 
+      else if (target instanceof HTMLInputElement && target.type === "date") {        
+        val = target.value === "" ? null : target.value; 
+      }
       else {
-        val = target.value; // Para select y text
+        val = target.value; 
       }
 
       setFormData((prev: any) => ({
@@ -174,6 +178,9 @@ export default function ClienteForm({cliente, onClose,onSaved }: ClienteFormProp
       setLoading(false);
     }
   };
+console.log("Fecha en formData:", formData.fecha_nacimiento, typeof formData.fecha_nacimiento);
+console.log("DV:", formData.dv, typeof formData.dv);
+console.log("telefono:", formData.telefono, typeof formData.telefono);
 
   return (
    
@@ -278,7 +285,17 @@ export default function ClienteForm({cliente, onClose,onSaved }: ClienteFormProp
   {/* Bloque 4: Fecha Nacimiento, Teléfono, Celular */}
   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
     
-    
+    <div>
+      <label className="block mb-1 font-medium">Fecha Naciemiento</label>
+      <Input
+        type="date"
+        name="fecha_nacimiento"
+        value={formData.fecha_nacimiento || ""}
+        onChange={handleChange}
+        placeholder="Fecha de Nacimiento"
+      />
+    </div>
+
     <div>
       <label className="block mb-1 font-medium">Teléfono</label>
       <Input
