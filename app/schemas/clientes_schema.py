@@ -16,7 +16,7 @@ class ClienteBase(BaseModel):
 
     tipo_documento_id: Optional[int] = None
 
-    nit: Annotated[
+    documento: Annotated[
         str,
         StringConstraints(min_length=1, max_length=20)
     ]
@@ -88,7 +88,7 @@ class ClienteCreate(ClienteBase):
 class ClienteUpdate(BaseModel):
     tipo_persona: Optional[str] = None
     tipo_documento_id: Optional[int] = None
-    nit: Optional[str] = None
+    documento: Optional[str] = None
     dv: Optional[str] = None
     nombre: Optional[str] = None
     primer_nombre: Optional[str] = None

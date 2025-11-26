@@ -21,7 +21,7 @@ import ClienteForm from "@/components/forms/ClienteForm";
 
 interface Cliente {
   id: number;
-  nit: string;
+  documento: string;
   nombre: string;
   telefono: string;
   direccion: string;
@@ -43,7 +43,7 @@ export default function ClientesTable({ clientes, onEdit, onDelete,onSaved }: Pr
    const [clienteEdit, setClienteEdit] = useState<any | null>(null);
 
   const columns = useMemo<ColumnDef<Cliente>[]>(() => [
-    { accessorKey: "nit", header: "NIT" },
+    { accessorKey: "documento", header: "Documento" },
     { accessorKey: "nombre", header: "Nombre" },
     { accessorKey: "telefono", header: "Teléfono" },
     { accessorKey: "direccion", header: "Dirección" },

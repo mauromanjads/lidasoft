@@ -8,10 +8,10 @@ from app.schemas.clientes_schema import ClienteCreate, ClienteResponse
 
 router = APIRouter(prefix="/clientes", tags=["Clientes"])
 
-# 👉 Crear cliente (con validación de NIT duplicado)
+# 👉 Crear cliente (con validación de DOCUMENTO duplicado)
 @router.post("/", response_model=ClienteResponse)
 def crear_cliente(cliente: ClienteCreate, db: Session = Depends(get_db)):
-    existe = db.query(Cliente).filter(Cliente.nit == cliente.nit).first()
+    existe = db.query(Cliente).filter(Cliente.documento == cliente.documento).first()
     if existe:
         raise HTTPException(status_code=409, detail="Cliente duplicado")
 
@@ -27,13 +27,13 @@ def crear_cliente(cliente: ClienteCreate, db: Session = Depends(get_db)):
 def listar_clientes(db: Session = Depends(get_db)):
     return db.query(Cliente).order_by(Cliente.nombre.asc()).all()
 
-#👉  Buscar por NIT o Nombre (nuevo filtro)
+#👉  Buscar por documento o Nombre (nuevo filtro)
 @router.get("/buscar", response_model=list[ClienteResponse])
-def buscar_cliente(query: str = Query(..., description="NIT o nombre del cliente a buscar"),
+def buscar_cliente(query: str = Query(..., description="documento o nombre del cliente a buscar"),
                    db: Session = Depends(get_db)):
     clientes = db.query(Cliente).filter(
         or_(
-            Cliente.nit.ilike(f"%{query}%"),
+            Cliente.documento.ilike(f"%{query}%"),
             Cliente.nombre.ilike(f"%{query}%")
         )
     ).all()

@@ -16,7 +16,7 @@ interface ClienteFormProps {
     id: string;
     tipo_persona: string;
     tipo_documento_id: number;
-    nit: string;
+    documento: string;
     dv: string;
     nombre: string;
     primer_nombre: string;
@@ -58,7 +58,7 @@ interface ClienteFormProps {
   onSubmit: (data: { 
     tipo_persona: string;
     tipo_documento_id: number;
-    nit: string;  
+    documento: string;  
     dv: string;
     nombre: string;
     primer_nombre: string;
@@ -106,7 +106,7 @@ export default function ClienteForm({cliente, onClose,onSaved }: ClienteFormProp
   const [formData, setFormData] = useState( cliente || { 
     tipo_persona: "",  
     tipo_documento_id:0, 
-    nit: "",
+    documento: "",
     dv: "",
     nombre: "",
     primer_nombre: "",
@@ -155,8 +155,8 @@ export default function ClienteForm({cliente, onClose,onSaved }: ClienteFormProp
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.nombre || !formData.nit) {
-      setError("Nombre y NIT son obligatorios.");
+    if (!formData.nombre || !formData.documento) {
+      setError("Nombre y Documento son obligatorios.");
       return;
     }
 
@@ -214,12 +214,12 @@ export default function ClienteForm({cliente, onClose,onSaved }: ClienteFormProp
       <SelectCiiu formData={formData} handleChange={handleChange} />
 
       <div>
-        <label className="block mb-1 font-medium">NIT</label>
+        <label className="block mb-1 font-medium">Documento</label>
         <Input
-          name="nit"
-          value={formData.nit || ""}
+          name="documento"
+          value={formData.documento || ""}
           onChange={handleChange}
-          placeholder="NIT"
+          placeholder="Documento"
           required
         />
       </div>

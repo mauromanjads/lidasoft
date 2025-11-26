@@ -1,14 +1,14 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 export interface Clientes {
   id: number;       
-  nit: string;
+  documento: string;
   nombre: string;
   telefono: string;
   direccion: string;
 }
 
 export interface ClienteData {  
-  nit: string;
+  documento: string;
   nombre: string;
   telefono?: string;
   direccion?: string;
