@@ -6,24 +6,22 @@ import { motion, AnimatePresence } from "framer-motion";
 interface CollapsibleProps {
   title: string;
   children: React.ReactNode;
+  isOpen: boolean;           // 👈 agregamos
+  onToggle: () => void;      // 👈 agregamos
 }
 
-export default function Collapsible({ title, children }: CollapsibleProps) {
-  const [isOpen, setIsOpen] = useState(false);
-
+export default function Collapsible({ title, children, isOpen, onToggle }: CollapsibleProps) {
   return (
     <div className="border rounded-lg p-3 shadow-sm bg-white">
-      {/* HEADER */}
       <button
         type="button"
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={onToggle}           // ⬅️ ahora lo controla el padre
         className="w-full flex justify-between items-center font-semibold text-left"
       >
         {title}
         <span className="text-xl">{isOpen ? "▲" : "▼"}</span>
       </button>
 
-      {/* CONTENT ANIMADO */}
       <AnimatePresence initial={false}>
         {isOpen && (
           <motion.div
