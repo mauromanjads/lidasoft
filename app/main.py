@@ -5,6 +5,8 @@ from app.routers import usuarios_router
 from app.routers import tipo_documentos
 from app.routers import generos_router
 from app.routers import regimen_router
+from app.routers import tipos_responsables_router
+
 from fastapi.middleware.cors import CORSMiddleware
 from app.routers import login_router
 
@@ -26,6 +28,7 @@ app.include_router(login_router.router)
 app.include_router(tipo_documentos.router)
 app.include_router(generos_router.router)
 app.include_router(regimen_router.router)
+app.include_router(tipos_responsables_router.router)
 
 
 @app.get("/")

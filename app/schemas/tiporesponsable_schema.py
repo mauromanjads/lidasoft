@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-class TipoResponsable(BaseModel):
+class TipoResponsablesBase(BaseModel):
     id: int
     codigo: str   
     descripcion: str
