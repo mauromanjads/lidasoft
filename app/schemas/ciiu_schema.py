@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-class CIIUModel(BaseModel):
+class CiiuBase(BaseModel):
     id: int
     codigo: str   
     descripcion: str

@@ -7,6 +7,7 @@ import SelectTipoDocumento from "@/components/ui/selects/TipoDocumentoSelect";
 import SelectGeneros from "@/components/ui/selects/GeneroSelect";
 import SelectRegimenes from "@/components/ui/selects/RegimenesSelect";
 import SelectTipoResponsable from "@/components/ui/selects/TipoResponsableSelect";
+import SelectCiiu from "@/components/ui/selects/CiiuSelect";
 import { guardarCliente,actualizarCliente } from "@/lib/api/clientes";
 
 interface ClienteFormProps {
@@ -208,7 +209,8 @@ export default function ClienteForm({cliente, onClose,onSaved }: ClienteFormProp
    <SelectTipoDocumento formData={formData} handleChange={handleChange} />
    <SelectGeneros formData={formData} handleChange={handleChange} />  
    <SelectRegimenes formData={formData} handleChange={handleChange} />  
-   <SelectTipoResponsable formData={formData} handleChange={handleChange} />  
+   <SelectTipoResponsable formData={formData} handleChange={handleChange} /> 
+   <SelectCiiu formData={formData} handleChange={handleChange} />  
 
     <div>
       <label className="block mb-1 font-medium">NIT</label>
