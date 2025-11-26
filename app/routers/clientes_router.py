@@ -25,7 +25,7 @@ def crear_cliente(cliente: ClienteCreate, db: Session = Depends(get_db)):
 # 👉 Listar todos
 @router.get("/", response_model=list[ClienteResponse])
 def listar_clientes(db: Session = Depends(get_db)):
-    return db.query(Cliente).all()
+    return db.query(Cliente).order_by(Cliente.nombre.asc()).all()
 
 #👉  Buscar por NIT o Nombre (nuevo filtro)
 @router.get("/buscar", response_model=list[ClienteResponse])
