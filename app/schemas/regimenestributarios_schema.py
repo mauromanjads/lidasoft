@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-class RegimenesTributariosModel(BaseModel):
+class RegimenesTributariosBase(BaseModel):
     id: int
     codigo: str   
     descripcion: str
