@@ -341,6 +341,7 @@ export default function ClienteForm({cliente, onClose,onSaved }: ClienteFormProp
           name="correo"
           value={formData.correo || ""}
           onChange={handleChange}
+          required
         />
       </div>
 

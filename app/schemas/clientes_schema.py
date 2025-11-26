@@ -82,6 +82,7 @@ class ClienteCreate(ClienteBase):
             return None  # 👈 Se convierte a null en Python
         return value
 
+
 # ====================================================
 # ✏️ 3. UPDATE (Todos opcionales)
 # ====================================================
