@@ -3,7 +3,7 @@ from sqlalchemy import Column, Integer, String, Date, DateTime, Boolean, DECIMAL
 from app.database import Base
 
 class Terceros(Base):
-    __tablename__ = "Terceros"
+    __tablename__ = "terceros"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     tipo_persona = Column(String(1), nullable=True)

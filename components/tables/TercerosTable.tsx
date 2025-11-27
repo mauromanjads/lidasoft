@@ -19,7 +19,6 @@ import TerceroForm from "@/components/forms/TerceroForm";
 import { useTiposDocumento } from "@/components/ui/selects/TipoDocumentoSelect";
 
 
-
 interface Tercero {
   id: number;
   documento: string;
@@ -27,6 +26,20 @@ interface Tercero {
   celular: string;
   estado: string;
   tipo_documento_id: number;
+  tipo_persona: string;
+  primer_nombre: string;
+  segundo_nombre: string;
+  primer_apellido: string;
+  segundo_apellido: string;
+  fecha_nacimiento: string;
+  genero_id: number;
+  razon_social: string;
+  regimen_id: number;
+  ciiu_id: number;
+  direccion: string;
+  telefono: string;   
+  whatsapp: string;
+  correo: string;
 }
 
 

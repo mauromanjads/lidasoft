@@ -1,19 +1,29 @@
-"use client"; 
+"use client";
 
 import { useEffect, useState } from "react";
 import TercerosTable from "@/components/tables/TercerosTable";
-import { Terceros, obtenerTerceros } from "@/lib/api/terceros";
+import { obtenerTerceros } from "@/lib/api/terceros";
 
+// Interfaz que espera la tabla
+interface Tercero {
+  id: number;
+  documento: string;
+  nombre: string;
+  celular: string;
+  estado: string;
+  tipo_documento_id: number;
+  tipo_persona?: string;
+}
 
 export default function TercerosPage() {
-  const [tercero_t, setTerceros] = useState<Terceros[]>([]);
+  const [terceros, setTerceros] = useState<Tercero[]>([]);
 
-  // 🚀 Cargar desde FastAPI
+  // Cargar terceros desde FastAPI
   useEffect(() => {
     const fetchTerceros = async () => {
       try {
-       const data = await obtenerTerceros();
-        setTerceros(data || []);
+        const data = await obtenerTerceros();
+        setTerceros(data as Tercero[]); // <-- casteo directo
       } catch (error) {
         console.error("Error cargando terceros:", error);
       }
@@ -22,27 +32,27 @@ export default function TercerosPage() {
     fetchTerceros();
   }, []);
 
+  // Refrescar tabla tras guardar un tercero
   const handleTerceroSaved = async () => {
-      try {
-        const data = await obtenerTerceros(); // Reutilizamos tu función fetch
-        setTerceros(data || []);; // Actualizamos la tabla
-      } catch (error) {
-        console.error("Error refrescando datos:", error);
-      }
-    };
-
+    try {
+      const data = await obtenerTerceros();
+      setTerceros(data as Tercero[]); // <-- casteo directo
+    } catch (error) {
+      console.error("Error refrescando datos:", error);
+    }
+  };
 
   return (
-    <div >
-      <h1 className="flex items-center gap-2 text-lg font-semibold"> {/* altura más baja */}        
-        🧑‍💼Listado de Clientes
+    <div>
+      <h1 className="flex items-center gap-2 text-lg font-semibold">
+        🧑‍💼 Listado de Clientes
       </h1>
 
       <TercerosTable
-        terceros = {tercero_t}
+        terceros={terceros}
         onEdit={(id) => console.log("Editar", id)}
         onDelete={(id) => console.log("Eliminar", id)}
-        onSaved={handleTerceroSaved}               
+        onSaved={handleTerceroSaved}
       />
     </div>
   );
