@@ -24,7 +24,8 @@ interface Cliente {
   documento: string;
   nombre: string;
   telefono: string;
-  direccion: string;
+  estado: string;
+  tipo_documento_id: string;
 }
 
 interface Props {
@@ -43,10 +44,11 @@ export default function ClientesTable({ clientes, onEdit, onDelete,onSaved }: Pr
    const [clienteEdit, setClienteEdit] = useState<any | null>(null);
 
   const columns = useMemo<ColumnDef<Cliente>[]>(() => [
+    { accessorKey: "tipo_documento_id", header: "Tipo Documento" },
     { accessorKey: "documento", header: "Documento" },
     { accessorKey: "nombre", header: "Nombre" },
     { accessorKey: "telefono", header: "Teléfono" },
-    { accessorKey: "direccion", header: "Dirección" },
+    { accessorKey: "estado", header: "Estado" },
     {
       id: "acciones",
       header: "Acciones",

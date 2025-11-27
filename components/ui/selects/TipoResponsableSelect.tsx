@@ -25,7 +25,7 @@ export default function TiposResponsablesSelect({ formData, handleChange }: Prop
 
   return (
     <div>
-      <label className="block mb-1 font-medium">Tipos de Responsabilidades</label>
+      <label className="block mb-1 font-medium">Resp.Fiscales</label>
       <select
         name="tipo_responsable_id"
         value={formData.tipo_responsable_id ?? ""}

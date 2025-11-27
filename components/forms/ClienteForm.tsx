@@ -120,7 +120,8 @@ export default function ClienteForm({cliente, onClose,onSaved }: ClienteFormProp
     telefono: "",
     celular: "",
     whatsapp: "" ,
-    correo : "" 
+    correo : "" ,
+    estado: ""
     
   });
   const [loading, setLoading] = useState(false);
@@ -194,8 +195,8 @@ export default function ClienteForm({cliente, onClose,onSaved }: ClienteFormProp
   return (
    
    <form onSubmit={handleSubmit} className="space-y-4 ">
-  {/* 🧾 DATOS GENERALES */}
-  <Collapsible title="📌 Datos Generales"  isOpen={openIndex === 0}  onToggle={() => handleToggle(0)}>
+  {/* 🧑 DATOS PERSONALES */}
+  <Collapsible title="🧑 Datos Personales"  isOpen={openIndex === 0}  onToggle={() => handleToggle(0)}>
     <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
       <div>
         <label className="block mb-1 font-medium">Tipo de Persona</label>
@@ -258,11 +259,10 @@ export default function ClienteForm({cliente, onClose,onSaved }: ClienteFormProp
         <Input
           name="primer_apellido"
           value={formData.primer_apellido || ""}
-          onChange={handleChange}
-          required
+          onChange={handleChange}          
         />
       </div>
-
+     
       <div>
         <label className="block mb-1 font-medium">Segundo Apellido</label>
         <Input
@@ -272,53 +272,35 @@ export default function ClienteForm({cliente, onClose,onSaved }: ClienteFormProp
         />
       </div>
 
-      <div>
-        <label className="block mb-1 font-medium">Razón Social</label>
-        <Input
-          name="razonsocial"
-          value={formData.razon_social || ""}
-          onChange={handleChange}
-        />
-      </div>
+       <div className="md:col-span-2">
+            <label className="block mb-1 font-medium">Razón Social</label>
+            <Input
+              name="razon_social"
+              value={formData.razon_social || ""}
+              onChange={handleChange}
+            />
+       </div>
 
-      <div>
-        <label className="block mb-1 font-medium">Nombre</label>
-        <Input
-          name="nombre"
-          value={formData.nombre || ""}
-          onChange={handleChange}
-          required
-        />
-      </div>
+       <div className="md:col-span-2">
+            <label className="block mb-1 font-medium">Nombre</label>
+            <Input
+              name="nombre"
+              value={formData.nombre || ""}
+              onChange={handleChange}
+              required
+            />
+         </div>     
 
-    </div>
+       </div>
+
+
   </Collapsible>
 
-  {/* 🧑 DATOS PERSONALES */}
-  <Collapsible title="🧑 Datos Personales"  isOpen={openIndex === 1}  onToggle={() => handleToggle(1)}>
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+  {/* 🧾 DATOS GENERALES */}
+  <Collapsible title="📌 Datos Generales"  isOpen={openIndex === 1}  onToggle={() => handleToggle(1)}>
+    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
      
-
-      
-
-      
-    </div>
-
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-      
-     
-       <SelectGeneros formData={formData} handleChange={handleChange} />
-      <SelectRegimenes formData={formData} handleChange={handleChange} />
-      <SelectTipoResponsable formData={formData} handleChange={handleChange} />
-      <SelectCiiu formData={formData} handleChange={handleChange} />
-
-    </div>
-  </Collapsible>
-
-  {/* 📅 CONTACTO */}
-  <Collapsible title="📅 Contacto"  isOpen={openIndex === 2}  onToggle={() => handleToggle(2)}>
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-      <div>
+    <div>
         <label className="block mb-1 font-medium">Fecha Nacimiento</label>
         <Input
           type="date"
@@ -326,13 +308,16 @@ export default function ClienteForm({cliente, onClose,onSaved }: ClienteFormProp
           value={formData.fecha_nacimiento || ""}
           onChange={handleChange}
         />
-      </div>
-
+      </div>      
+     
+       <SelectGeneros formData={formData} handleChange={handleChange} />
+      <SelectRegimenes formData={formData} handleChange={handleChange} />
+      
       <div>
-        <label className="block mb-1 font-medium">Teléfono</label>
+        <label className="block mb-1 font-medium">Estado</label>
         <Input
-          name="telefono"
-          value={formData.telefono || ""}
+          name="estado"
+          value={formData.estado || ""}
           onChange={handleChange}
         />
       </div>
@@ -345,12 +330,32 @@ export default function ClienteForm({cliente, onClose,onSaved }: ClienteFormProp
           onChange={handleChange}
         />
       </div>
+
+      <div className="col-span-3">
+        <label className="block mb-1 font-medium">Dirección</label>
+        <Input
+          name="direccion"
+          value={formData.direccion || ""}
+          onChange={handleChange}
+        />
+      </div>
+      
     </div>
   </Collapsible>
 
-  {/* 📬 CONTACTO */}
-  <Collapsible title="📬 Dirección y Comunicación"  isOpen={openIndex === 3}  onToggle={() => handleToggle(3)}>
+  {/* 📅 CONTACTO */}
+  <Collapsible title="📅 Contacto"  isOpen={openIndex === 2}  onToggle={() => handleToggle(2)}>
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      
+      <div>
+        <label className="block mb-1 font-medium">Teléfono</label>
+        <Input
+          name="telefono"
+          value={formData.telefono || ""}
+          onChange={handleChange}
+        />
+      </div>
+
       <div>
         <label className="block mb-1 font-medium">WhatsApp</label>
         <Input
@@ -370,17 +375,11 @@ export default function ClienteForm({cliente, onClose,onSaved }: ClienteFormProp
         />
       </div>
 
-      <div>
-        <label className="block mb-1 font-medium">Dirección</label>
-        <Input
-          name="direccion"
-          value={formData.direccion || ""}
-          onChange={handleChange}
-        />
-      </div>
+     
     </div>
   </Collapsible>
 
+  
   {/* ⚠️ ERRORES */}
   {error && <p className="text-red-500">{error}</p>}
 
