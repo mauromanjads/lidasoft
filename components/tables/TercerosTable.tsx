@@ -15,40 +15,40 @@ import Modal from "@/components/ui/modal";
 import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
-import ClienteForm from "@/components/forms/ClienteForm";
+import TerceroForm from "@/components/forms/TerceroForm";
 import { useTiposDocumento } from "@/components/ui/selects/TipoDocumentoSelect";
 
 
 
-interface Cliente {
+interface Tercero {
   id: number;
   documento: string;
   nombre: string;
-  telefono: string;
+  celular: string;
   estado: string;
   tipo_documento_id: number;
 }
 
 
 interface Props {
-  clientes: Cliente[];  
+  terceros: Tercero[];  
   onEdit?: (id: number) => void;
   onDelete?: (id: number) => void;
   onSaved?: () => void; 
 }
 
-export default function ClientesTable({ clientes, onEdit, onDelete,onSaved }: Props) {
+export default function TercerosTable({ terceros, onEdit, onDelete,onSaved }: Props) {
   const [filter, setFilter] = useState("");
   const [pageSize, setPageSize] = useState(5);
   const [pageIndex, setPageIndex] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
  
-   const [clienteEdit, setClienteEdit] = useState<any | null>(null);
+   const [terceroEdit, setTerceroEdit] = useState<any | null>(null);
 
-   const { tiposDocumentos, loading } = useTiposDocumento();
+   const { tiposDocumentos } = useTiposDocumento();
    
 
-  const columns = useMemo<ColumnDef<Cliente>[]>(() => [
+  const columns = useMemo<ColumnDef<Tercero>[]>(() => [
     { accessorKey: "tipo_documento_id", header: "Tipo Documento" ,
        cell: ({ row }) => {
         const tipo = tiposDocumentos.find(
@@ -69,7 +69,7 @@ export default function ClientesTable({ clientes, onEdit, onDelete,onSaved }: Pr
           <Button
             className="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded-lg"
             onClick={() => {
-            setClienteEdit(row.original);   // cliente viene de la fila de la tabla
+            setTerceroEdit(row.original);   // viene de la fila de la tabla
             setIsOpen(true);  
         }}
           >
@@ -87,7 +87,7 @@ export default function ClientesTable({ clientes, onEdit, onDelete,onSaved }: Pr
   ], [onEdit, onDelete]);
 
   const table = useReactTable({
-    data: clientes,
+    data: terceros,
     columns,
     state: { globalFilter: filter, pagination: { pageIndex, pageSize } },
     onGlobalFilterChange: setFilter,
@@ -145,7 +145,7 @@ export default function ClientesTable({ clientes, onEdit, onDelete,onSaved }: Pr
           className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 shadow-md"
         >  <div className="flex items-center gap-2">
             <img src="/icons/plus.png" alt="Pdf" className="w-6 h-6" />
-            <span>Nuevo Cliente</span>
+            <span>Nuevo</span>
           </div>
         </Button>
 
@@ -153,23 +153,23 @@ export default function ClientesTable({ clientes, onEdit, onDelete,onSaved }: Pr
             isOpen={isOpen} 
             onClose={() => {
               setIsOpen(false);
-              setClienteEdit(null);   // 👈 Ahora sí se limpia              
+              setTerceroEdit(null);   // 👈 Ahora sí se limpia              
             }}
           >
             <h2 className="text-xl font-semibold mb-4">
-              {clienteEdit ? "Editar Cliente" : "Crear Nuevo Cliente"}
+              {terceroEdit ? "Editar" : "Crear Nuevo"}
             </h2>
 
-            <ClienteForm
-              cliente={clienteEdit}
+            <TerceroForm
+              tercero={terceroEdit}
               onSubmit={async (data) => {
-                console.log("Datos del cliente:", data);  
+                console.log("Datos del tercero:", data);  
                 setIsOpen(false);
-                setClienteEdit(null);   // 👈 también al guardar
+                setTerceroEdit(null);   // 👈 también al guardar
               }}
               onClose={() => {
                 setIsOpen(false);
-                setClienteEdit(null);
+                setTerceroEdit(null);
               }}
               onSaved={onSaved}
             />

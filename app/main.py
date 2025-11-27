@@ -1,6 +1,6 @@
 # app/main.py
 from fastapi import FastAPI
-from app.routers import clientes_router
+from app.routers import terceros_router
 from app.routers import usuarios_router
 from app.routers import tipo_documentos
 from app.routers import generos_router
@@ -23,7 +23,7 @@ app.add_middleware(
 
 
 # Registrar los routers
-app.include_router(clientes_router.router)
+app.include_router(terceros_router.router)
 app.include_router(usuarios_router.router)
 app.include_router(login_router.router)
 app.include_router(tipo_documentos.router)

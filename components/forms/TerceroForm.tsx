@@ -8,10 +8,10 @@ import Collapsible from "@/components/ui/collapsible";
 import SelectTipoDocumento from "@/components/ui/selects/TipoDocumentoSelect";
 import SelectGeneros from "@/components/ui/selects/GeneroSelect";
 import SelectRegimenes from "@/components/ui/selects/RegimenesSelect";
-import { guardarCliente,actualizarCliente } from "@/lib/api/clientes";
+import { guardarTercero,actualizarTercero } from "@/lib/api/terceros";
 
-interface ClienteFormProps {
-  cliente?: {
+interface TerceroFormProps {
+  tercero?: {
     id: string;
     tipo_persona: string;
     tipo_documento_id: number;
@@ -100,9 +100,9 @@ interface ClienteFormProps {
   onSaved?: () => void;  
 }
 
-export default function ClienteForm({cliente, onClose,onSaved }: ClienteFormProps) {  
+export default function TerceroForm({tercero, onClose,onSaved }: TerceroFormProps) {  
   
-  const [formData, setFormData] = useState( cliente || { 
+  const [formData, setFormData] = useState( tercero || { 
     tipo_persona: "",  
     tipo_documento_id:0, 
     documento: "",
@@ -240,10 +240,10 @@ export default function ClienteForm({cliente, onClose,onSaved }: ClienteFormProp
     setLoading(true);
 
     try {        
-       if (cliente) {
-          await actualizarCliente(cliente.id, formData); // EDITAR
+       if (tercero) {
+          await actualizarTercero(tercero.id, formData); // EDITAR
         } else {
-          await guardarCliente(formData); // CREAR
+          await guardarTercero(formData); // CREAR
         }
       
       if (onClose) onClose();  
@@ -482,7 +482,7 @@ export default function ClienteForm({cliente, onClose,onSaved }: ClienteFormProp
       ❌ Cancelar
     </Button>
     <Button type="submit" disabled={loading}>
-      {loading ? (cliente ? "Actualizando..." : "Guardando...") : (cliente ? "💾 Actualizar" : "💾 Guardar")}
+      {loading ? (tercero ? "Actualizando..." : "Guardando...") : (tercero ? "💾 Actualizar" : "💾 Guardar")}
     </Button>
   </div>
    </form>

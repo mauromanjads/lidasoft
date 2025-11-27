@@ -8,7 +8,7 @@ from pydantic import BaseModel, EmailStr, Field, StringConstraints
 # ====================================================
 # 🧩 1. BASE (Campos comunes)
 # ====================================================
-class ClienteBase(BaseModel):
+class TerceroBase(BaseModel):
     tipo_persona: Annotated[
         str | None,
         StringConstraints(min_length=1, max_length=5)
@@ -70,12 +70,12 @@ class ClienteBase(BaseModel):
 
     estado: Annotated[str | None, StringConstraints(max_length=1)] = None
     notas: Annotated[str | None, StringConstraints(max_length=1000)] = None
-
+    tipotercero: Annotated[str | None, StringConstraints(max_length=100)] = None
 
 # ====================================================
 # 🟢 2. CREATE (Validación adicional)
 # ====================================================
-class ClienteCreate(ClienteBase):
+class TerceroCreate(TerceroBase):
     @field_validator("fecha_nacimiento", mode="before")
     def vacio_a_null(cls, value):
         if value in ("", None):
@@ -86,7 +86,7 @@ class ClienteCreate(ClienteBase):
 # ====================================================
 # ✏️ 3. UPDATE (Todos opcionales)
 # ====================================================
-class ClienteUpdate(BaseModel):
+class TerceroUpdate(BaseModel):
     tipo_persona: Optional[str] = None
     tipo_documento_id: Optional[int] = None
     documento: Optional[str] = None
@@ -122,12 +122,13 @@ class ClienteUpdate(BaseModel):
     recibe_correo: Optional[bool] = None
     estado: Optional[str] = None
     notas: Optional[str] = None
+    tipotercero: Optional[str] = None    
 
 
 # ====================================================
 # 📤 4. RESPONSE (Lo que devuelves en la API)
 # ====================================================
-class ClienteResponse(ClienteBase):
+class TerceroResponse(TerceroBase):
     id: int
     usuario_creacion: Optional[str] = None
     fecha_creacion: Optional[datetime] = None

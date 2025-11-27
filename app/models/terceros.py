@@ -2,8 +2,8 @@
 from sqlalchemy import Column, Integer, String, Date, DateTime, Boolean, DECIMAL
 from app.database import Base
 
-class Cliente(Base):
-    __tablename__ = "clientes"
+class Terceros(Base):
+    __tablename__ = "Terceros"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     tipo_persona = Column(String(1), nullable=True)
@@ -46,4 +46,5 @@ class Cliente(Base):
     fecha_creacion = Column(DateTime, nullable=True)
     usuario_modifico = Column(String(100), nullable=True)
     fecha_modificacion = Column(DateTime, nullable=True)
+    tipotercero = Column(String(100), nullable=True)
     

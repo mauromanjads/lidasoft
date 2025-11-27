@@ -1,5 +1,5 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
-export interface Clientes {
+export interface Terceros {
   id: number;       
   documento: string;
   nombre: string;
@@ -7,34 +7,34 @@ export interface Clientes {
   direccion: string;
 }
 
-export interface ClienteData {  
+export interface TercerosData {  
   documento: string;
   nombre: string;
   telefono?: string;
   direccion?: string;
 }
 
-export const obtenerClientes = async (): Promise<Clientes[] | null> => {
+export const obtenerTerceros = async (): Promise<Terceros[] | null> => {
   try {
-    const res = await fetch(`${API_URL}/clientes`);
+    const res = await fetch(`${API_URL}/terceros`);
 
     if (!res.ok) {
-      throw new Error(`Error al cargar clientes: ${res.status}`);
+      throw new Error(`Error al cargar datos: ${res.status}`);
     }
 
     const data = await res.json();
     return data;
 
   } catch (error) {
-    console.error("Error obteniendo clientes:", error);
+    console.error("Error obteniendo datos:", error);
     return null;  // ← importante para que no explote tu app
   }
 };
 
 
-export async function guardarCliente(data: ClienteData) {
+export async function guardarTercero(data: TercerosData) {
   try {
-    const response = await fetch(`${API_URL}/clientes`, {
+    const response = await fetch(`${API_URL}/terceros`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -44,25 +44,25 @@ export async function guardarCliente(data: ClienteData) {
 
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(errorData.detail || "Error al guardar cliente");
+      throw new Error(errorData.detail || "Error al guardar");
     }
 
     return await response.json();
   } catch (err) {
-    console.error("Error en guardarCliente:", err);
+    console.error("Error en guardar:", err);
     throw err;
   }
 }
 
-export async function actualizarCliente(id: string, data: any) {
-  const res = await fetch(`${API_URL}/clientes/${id}`, {
+export async function actualizarTercero(id: string, data: any) {
+  const res = await fetch(`${API_URL}/terceros/${id}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
   });
 
   if (!res.ok) {
-    throw new Error("Error actualizando cliente");
+    throw new Error("Error actualizando");
   }
 
   return res.json();

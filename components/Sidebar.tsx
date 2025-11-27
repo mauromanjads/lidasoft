@@ -55,16 +55,16 @@ export default function Sidebar() {
                 <div
                   className="flex justify-between items-center bg-[#0d2f5a]/70 hover:bg-[#103766]/90 
                   p-2 rounded-lg cursor-pointer transition-all shadow-md"
-                  onClick={() => toggleSubMenu("configuracion")}
+                  onClick={() => toggleSubMenu("terceros")}
                 >
-                  👥 Configuración
+                  👥 Terceros
                   <span className="text-sm">
-                    {subMenuOpen === "configuracion" ? "▲" : "▼"}
+                    {subMenuOpen === "terceros" ? "▲" : "▼"}
                   </span>
                 </div>
 
                 <AnimatePresence>
-                  {subMenuOpen === "configuracion" && (
+                  {subMenuOpen === "terceros" && (
                     <motion.div
                       initial={{ height: 0, opacity: 0 }}
                       animate={{ height: "auto", opacity: 1 }}
@@ -72,7 +72,7 @@ export default function Sidebar() {
                       className="pl-4 mt-2 space-y-2"
                     >
                       <a
-                        href="/dashboard/clientes"
+                        href="/dashboard/terceros"
                         className="block bg-[#0d2f5a]/70 hover:bg-[#103766]/90 
                         p-2 rounded-lg transition-all shadow-md"
                       >
