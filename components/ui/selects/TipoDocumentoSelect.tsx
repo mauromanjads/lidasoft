@@ -43,3 +43,25 @@ export default function TipoDocumentoSelect({ formData, handleChange }: Props) {
     </div>
   );
 }
+
+export const useTiposDocumento = () => {
+  const [tiposDocumentos, setTiposDocumentos] = useState<TipoDocumento[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const cargarTipos = async () => {
+      try {
+        const data = await obtenerTiposDocumento();
+        setTiposDocumentos(data);
+      } catch (error) {
+        console.error("Error cargando tipos de documento", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    cargarTipos();
+  }, []);
+
+  return { tiposDocumentos, loading };
+};

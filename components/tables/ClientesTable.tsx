@@ -16,6 +16,7 @@ import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import ClienteForm from "@/components/forms/ClienteForm";
+import { useTiposDocumento } from "@/components/ui/selects/TipoDocumentoSelect";
 
 
 
@@ -25,11 +26,12 @@ interface Cliente {
   nombre: string;
   telefono: string;
   estado: string;
-  tipo_documento_id: string;
+  tipo_documento_id: number;
 }
 
+
 interface Props {
-  clientes: Cliente[];
+  clientes: Cliente[];  
   onEdit?: (id: number) => void;
   onDelete?: (id: number) => void;
   onSaved?: () => void; 
@@ -43,11 +45,21 @@ export default function ClientesTable({ clientes, onEdit, onDelete,onSaved }: Pr
  
    const [clienteEdit, setClienteEdit] = useState<any | null>(null);
 
+   const { tiposDocumentos, loading } = useTiposDocumento();
+   
+
   const columns = useMemo<ColumnDef<Cliente>[]>(() => [
-    { accessorKey: "tipo_documento_id", header: "Tipo Documento" },
+    { accessorKey: "tipo_documento_id", header: "Tipo Documento" ,
+       cell: ({ row }) => {
+        const tipo = tiposDocumentos.find(
+          (t) => t.id === row.original.tipo_documento_id
+        );
+        return tipo ? tipo.codigo : "—";
+      },
+    },
     { accessorKey: "documento", header: "Documento" },
     { accessorKey: "nombre", header: "Nombre" },
-    { accessorKey: "telefono", header: "Teléfono" },
+    { accessorKey: "celular", header: "Celular" },
     { accessorKey: "estado", header: "Estado" },
     {
       id: "acciones",

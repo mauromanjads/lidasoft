@@ -1,14 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import { useEffect,useRef} from "react";
 import Button from "@/components/ui/button";
 import Input from "@/components/ui/input";
 import Collapsible from "@/components/ui/collapsible";
 import SelectTipoDocumento from "@/components/ui/selects/TipoDocumentoSelect";
 import SelectGeneros from "@/components/ui/selects/GeneroSelect";
 import SelectRegimenes from "@/components/ui/selects/RegimenesSelect";
-import SelectTipoResponsable from "@/components/ui/selects/TipoResponsableSelect";
-import SelectCiiu from "@/components/ui/selects/CiiuSelect";
 import { guardarCliente,actualizarCliente } from "@/lib/api/clientes";
 
 interface ClienteFormProps {
@@ -120,14 +119,89 @@ export default function ClienteForm({cliente, onClose,onSaved }: ClienteFormProp
     telefono: "",
     celular: "",
     whatsapp: "" ,
-    correo : "" ,
-    estado: ""
+    correo : "tucorreo@info.com" ,
+    estado: "A"
     
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+     
+  const disableStyle = (condition: boolean) =>
+  condition ? "bg-gray-200 cursor-not-allowed" : "";
 
-  
+  const limpiarCampos = (tipo: string) => {
+      if (tipo === "J") {
+        return {
+          primer_nombre: "",
+          segundo_nombre: "",
+          primer_apellido: "",
+          segundo_apellido: "",
+          nombre: ""
+        };
+      }
+      return { dv: "", razon_social: "" };
+    };
+
+    useEffect(() => {
+      setFormData(prev => ({
+        ...prev,
+        ...limpiarCampos(formData.tipo_persona)
+      }));
+    }, [formData.tipo_persona]);
+
+    useEffect(() => {
+      const {
+        primer_nombre,
+        segundo_nombre,
+        primer_apellido,
+        segundo_apellido,
+        razon_social,
+        tipo_persona
+      } = formData;
+
+      const nombreDesdePartes = [
+        primer_nombre?.trim(),
+        segundo_nombre?.trim(),
+        primer_apellido?.trim(),
+        segundo_apellido?.trim()
+      ]
+        .filter(Boolean)
+        .join(" ");
+
+      const newData: Partial<typeof formData> = {};
+
+      if (tipo_persona === "J") {
+        // Si el usuario escribió algo en razon_social, usarlo como fuente
+        if (razon_social && razon_social.trim() !== "") {
+          newData.nombre = razon_social.trim();          
+        } 
+        
+      } else {
+        // Persona natural: nombre viene de las partes y razon_social se limpia
+        newData.nombre = nombreDesdePartes;
+        newData.razon_social = "";
+      }
+
+      setFormData(prev => {
+        // evita setState si no hay cambios (previene loops innecesarios)
+        if (
+          prev.nombre === (newData.nombre ?? prev.nombre) &&
+          prev.razon_social === (newData.razon_social ?? prev.razon_social)
+        ) {
+          return prev;
+        }
+        return { ...prev, ...newData };
+      });
+    }, [
+      formData.tipo_persona,
+      formData.primer_nombre,
+      formData.segundo_nombre,
+      formData.primer_apellido,
+      formData.segundo_apellido,
+      formData.razon_social
+    ]);
+
+
   const handleChange = (
       e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
     ) => {
@@ -232,7 +306,9 @@ export default function ClienteForm({cliente, onClose,onSaved }: ClienteFormProp
           name="dv"
           value={formData.dv || ""}
           onChange={handleChange}
-          maxLength={1}         
+          maxLength={1}   
+          readOnly={formData.tipo_persona !== "J"}  
+          className={disableStyle(formData.tipo_persona !== "J")}
         />
       </div>
 
@@ -242,6 +318,8 @@ export default function ClienteForm({cliente, onClose,onSaved }: ClienteFormProp
           name="primer_nombre"
           value={formData.primer_nombre || ""}
           onChange={handleChange}
+          readOnly={formData.tipo_persona !== "N"}  
+          className={disableStyle(formData.tipo_persona !== "N")}
         />
       </div>
       
@@ -251,6 +329,8 @@ export default function ClienteForm({cliente, onClose,onSaved }: ClienteFormProp
           name="segundo_nombre"
           value={formData.segundo_nombre || ""}
           onChange={handleChange}
+          readOnly={formData.tipo_persona !== "N"}  
+          className={disableStyle(formData.tipo_persona !== "N")}
         />
       </div>
 
@@ -259,7 +339,9 @@ export default function ClienteForm({cliente, onClose,onSaved }: ClienteFormProp
         <Input
           name="primer_apellido"
           value={formData.primer_apellido || ""}
-          onChange={handleChange}          
+          onChange={handleChange}
+          readOnly={formData.tipo_persona !== "N"}  
+          className={disableStyle(formData.tipo_persona !== "N")}          
         />
       </div>
      
@@ -269,6 +351,8 @@ export default function ClienteForm({cliente, onClose,onSaved }: ClienteFormProp
           name="segundo_apellido"
           value={formData.segundo_apellido || ""}
           onChange={handleChange}
+          readOnly={formData.tipo_persona !== "N"}  
+          className={disableStyle(formData.tipo_persona !== "N")}
         />
       </div>
 
@@ -278,6 +362,8 @@ export default function ClienteForm({cliente, onClose,onSaved }: ClienteFormProp
               name="razon_social"
               value={formData.razon_social || ""}
               onChange={handleChange}
+              readOnly={formData.tipo_persona !== "J"}  
+          className={disableStyle(formData.tipo_persona !== "J")}
             />
        </div>
 
@@ -286,14 +372,14 @@ export default function ClienteForm({cliente, onClose,onSaved }: ClienteFormProp
             <Input
               name="nombre"
               value={formData.nombre || ""}
+              readOnly={true}  
+             className={disableStyle(true)}
               onChange={handleChange}
               required
             />
          </div>     
 
-       </div>
-
-
+    </div>
   </Collapsible>
 
   {/* 🧾 DATOS GENERALES */}
@@ -315,11 +401,17 @@ export default function ClienteForm({cliente, onClose,onSaved }: ClienteFormProp
       
       <div>
         <label className="block mb-1 font-medium">Estado</label>
-        <Input
+        <select
           name="estado"
           value={formData.estado || ""}
+          className="w-full border rounded-md p-2"
+          required
           onChange={handleChange}
-        />
+        >
+          <option value="">Seleccione...</option>
+          <option value="A">Activo</option>
+          <option value="I">Inactivo</option>
+        </select>
       </div>
 
       <div>
@@ -368,6 +460,7 @@ export default function ClienteForm({cliente, onClose,onSaved }: ClienteFormProp
       <div>
         <label className="block mb-1 font-medium">Correo</label>
         <Input
+        type="email"
           name="correo"
           value={formData.correo || ""}
           onChange={handleChange}
