@@ -23,9 +23,12 @@ def crear_tercero(tercero: TerceroCreate, db: Session = Depends(get_db)):
 
 
 # 👉 Listar todos
-@router.get("/", response_model=list[TerceroResponse])
-def listar_terceros(db: Session = Depends(get_db)):
-    return db.query(Terceros).order_by(Terceros.nombre.asc()).all()
+@router.get("/{tipotercero}", response_model=list[TerceroResponse])
+def listar_terceros(tipotercero: str,db: Session = Depends(get_db)):
+    return db.query(Terceros).filter(
+            Terceros.tipotercero.ilike(f"%{tipotercero}%")
+        ).order_by(Terceros.nombre.asc()).all()
+
 
 #👉  Buscar por documento o Nombre (nuevo filtro)
 @router.get("/buscar", response_model=list[TerceroResponse])

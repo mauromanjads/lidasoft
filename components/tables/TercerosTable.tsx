@@ -66,7 +66,7 @@ export default function TercerosTable({ terceros, onEdit, onDelete,onSaved }: Pr
        cell: ({ row }) => {
         const tipo = tiposDocumentos.find(
           (t) => t.id === row.original.tipo_documento_id
-        );
+        );        
         return tipo ? tipo.codigo : "—";
       },
     },
@@ -97,7 +97,7 @@ export default function TercerosTable({ terceros, onEdit, onDelete,onSaved }: Pr
         </div>
       ),
     },
-  ], [onEdit, onDelete]);
+  ], [onEdit, onDelete,tiposDocumentos]);
 
   const table = useReactTable({
     data: terceros,

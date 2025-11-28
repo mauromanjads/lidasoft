@@ -7,7 +7,7 @@ class Terceros(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     tipo_persona = Column(String(1), nullable=True)
-    tipo_documento_id = Column(Integer, nullable=True)
+    tipo_documento_id = Column(Integer,  nullable=True)
     documento = Column(String(20), nullable=False)
     dv = Column(String(1), nullable=True)
     nombre = Column(String(150), nullable=True)

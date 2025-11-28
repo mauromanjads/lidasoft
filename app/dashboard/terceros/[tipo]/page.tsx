@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import TercerosTable from "@/components/tables/TercerosTable";
 import { obtenerTerceros } from "@/lib/api/terceros";
+import { useParams } from "next/navigation";
 
 // Interfaz que espera la tabla
 interface Tercero {
@@ -10,19 +11,22 @@ interface Tercero {
   documento: string;
   nombre: string;
   celular: string;
-  estado: string;
-  tipo_documento_id: number;
+  estado: string;  
   tipo_persona?: string;
 }
 
 export default function TercerosPage() {
   const [terceros, setTerceros] = useState<Tercero[]>([]);
+  const params = useParams();       // 👈 aquí
+  const tipo = params.tipo as string; // ← dinámico desde URL
 
   // Cargar terceros desde FastAPI
-  useEffect(() => {
+  useEffect(() => {   
+    if (!tipo) return;
+
     const fetchTerceros = async () => {
       try {
-        const data = await obtenerTerceros();
+        const data = await obtenerTerceros(tipo as string );
         setTerceros(data as Tercero[]); // <-- casteo directo
       } catch (error) {
         console.error("Error cargando terceros:", error);
@@ -35,7 +39,7 @@ export default function TercerosPage() {
   // Refrescar tabla tras guardar un tercero
   const handleTerceroSaved = async () => {
     try {
-      const data = await obtenerTerceros();
+      const data = await obtenerTerceros(tipo as string);
       setTerceros(data as Tercero[]); // <-- casteo directo
     } catch (error) {
       console.error("Error refrescando datos:", error);
@@ -45,7 +49,7 @@ export default function TercerosPage() {
   return (
     <div>
       <h1 className="flex items-center gap-2 text-lg font-semibold">
-        🧑‍💼 Listado de Clientes
+        🧑‍💼 Listado de {tipo} 
       </h1>
 
       <TercerosTable

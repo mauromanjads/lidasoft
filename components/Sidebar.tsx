@@ -72,18 +72,18 @@ export default function Sidebar() {
                       className="pl-4 mt-2 space-y-2"
                     >
                       <a
-                        href="/dashboard/terceros"
+                        href="/dashboard/terceros/clientes"
                         className="block bg-[#0d2f5a]/70 hover:bg-[#103766]/90 
                         p-2 rounded-lg transition-all shadow-md"
                       >
                         📋 Clientes
                       </a>
                       <a
-                        href="/dashboard/clientes/nuevo"
+                        href="/dashboard/terceros/proveedores"
                         className="block bg-[#0d2f5a]/70 hover:bg-[#103766]/90 
                         p-2 rounded-lg transition-all shadow-md"
                       >
-                        ➕ Nuevo
+                        ➕ Proveedores
                       </a>
                     </motion.div>
                   )}
