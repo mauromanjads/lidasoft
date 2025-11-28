@@ -5,17 +5,27 @@ from sqlalchemy import or_
 from app.database import get_db
 from app.models.terceros import Terceros
 from app.schemas.terceros_schema import TerceroCreate, TerceroResponse
+from datetime import datetime,timezone
+from fastapi import Request
 
 router = APIRouter(prefix="/terceros", tags=["terceros"])
 
 # 👉 Crear tercero (con validación de DOCUMENTO duplicado)
 @router.post("/", response_model=TerceroResponse)
-def crear_tercero(tercero: TerceroCreate, db: Session = Depends(get_db)):
+def crear_tercero(
+    request: Request,  
+    tercero: TerceroCreate,
+    db: Session = Depends(get_db),     
+):
+    usuario_logueado = request.cookies.get("usuario") 
     existe = db.query(Terceros).filter(Terceros.documento == tercero.documento).first()
     if existe:
         raise HTTPException(status_code=409, detail="tercero duplicado")
 
-    db_tercero = Terceros(**tercero.model_dump())
+    db_tercero = Terceros(**tercero.model_dump(),
+        usuario_creacion=usuario_logueado,
+        fecha_creacion=datetime.now(timezone.utc)
+       )
     db.add(db_tercero)
     db.commit()
     db.refresh(db_tercero)
@@ -58,14 +68,24 @@ def obtener_tercero(tercero_id: int, db: Session = Depends(get_db)):
 
 # 👉 Actualizar
 @router.put("/{tercero_id}", response_model=TerceroResponse)
-def actualizar_tercero(tercero_id: int, tercero_data: TerceroCreate, db: Session = Depends(get_db)):
+def actualizar_tercero(
+    request:Request,
+    tercero_id: int,
+    tercero_data: TerceroCreate,
+    db: Session = Depends(get_db)    
+):
     try:
+        usuario_logueado = request.cookies.get("usuario") 
         tercero = db.query(Terceros).filter(Terceros.id == tercero_id).first()
         if not tercero:
             raise HTTPException(status_code=404, detail="tercero no existe")
 
         for key, value in tercero_data.model_dump().items():
             setattr(tercero, key, value)
+
+# 👉    Guardar quién modificó
+        tercero.usuario_modifico = usuario_logueado
+        tercero.fecha_modificacion = datetime.now(timezone.utc)
 
         db.commit()
         db.refresh(tercero)

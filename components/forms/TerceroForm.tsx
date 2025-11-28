@@ -9,6 +9,7 @@ import SelectTipoDocumento from "@/components/ui/selects/TipoDocumentoSelect";
 import SelectGeneros from "@/components/ui/selects/GeneroSelect";
 import SelectRegimenes from "@/components/ui/selects/RegimenesSelect";
 import { guardarTercero,actualizarTercero } from "@/lib/api/terceros";
+import { usePathname } from "next/navigation";
 
 interface TerceroFormProps {
   tercero?: {
@@ -102,6 +103,9 @@ interface TerceroFormProps {
 
 export default function TerceroForm({tercero, onClose,onSaved }: TerceroFormProps) {  
   
+  const pathname = usePathname();           
+  const tipoTercero = pathname.split("/").pop();  // 👉 "para saber de que ruta viene /clientes, /proveedores, etc"
+
   const [formData, setFormData] = useState( tercero || { 
     tipo_persona: "",  
     tipo_documento_id:0, 
@@ -120,7 +124,8 @@ export default function TerceroForm({tercero, onClose,onSaved }: TerceroFormProp
     celular: "",
     whatsapp: "" ,
     correo : "tucorreo@info.com" ,
-    estado: "A"
+    estado: "A",
+    tipotercero: tipoTercero || "",
     
   });
   const [loading, setLoading] = useState(false);
