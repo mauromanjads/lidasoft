@@ -75,7 +75,7 @@ def actualizar_tercero(
     db: Session = Depends(get_db)    
 ):
     try:
-        usuario_logueado = request.cookies.get("usuario") 
+        usuario_logueado = request.cookies.get("usuario")         
         tercero = db.query(Terceros).filter(Terceros.id == tercero_id).first()
         if not tercero:
             raise HTTPException(status_code=404, detail="tercero no existe")

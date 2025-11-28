@@ -39,6 +39,7 @@ export async function guardarTercero(data: TercerosData) {
       headers: {
         "Content-Type": "application/json",
       },
+      credentials: "include", 
       body: JSON.stringify(data),
     });
 
@@ -58,6 +59,7 @@ export async function actualizarTercero(id: string, data: any) {
   const res = await fetch(`${API_URL}/terceros/${id}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
+    credentials: "include", 
     body: JSON.stringify(data),
   });
 
