@@ -115,6 +115,13 @@ export default function TercerosTable({ terceros, onEdit, onDelete,onSaved }: Pr
     },
   });
 
+  const maxButtons = 5;
+  const totalPages = table.getPageOptions().length;
+  const startPage = Math.max(0, pageIndex - Math.floor(maxButtons / 2));
+  const endPage = Math.min(totalPages, startPage + maxButtons);
+
+  
+
   // 📤 Exportar Excel
   const exportToExcel = () => {
     const data = table.getFilteredRowModel().rows.map((row) => row.original);
@@ -242,12 +249,34 @@ export default function TercerosTable({ terceros, onEdit, onDelete,onSaved }: Pr
           <Button onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}
             className="px-3 py-1 rounded-lg bg-gray-200 hover:bg-gray-300 disabled:opacity-50">◀</Button>
 
-          {Array.from({ length: table.getPageCount() }).map((_, i) => (
-            <button key={i} onClick={() => setPageIndex(i)}
-              className={`px-3 py-1 rounded-lg transition ${i === pageIndex ? "bg-green-600 text-white font-bold" : "bg-gray-200 hover:bg-gray-300"}`}>
-              {i + 1}
-            </button>
-          ))}
+            {/* Mostrar primero */}
+              {startPage > 0 && (
+                <>
+                  <button onClick={() => setPageIndex(0)}>1</button>
+                  {startPage > 1 && <span>...</span>}
+                </>
+              )}
+
+           {/* Páginas visibles dinámicas */}
+            {Array.from({ length: endPage - startPage }).map((_, i) => {
+              const num = startPage + i;
+              return (
+                <button key={num} onClick={() => setPageIndex(num)}
+                  className={`px-3 py-1 rounded-lg transition ${num === pageIndex ? "bg-green-600 text-white font-bold" : "bg-gray-200 hover:bg-gray-300"}`}>
+                  {num + 1}
+                </button>
+              );
+            })}
+
+            {/* Mostrar última */}
+            {endPage < table.getPageCount() && (
+              <>
+                {endPage < table.getPageCount() - 1 && <span>...</span>}
+                <button onClick={() => setPageIndex(table.getPageCount() - 1)}>
+                  {table.getPageCount()}
+                </button>
+              </>
+            )}
 
           <Button onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}
             className="px-3 py-1 rounded-lg bg-gray-200 hover:bg-gray-300 disabled:opacity-50">▶</Button>
