@@ -95,16 +95,16 @@ export default function Sidebar() {
                 <div
                   className="flex justify-between items-center bg-[#0d2f5a]/70 hover:bg-[#103766]/90 
                   p-2 rounded-lg cursor-pointer transition-all shadow-md"
-                  onClick={() => toggleSubMenu("productos")}
+                  onClick={() => toggleSubMenu("catalogos")}
                 >
-                  📦 Productos
+                  📦 Catálogos
                   <span className="text-sm">
-                    {subMenuOpen === "productos" ? "▲" : "▼"}
+                    {subMenuOpen === "catalogos" ? "▲" : "▼"}
                   </span>
                 </div>
 
                 <AnimatePresence>
-                  {subMenuOpen === "productos" && (
+                  {subMenuOpen === "catalogos" && (
                     <motion.div
                       initial={{ height: 0, opacity: 0 }}
                       animate={{ height: "auto", opacity: 1 }}
@@ -116,14 +116,14 @@ export default function Sidebar() {
                         className="block bg-[#0d2f5a]/70 hover:bg-[#103766]/90 
                         p-2 rounded-lg transition-all shadow-md"
                       >
-                        📋 Listar
+                        📋 Productos
                       </a>
                       <a
                         href="/dashboard/productos/nuevo"
                         className="block bg-[#0d2f5a]/70 hover:bg-[#103766]/90 
                         p-2 rounded-lg transition-all shadow-md"
                       >
-                        ➕ Nuevo
+                        ➕ Unidades de Medida
                       </a>
                     </motion.div>
                   )}
