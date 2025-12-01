@@ -1,7 +1,18 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { crearProducto, crearPresentacion, crearPrecio, obtenerUnidades } from "@/lib/api/productos";
+import { 
+    crearProducto,
+    crearPresentacion, 
+    crearPrecio, 
+    obtenerUnidades,
+    actualizarProducto,
+    actualizarPresentacion,
+    actualizarPrecio ,
+    listarPresentaciones,
+    listarPrecios
+
+  } from "@/lib/api/productos";
 import { UnidadMedida } from "@/app/types";
 
 interface PrecioForm {
@@ -108,38 +119,50 @@ export default function ProductoForm({ onCreate }: ProductoFormProps) {
     );
   }
 
-  async function handleSubmit(e: React.FormEvent) {
+    async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    try {
-      // 1️⃣ Crear producto
-      const producto = await crearProducto({ codigo, nombre, descripcion });
 
-      // 2️⃣ Crear presentaciones
+    try {
+      // ===================== 1️⃣ Crear producto =====================
+      const producto = await crearProducto({ codigo, nombre, descripcion });
+      if (!producto?.id) throw new Error("No se pudo crear el producto");
+
+      // ===================== 2️⃣ Crear presentaciones =====================
       for (const pres of presentaciones) {
         const presentacion = await crearPresentacion(producto.id, {
-          tipo_presentacion: pres.tipo_presentacion,
+         tipo_presentacion: pres.tipo_presentacion,
           cantidad_equivalente: pres.cantidad_equivalente,
           unidad_medida_id: pres.unidad_medida_id,
-          activo: true,
-        });
+          activo: true,          
+      });
 
-        // 3️⃣ Crear precios
+        if (!presentacion?.id) throw new Error("No se pudo crear la presentación");
+
+        // ===================== 3️⃣ Crear precios =====================
         for (const pr of pres.precios) {
           await crearPrecio(presentacion.id, pr);
         }
       }
 
-      // Reset del formulario
-      setCodigo(""); setNombre(""); setDescripcion("");
-      setPresentaciones([{ tipo_presentacion: "", cantidad_equivalente: 1, unidad_medida_id: unidades[0]?.id || 0, precios: [] }]);
+      // ===================== 4️⃣ Reset del formulario =====================
+      setCodigo("");
+      setNombre("");
+      setDescripcion("");
+      setPresentaciones([
+        { tipo_presentacion: "", cantidad_equivalente: 1, unidad_medida_id: unidades[0]?.id || 0, precios: [] }
+      ]);
 
-      if (onCreate) await onCreate(); // 🚀 Función pasada desde la página
+      // ===================== 5️⃣ Callback opcional =====================
+      if (onCreate) await onCreate();
+
       alert("Producto creado correctamente ✅");
-    } catch (err) {
+
+    } catch (err: any) {
       console.error(err);
-      alert("Error al crear producto");
+      alert("Error al crear producto: " + (err.message || err));
     }
   }
+
 
   return (
     <form onSubmit={handleSubmit} className="p-4 border rounded space-y-4">
