@@ -8,5 +8,5 @@ class Categoria(Base):
     id = Column(Integer, primary_key=True, index=True)
     nombre = Column(String(100), nullable=False)
     descripcion = Column(Text, nullable=True)
-    estado = Column(Boolean, default=True)
+    estado = Column(String(1), nullable=True)
     creado = Column(DateTime(timezone=False), server_default=func.now())

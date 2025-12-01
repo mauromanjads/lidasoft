@@ -6,7 +6,7 @@ from typing import Optional
 class CategoriaBase(BaseModel):
     nombre: str
     descripcion: Optional[str] = None
-    estado: Optional[bool] = True
+    estado: Optional[str] = True
 
 class CategoriaCreate(CategoriaBase):
     pass
@@ -14,7 +14,7 @@ class CategoriaCreate(CategoriaBase):
 class CategoriaUpdate(BaseModel):
     nombre: Optional[str]
     descripcion: Optional[str]
-    estado: Optional[bool]
+    estado: Optional[str]
 
 class CategoriaResponse(CategoriaBase):
     id: int

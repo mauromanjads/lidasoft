@@ -4,14 +4,14 @@ export interface Categoria {
   id: number;
   nombre: string;
   descripcion?: string;
-  estado: boolean;
+  estado: string;
   creado: string;
 }
 
 export interface CategoriaData {
   nombre: string;
   descripcion?: string;
-  estado?: boolean;
+  estado?: string;
 }
 
 /* ============================================
@@ -86,7 +86,7 @@ export async function guardarCategoria(data: CategoriaData) {
 /* ============================================
    ACTUALIZAR CATEGORIA
 ============================================ */
-export async function actualizarCategoria(id: number, data: Partial<CategoriaData>) {
+export async function actualizarCategoria(id: string, data: Partial<CategoriaData>) {
   try {
     const response = await fetch(`${API_URL}/categorias/${id}`, {
       method: "PUT",

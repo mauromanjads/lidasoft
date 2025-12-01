@@ -15,13 +15,13 @@ import Modal from "@/components/ui/modal";
 import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
-//import TerceroForm from "@/components/forms/TerceroForm";
+import CategoriaForm from "@/components/forms/CategoriaForm";
 
 interface Categoria {
   id: number;
   nombre: string;
   descripcion: string;
-  estado: boolean;
+  estado: string;
 }
 
 interface Props {
@@ -105,8 +105,8 @@ export default function CategoriasTable({ categorias, onEdit, onDelete,onSaved }
     const data = table.getFilteredRowModel().rows.map((row) => row.original);
     const ws = XLSX.utils.json_to_sheet(data);
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Clientes");
-    XLSX.writeFile(wb, "clientes.xlsx");
+    XLSX.utils.book_append_sheet(wb, ws, "Categorias");
+    XLSX.writeFile(wb, "Categorias.xlsx");
   };
 
   // 📄 Exportar PDF
@@ -120,7 +120,7 @@ export default function CategoriasTable({ categorias, onEdit, onDelete,onSaved }
       .map((col) => String(col.columnDef.header));
 
     autoTable(doc, { head: [headers], body: data });
-    doc.save("clientes.pdf");
+    doc.save("categorias.pdf");
   };
 
   return (
@@ -137,7 +137,7 @@ export default function CategoriasTable({ categorias, onEdit, onDelete,onSaved }
           className="border px-3 py-2 rounded-lg shadow-sm w-1/3"
         />
 
-         {/* Crear Cliente */}
+         {/* Crear */}
         <Button
           onClick={() => setIsOpen(true)} // <-- Aquí podrías abrir modal o ir a formulario
           className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 shadow-md"
@@ -158,7 +158,20 @@ export default function CategoriasTable({ categorias, onEdit, onDelete,onSaved }
               {categoriaEdit ? "Editar" : "Crear Nuevo"}
             </h2>
 
-            
+            <CategoriaForm
+                categoria={categoriaEdit}
+                onSubmit={async (data) => {
+                  console.log("Datos de la categoria:", data);  
+                  setIsOpen(false);
+                  setCategoriaEdit(null);   // 👈 también al guardar
+                }}
+                onClose={() => {
+                  setIsOpen(false);
+                  setCategoriaEdit(null);
+                }}
+                onSaved={onSaved}
+              />
+                 
           </Modal>
 
 

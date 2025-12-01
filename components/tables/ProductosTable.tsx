@@ -102,8 +102,8 @@ export default function ProductoTable({ productos, onEdit, onDelete,onSaved }: P
     const data = table.getFilteredRowModel().rows.map((row) => row.original);
     const ws = XLSX.utils.json_to_sheet(data);
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Clientes");
-    XLSX.writeFile(wb, "clientes.xlsx");
+    XLSX.utils.book_append_sheet(wb, ws, "Productos");
+    XLSX.writeFile(wb, "productos.xlsx");
   };
 
   // 📄 Exportar PDF
@@ -117,7 +117,7 @@ export default function ProductoTable({ productos, onEdit, onDelete,onSaved }: P
       .map((col) => String(col.columnDef.header));
 
     autoTable(doc, { head: [headers], body: data });
-    doc.save("clientes.pdf");
+    doc.save("productos.pdf");
   };
 
   return (

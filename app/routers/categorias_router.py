@@ -14,13 +14,10 @@ router = APIRouter(prefix="/categorias", tags=["categorias"])
 # 👉 Crear categoría (validando que NO exista el nombre)
 # ------------------------------------------------------------
 @router.post("/", response_model=CategoriaResponse)
-def crear_categoria(
-    request: Request,
+def crear_categoria(    
     categoria: CategoriaCreate,
     db: Session = Depends(get_db)
 ):
-    usuario_logueado = request.cookies.get("usuario")
-
     existe = db.query(Categoria).filter(
         Categoria.nombre.ilike(categoria.nombre)
     ).first()
@@ -29,9 +26,7 @@ def crear_categoria(
         raise HTTPException(status_code=409, detail="La categoría ya existe")
 
     db_cat = Categoria(
-        **categoria.model_dump(),
-        usuario_creacion=usuario_logueado,
-        fecha_creacion=datetime.now(timezone.utc)
+        **categoria.model_dump()
     )
 
     db.add(db_cat)
@@ -107,10 +102,7 @@ def actualizar_categoria(
             raise HTTPException(status_code=409, detail="Otra categoría ya tiene ese nombre")
 
         for key, value in categoria_data.model_dump().items():
-            setattr(categoria, key, value)
-
-        categoria.usuario_modifico = usuario_logueado
-        categoria.fecha_modificacion = datetime.now(timezone.utc)
+            setattr(categoria, key, value)        
 
         db.commit()
         db.refresh(categoria)

@@ -127,8 +127,8 @@ export default function TercerosTable({ terceros, onEdit, onDelete,onSaved }: Pr
     const data = table.getFilteredRowModel().rows.map((row) => row.original);
     const ws = XLSX.utils.json_to_sheet(data);
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Clientes");
-    XLSX.writeFile(wb, "clientes.xlsx");
+    XLSX.utils.book_append_sheet(wb, ws, "Terceros");
+    XLSX.writeFile(wb, "terceros.xlsx");
   };
 
   // 📄 Exportar PDF
@@ -142,7 +142,7 @@ export default function TercerosTable({ terceros, onEdit, onDelete,onSaved }: Pr
       .map((col) => String(col.columnDef.header));
 
     autoTable(doc, { head: [headers], body: data });
-    doc.save("clientes.pdf");
+    doc.save("terceros.pdf");
   };
 
   return (

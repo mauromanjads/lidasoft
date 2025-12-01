@@ -10,7 +10,7 @@ interface Categoria {
    id: number;  
   nombre: string;
   descripcion: string;
-  estado: boolean;}
+  estado: string;}
 
 export default function CategoriasPage() {
   const [categorias, setCategorias] = useState<Categoria[]>([]);
