@@ -11,8 +11,22 @@ interface Tercero {
   documento: string;
   nombre: string;
   celular: string;
-  estado: string;  
-  tipo_persona?: string;
+  estado: string;
+  tipo_documento_id: number;
+  tipo_persona: string;
+  primer_nombre: string;
+  segundo_nombre: string;
+  primer_apellido: string;
+  segundo_apellido: string;
+  fecha_nacimiento: string;
+  genero_id: number;
+  razon_social: string;
+  regimen_id: number;
+  ciiu_id: number;
+  direccion: string;
+  telefono: string;   
+  whatsapp: string;
+  correo: string;
 }
 
 export default function TercerosPage() {

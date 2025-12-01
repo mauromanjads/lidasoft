@@ -9,6 +9,7 @@ from app.routers import tipos_responsables_router
 from app.routers import ciiu_router
 from app.routers import productos_router
 from app.routers import unidades_medida_router
+from app.routers import categorias_router
 
 from fastapi.middleware.cors import CORSMiddleware
 from app.routers import login_router
@@ -35,6 +36,7 @@ app.include_router(tipos_responsables_router.router)
 app.include_router(ciiu_router.router)
 app.include_router(productos_router.router)
 app.include_router(unidades_medida_router.router)
+app.include_router(categorias_router.router)
 
 
 
