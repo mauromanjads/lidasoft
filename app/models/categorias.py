@@ -1,5 +1,6 @@
 # app/models.py
 from sqlalchemy import Column, Integer, String, Text, Boolean, DateTime, func
+from sqlalchemy.orm import relationship
 from app.database import Base
 
 class Categoria(Base):
@@ -10,3 +11,5 @@ class Categoria(Base):
     descripcion = Column(Text, nullable=True)
     estado = Column(String(1), nullable=True)
     creado = Column(DateTime(timezone=False), server_default=func.now())
+
+    productos = relationship("Producto", back_populates="categoria")
