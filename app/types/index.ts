@@ -1,34 +1,46 @@
+// types.ts
+
+// ===================== UNIDADES DE MEDIDA =====================
 export interface UnidadMedida {
   id: number;
+  nombre: string;
   codigo: string;
+}
+
+// ===================== CATEGORIAS =====================
+export interface Categoria {
+  id: number;
   nombre: string;
 }
 
-export interface ProductoPrecio {
-  id: number;
-  lista_precio: string;
-  precio: number;
-  iva_porcentaje: number;
-  fecha_desde: string;
-  fecha_hasta?: string | null;
-  activo: boolean;
-}
-
-export interface ProductoPresentacion {
-  id: number;
-  tipo_presentacion: string;
-  cantidad_equivalente: number;
-  unidad_medida_id: number;
-  precios: ProductoPrecio[];
-  activo: boolean;
-}
-
+// ===================== PRODUCTOS =====================
 export interface Producto {
-  id: number;
+  id?: number; // opcional en creación
   codigo: string;
   nombre: string;
   descripcion?: string;
-  activo: boolean;
+  activo?: boolean;
   codigo_barra?: string;
+  categoria_id?: number;
+  iva?: number;
+  tipo_impuesto?: string;
+  unidad_medida_id?: number;
+  control_inventario?: string;
+}
+
+// ===================== PRESENTACIONES =====================
+export interface ProductoPresentacion {
+  id?: number; // opcional en creación
+  producto_id: number;
+  tipo_presentacion: string;
+  cantidad_equivalente: number;
+  unidad_medida_id: number;
+  activo?: boolean;
+  precio_venta?: number;
+  precio_compra?: number;
+}
+
+// ===================== PRODUCTO + PRESENTACIONES =====================
+export interface ProductoConPresentaciones extends Producto {
   presentaciones: ProductoPresentacion[];
 }

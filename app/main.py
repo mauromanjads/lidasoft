@@ -38,7 +38,7 @@ app.include_router(ciiu_router.router)
 app.include_router(productos_router.router)
 app.include_router(unidades_medida_router.router)
 app.include_router(categorias_router.router)
-app.include_router(producto_presentacion_router)
+app.include_router(producto_presentacion_router.router)
 
 
 

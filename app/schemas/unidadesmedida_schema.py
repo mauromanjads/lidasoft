@@ -6,14 +6,14 @@ class UnidadesMedidaBase(BaseModel):
     codigo: str
     nombre: str    
 
-class UnidadesMedidaCreate(UnidadesMedidaBase):
+class UnidadMedidaCreate(UnidadesMedidaBase):
     pass
 
 class UnidadesMedidaUpdate(BaseModel):
     codigo: Optional[str]
     nombre: Optional[str]    
 
-class UnidadesMedidaResponse(UnidadesMedidaBase):
+class UnidadMedidaRead(UnidadesMedidaBase):
     id: int   
 
     class Config:

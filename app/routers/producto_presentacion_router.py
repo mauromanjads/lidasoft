@@ -7,7 +7,7 @@ from app.schemas.productopresentacion_schema import (
     ProductoPresentacionUpdate,
     ProductoPresentacionOut
 )
-from models.producto_presentacion import ProductoPresentacion
+from app.models.producto_presentacion import ProductoPresentacion
 
 router = APIRouter(prefix="/productos-presentacion", tags=["Productos - Presentaciones"])
 

@@ -3,14 +3,11 @@
 import { useEffect, useState } from "react";
 import { 
     crearProducto,
-    crearPresentacion, 
-    crearPrecio, 
+    crearPresentacion,     
     obtenerUnidades,
     actualizarProducto,
-    actualizarPresentacion,
-    actualizarPrecio ,
-    listarPresentaciones,
-    listarPrecios
+    actualizarPresentacion,    
+    listarPresentaciones    
 
   } from "@/lib/api/productos";
 import { UnidadMedida } from "@/app/types";

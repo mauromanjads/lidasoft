@@ -3,8 +3,8 @@ from fastapi import APIRouter, Depends, HTTPException,Query
 from sqlalchemy.orm import Session
 from typing import List
 from app.database import get_db
-from app.models.productos import UnidadMedida
-from app.schemas.productos_schema import UnidadMedidaCreate, UnidadMedidaRead
+from app.models.unidadesmedida import UnidadMedida
+from app.schemas.unidadesmedida_schema import UnidadMedidaCreate, UnidadMedidaRead
 
 router = APIRouter(prefix="/unidades", tags=["Unidades de Medida"])
 
@@ -18,7 +18,7 @@ def crear_unidad(unidad: UnidadMedidaCreate, db: Session = Depends(get_db)):
 
 @router.get("/", response_model=List[UnidadMedidaRead])
 def listar_unidades(db: Session = Depends(get_db)):
-    return db.query(UnidadMedida).all()
+    return db.query(UnidadMedida).order_by(UnidadMedida.nombre.asc()).all()
 
 # ------------------------------------------------------------
 # 👉 Buscar por nombre
