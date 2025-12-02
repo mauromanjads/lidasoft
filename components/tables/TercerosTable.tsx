@@ -17,7 +17,7 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import TerceroForm from "@/components/forms/TerceroForm";
 import { useTiposDocumento } from "@/components/ui/selects/TipoDocumentoSelect";
-
+import { useParams } from "next/navigation";
 
 interface Tercero {
   id: number;
@@ -145,6 +145,23 @@ export default function TercerosTable({ terceros, onEdit, onDelete,onSaved }: Pr
     doc.save("terceros.pdf");
   };
 
+  const params = useParams();       // 👈 aquí  
+  const tipoTerceroRaw = params?.tipo;
+
+  // Garantizamos que sea string
+  const tipoTercero = Array.isArray(tipoTerceroRaw)
+    ? tipoTerceroRaw[0]
+    : tipoTerceroRaw || "";
+
+const labels: Record<string, string> = {
+  clientes: "Cliente",
+  proveedores: "Proveedor",
+};
+  const label = labels[tipoTercero] || "Tercero";
+  const titulo = terceroEdit
+  ? `Editar ${label}`
+  : `Crear Nuevo ${label}`;
+
   return (
     <div className="p-4 bg-white rounded-xl shadow-lg">
 
@@ -177,7 +194,7 @@ export default function TercerosTable({ terceros, onEdit, onDelete,onSaved }: Pr
             }}
           >
             <h2 className="text-xl font-semibold mb-4">
-              {terceroEdit ? "Editar" : "Crear Nuevo"}
+              {titulo}
             </h2>
 
             <TerceroForm
