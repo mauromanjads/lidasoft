@@ -155,7 +155,7 @@ export default function CategoriasTable({ categorias, onEdit, onDelete,onSaved }
             }}
           >
             <h2 className="text-xl font-semibold mb-4">
-              {categoriaEdit ? "Editar" : "Crear Nuevo"}
+              {categoriaEdit ? "Editar Categoría" : "Crear Nueva categoría"}
             </h2>
 
             <CategoriaForm

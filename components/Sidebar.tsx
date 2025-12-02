@@ -128,7 +128,7 @@ export default function Sidebar() {
                       </a>
 
                       <a
-                        href="/dashboard/productos/nuevo"
+                        href="/dashboard/unidades"
                         className="block bg-[#0d2f5a]/70 hover:bg-[#103766]/90 
                         p-2 rounded-lg transition-all shadow-md"
                       >
