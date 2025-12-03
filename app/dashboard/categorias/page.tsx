@@ -44,7 +44,7 @@ export default function CategoriasPage() {
   return (
     <div>
       <h1 className="flex items-center gap-2 text-lg font-semibold">
-        🧑‍💼 Listado de Categorías 
+        🧩 Listado de Categorías 
       </h1>
 
       <CategoriasTable

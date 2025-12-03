@@ -45,7 +45,7 @@ export default function ProductosPage() {
   return (
     <div>
       <h1 className="flex items-center gap-2 text-lg font-semibold">
-        🧑‍💼 Listado de productos 
+        🛒  Listado de productos 
       </h1>
 
       <ProductosTable

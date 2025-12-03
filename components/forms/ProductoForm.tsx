@@ -195,7 +195,7 @@ export default function ProductoForm({
                 : "text-gray-600 hover:text-[#1d4e89]"}
             `}
           >
-          Producto
+          🛒Producto
         </button>
 
         <button
@@ -209,7 +209,7 @@ export default function ProductoForm({
                   : "text-gray-600 hover:text-[#1d4e89]"}
               `}
             >
-          Presentaciones
+          ⚖️ Presentaciones
         </button>
       </div>
 

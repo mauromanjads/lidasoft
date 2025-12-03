@@ -76,14 +76,14 @@ export default function Sidebar() {
                         className="block bg-[#0d2f5a]/70 hover:bg-[#103766]/90 
                         p-2 rounded-lg transition-all shadow-md"
                       >
-                        📋 Clientes
+                        🧑‍🤝‍🧑 Clientes
                       </a>
                       <a
                         href="/dashboard/terceros/proveedores"
                         className="block bg-[#0d2f5a]/70 hover:bg-[#103766]/90 
                         p-2 rounded-lg transition-all shadow-md"
                       >
-                        ➕ Proveedores
+                        🏪 Proveedores
                       </a>
                     </motion.div>
                   )}
@@ -116,7 +116,7 @@ export default function Sidebar() {
                         className="block bg-[#0d2f5a]/70 hover:bg-[#103766]/90 
                         p-2 rounded-lg transition-all shadow-md"
                       >
-                        📋 Productos
+                        🛒 Productos
                       </a>
 
                       <a
@@ -124,7 +124,7 @@ export default function Sidebar() {
                         className="block bg-[#0d2f5a]/70 hover:bg-[#103766]/90 
                         p-2 rounded-lg transition-all shadow-md"
                       >
-                        ➕ Categorías
+                        🧩 Categorías
                       </a>
 
                       <a
@@ -132,7 +132,7 @@ export default function Sidebar() {
                         className="block bg-[#0d2f5a]/70 hover:bg-[#103766]/90 
                         p-2 rounded-lg transition-all shadow-md"
                       >
-                        ➕ Unidades de Medida
+                        ⚖️ Unidades de Medida
                       </a>
                     </motion.div>
                   )}

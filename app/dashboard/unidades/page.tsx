@@ -41,7 +41,7 @@ export default function UnidadesMedidaPage() {
   return (
     <div>
       <h1 className="flex items-center gap-2 text-lg font-semibold">
-        📏 Unidades de Medida
+        ⚖️ Unidades de Medida
       </h1>
 
       <UnidadesMedidaTable
