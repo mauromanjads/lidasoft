@@ -178,7 +178,7 @@ export default function ProductoForm({
     return (
   <form
     onSubmit={handleSubmit}
-    className="p-2 border rounded-md space-y-3 text-xs max-w-5xl mx-auto"
+    className="p-2 border rounded-md space-y-3 text-sm max-w-5xl mx-auto"
   >
     <div className="max-w-5xl mx-auto p-2">
       
@@ -223,7 +223,7 @@ export default function ProductoForm({
             <label className="flex flex-col">
               <span className="mb-1">Código:</span>
               <input
-                className="border p-1.5 rounded text-xs"
+                className="border p-1.5 rounded text-sm"
                 value={codigo}
                 onChange={(e) => setCodigo(e.target.value)}
               />
@@ -232,13 +232,13 @@ export default function ProductoForm({
             <label className="flex flex-col">
               <span className="mb-1">Nombre:</span>
               <input
-                className="border p-1.5 rounded text-xs"
+                className="border p-1.5 rounded text-sm"
                 value={nombre}
                 onChange={(e) => setNombre(e.target.value)}
               />
             </label>
 
-            <label className="flex flex-col text-xs">
+            <label className="flex flex-col text-sm">
               <span className="mb-1 font-semibold text-gray-800 tracking-wide text-center">
                 Estado:
               </span>
@@ -273,7 +273,7 @@ export default function ProductoForm({
             <label className="flex flex-col">
               <span className="mb-1">Código Barras:</span>
               <input
-                className="border p-1.5 rounded text-xs"
+                className="border p-1.5 rounded text-sm"
                 value={codigoBarra}
                 onChange={(e) => setCodigoBarra(e.target.value)}
               />
@@ -302,7 +302,7 @@ export default function ProductoForm({
               <input
                 type="number"
                 step="0.01"
-                className="border p-1.5 rounded text-xs"
+                className="border p-1.5 rounded text-sm"
                 value={iva}
                 onChange={(e) => setIva(Number(e.target.value))}
               />
@@ -311,7 +311,7 @@ export default function ProductoForm({
             <label className="flex flex-col">
               <span className="mb-1">Tipo Impuesto:</span>
               <select
-                className="border p-1.5 rounded text-xs"
+                className="border p-1.5 rounded text-sm"
                 value={tipoImpuesto}
                 onChange={(e) => setTipoImpuesto(e.target.value)}
               >
@@ -326,7 +326,7 @@ export default function ProductoForm({
             <label className="flex flex-col">
               <span className="mb-1">Inventario:</span>
               <select
-                className="border p-1.5 rounded text-xs"
+                className="border p-1.5 rounded text-sm"
                 value={controlInventario}
                 onChange={(e) => setControlInventario(e.target.value)}
               >
@@ -339,7 +339,7 @@ export default function ProductoForm({
           <label className="flex flex-col">
             <span className="mb-1">Descripción:</span>
             <textarea
-              className="border p-1.5 rounded text-xs"
+              className="border p-1.5 rounded text-sm"
               rows={2}
               value={descripcion}
               onChange={(e) => setDescripcion(e.target.value)}
@@ -355,7 +355,7 @@ export default function ProductoForm({
           {presentaciones.map((pres, index) => (
             <div key={index} className="border rounded p-2 space-y-2 bg-gray-50">
 
-              <div className="grid grid-cols-1 md:grid-cols-5 gap-2 text-xs">
+              <div className="grid grid-cols-1 md:grid-cols-5 gap-2 text-sm">
 
                 <label className="flex flex-col">
                   <span>Presentación:</span>
@@ -422,7 +422,7 @@ export default function ProductoForm({
               <button
                 type="button"
                 onClick={() => eliminarPresentacion(index)}
-                className="text-red-600 text-xs"
+                className="text-red-600 text-sm"
               >
                 Eliminar
               </button>
@@ -432,7 +432,7 @@ export default function ProductoForm({
           <button
             type="button"
             onClick={agregarPresentacion}
-            className="text-green-600 text-xs"
+            className="text-green-600 text-sm"
           >
             + Agregar Presentación
           </button>
