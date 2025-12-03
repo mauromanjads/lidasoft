@@ -152,7 +152,7 @@ export default function ProductoTable({ productos, onEdit, onDelete,onSaved }: P
             }}
           >
             <h2 className="text-xl font-semibold mb-4">
-              {productoEdit ? "Editar" : "Crear Nuevo"}
+              {productoEdit ? "Editar Producto" : "Crear Nuevo Producto"}
             </h2>
 
             <ProductoForm
