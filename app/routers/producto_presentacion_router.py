@@ -18,35 +18,38 @@ def get_db():
     finally:
         db.close()
 
-@router.get("/", response_model=list[ProductoPresentacionOut])
-def listar_presentaciones(db: Session = Depends(get_db)):
-    return db.query(ProductoPresentacion).all()
-
-
-@router.post("/{producto_id}/presentaciones",  response_model=ProductoPresentacionOut)
-def crear_presentacion( producto_id: int,data: ProductoPresentacionCreate, db: Session = Depends(get_db)):
-    print(producto_id)
-    nueva = ProductoPresentacion(
-        producto_id=producto_id,   # ⬅️ Aquí lo asignas manualmente
-        **data.model_dump()
+# 🔥 LISTAR presentaciones DE UN PRODUCTO
+@router.get("/{producto_id}/presentaciones", response_model=list[ProductoPresentacionOut])
+def listar_presentaciones_producto(producto_id: int, db: Session = Depends(get_db)):
+    return (
+        db.query(ProductoPresentacion)
+        .filter(ProductoPresentacion.producto_id == producto_id)
+        .all()
     )
 
+# 🔥 CREAR presentación
+@router.post("/{producto_id}/presentaciones", response_model=ProductoPresentacionOut)
+def crear_presentacion(producto_id: int, data: ProductoPresentacionCreate, db: Session = Depends(get_db)):
+
+    nueva = ProductoPresentacion(
+        producto_id=producto_id,
+        **data.model_dump()
+    )
     db.add(nueva)
     db.commit()
     db.refresh(nueva)
-
     return nueva
 
-
-@router.get("/{id}", response_model=ProductoPresentacionOut)
+# 🔥 OBTENER una presentación por ID
+@router.get("/presentaciones/{id}", response_model=ProductoPresentacionOut)
 def obtener_presentacion(id: int, db: Session = Depends(get_db)):
     present = db.query(ProductoPresentacion).filter(ProductoPresentacion.id == id).first()
     if not present:
         raise HTTPException(404, "Presentación no encontrada")
     return present
 
-
-@router.put("/{id}", response_model=ProductoPresentacionOut)
+# 🔥 ACTUALIZAR presentación
+@router.put("/presentaciones/{id}", response_model=ProductoPresentacionOut)
 def actualizar_presentacion(id: int, data: ProductoPresentacionUpdate, db: Session = Depends(get_db)):
     present = db.query(ProductoPresentacion).filter(ProductoPresentacion.id == id).first()
     if not present:
@@ -59,8 +62,8 @@ def actualizar_presentacion(id: int, data: ProductoPresentacionUpdate, db: Sessi
     db.refresh(present)
     return present
 
-
-@router.delete("/{id}")
+# 🔥 ELIMINAR presentación
+@router.delete("/presentaciones/{id}")
 def eliminar_presentacion(id: int, db: Session = Depends(get_db)):
     present = db.query(ProductoPresentacion).filter(ProductoPresentacion.id == id).first()
     if not present:

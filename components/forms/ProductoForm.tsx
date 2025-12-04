@@ -10,7 +10,8 @@ import {
   crearProducto,
   crearPresentacion,
   obtenerUnidades,
-  obtenerCategorias
+  obtenerCategorias,
+  listarPresentaciones
 } from "@/lib/api/productos";
 import { Producto, UnidadMedida, Categoria } from "@/app/types";
 
@@ -102,10 +103,33 @@ export default function ProductoForm({
       setIva(producto.iva || 0);
       setTipoImpuesto(producto.tipo_impuesto || "");
       setControlInventario(producto.control_inventario || "S");
-      setActivo(producto.activo ||false);
-    }
-  }, [producto]);
+      setActivo(producto.activo ||false);   
+      
+     // cargar presentaciones desde la API
+    listarPresentaciones(Number(producto.id))
+      .then((lista) => {
+        // Convertimos la lista del backend al formato que usa el formulario
+        const mapped = lista.map((p) => ({
+          tipo_presentacion: p.tipo_presentacion ?? "",
+          cantidad_equivalente: p.cantidad_equivalente ?? 1,
+          unidad_medida_id: p.unidad_medida_id ?? 0,
+          precio_venta: p.precio_venta ?? 0,
+          precio_compra: p.precio_compra ?? 0,
+          activo: p.activo ?? true,
+        }));
 
+        setPresentaciones(mapped);
+      })
+      .catch((err) => {
+        console.error("Error cargando presentaciones:", err);
+        setPresentaciones([]);
+      });
+
+    }
+  }, [producto,categorias],);
+
+
+  
   const agregarPresentacion = () => {
     setPresentaciones([
       ...presentaciones,
