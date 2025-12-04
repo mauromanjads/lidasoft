@@ -1,8 +1,10 @@
 from pydantic import BaseModel
 from typing import Optional
 
+# =========================
+# Modelo base compartido
+# =========================
 class ProductoPresentacionBase(BaseModel):
-    producto_id: int
     tipo_presentacion: str
     cantidad_equivalente: float
     unidad_medida_id: int
@@ -10,19 +12,32 @@ class ProductoPresentacionBase(BaseModel):
     precio_venta: Optional[float] = 0
     precio_compra: Optional[float] = 0
 
+# =========================
+# Modelo para creación
+# =========================
 class ProductoPresentacionCreate(ProductoPresentacionBase):
-    tipo_presentacion: str
-    cantidad_equivalente: float
-    unidad_medida_id: int
+    # Hacemos obligatorios los campos que en la base son opcionales
     precio_venta: float
     precio_compra: float
-    activo: bool
+    activo: bool = True
 
-class ProductoPresentacionUpdate(ProductoPresentacionBase):
-    pass
+# =========================
+# Modelo para actualización
+# =========================
+class ProductoPresentacionUpdate(BaseModel):
+    # Todos opcionales para permitir updates parciales
+    tipo_presentacion: Optional[str] = None
+    cantidad_equivalente: Optional[float] = None
+    unidad_medida_id: Optional[int] = None
+    activo: Optional[bool] = None
+    precio_venta: Optional[float] = None
+    precio_compra: Optional[float] = None
 
+# =========================
+# Modelo de salida
+# =========================
 class ProductoPresentacionOut(ProductoPresentacionBase):
     id: int
 
     class Config:
-        from_attributes = True
+        orm_mode = True

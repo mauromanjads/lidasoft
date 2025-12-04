@@ -25,6 +25,7 @@ def listar_presentaciones(db: Session = Depends(get_db)):
 
 @router.post("/{producto_id}/presentaciones",  response_model=ProductoPresentacionOut)
 def crear_presentacion( producto_id: int,data: ProductoPresentacionCreate, db: Session = Depends(get_db)):
+    print(producto_id)
     nueva = ProductoPresentacion(
         producto_id=producto_id,   # ⬅️ Aquí lo asignas manualmente
         **data.model_dump()
