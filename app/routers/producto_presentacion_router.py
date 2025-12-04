@@ -9,7 +9,7 @@ from app.schemas.productopresentacion_schema import (
 )
 from app.models.producto_presentacion import ProductoPresentacion
 
-router = APIRouter(prefix="/productos-presentacion", tags=["Productos - Presentaciones"])
+router = APIRouter(prefix="/productos", tags=["Productos - Presentaciones"])
 
 def get_db():
     db = SessionLocal()
@@ -23,12 +23,17 @@ def listar_presentaciones(db: Session = Depends(get_db)):
     return db.query(ProductoPresentacion).all()
 
 
-@router.post("/", response_model=ProductoPresentacionOut)
-def crear_presentacion(data: ProductoPresentacionCreate, db: Session = Depends(get_db)):
-    nueva = ProductoPresentacion(**data.model_dump())
+@router.post("/{producto_id}/presentaciones",  response_model=ProductoPresentacionOut)
+def crear_presentacion( producto_id: int,data: ProductoPresentacionCreate, db: Session = Depends(get_db)):
+    nueva = ProductoPresentacion(
+        producto_id=producto_id,   # ⬅️ Aquí lo asignas manualmente
+        **data.model_dump()
+    )
+
     db.add(nueva)
     db.commit()
     db.refresh(nueva)
+
     return nueva
 
 

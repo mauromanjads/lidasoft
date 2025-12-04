@@ -361,7 +361,8 @@ export default function ProductoForm({
                         value={descripcion}
                         onChange={(e) => setDescripcion(e.target.value)}
                       />
-                    </div>              
+                    </div>
+              
            
               </div>
 

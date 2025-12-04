@@ -41,7 +41,9 @@ export const crearPresentacion = (
   return fetchAPI<ProductoPresentacion>(`${API_URL}/productos/${producto_id}/presentaciones`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ ...data, producto_id }),
+    body: JSON.stringify({     
+      ...data,
+    }),
   });
 };
 

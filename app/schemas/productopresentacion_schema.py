@@ -11,7 +11,12 @@ class ProductoPresentacionBase(BaseModel):
     precio_compra: Optional[float] = 0
 
 class ProductoPresentacionCreate(ProductoPresentacionBase):
-    pass
+    tipo_presentacion: str
+    cantidad_equivalente: float
+    unidad_medida_id: int
+    precio_venta: float
+    precio_compra: float
+    activo: bool
 
 class ProductoPresentacionUpdate(ProductoPresentacionBase):
     pass
