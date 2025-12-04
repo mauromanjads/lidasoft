@@ -47,8 +47,22 @@ export default function ProductoTable({ productos, onEdit, onDelete,onSaved }: P
   const columns = useMemo<ColumnDef<Producto>[]>(() => [    
     { accessorKey: "codigo", header: "Código" },
     { accessorKey: "nombre", header: "Nombre" },
-    { accessorKey: "descripcion", header: "Descripción" },
-    { accessorKey: "activo", header: "Activo" },
+    { accessorKey: "descripcion", header: "Descripción" },    
+    {
+      accessorKey: "activo",
+      header: "Activo",
+      cell: ({ row }) => {
+        const value = row.original.activo;
+        return (
+          <input
+            type="checkbox"
+            checked={value}
+            disabled
+            className="w-4 h-4 accent-green-600"
+          />
+        );
+      },
+    },    
     {
       id: "acciones",
       header: "Acciones",

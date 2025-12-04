@@ -1,6 +1,8 @@
 "use client";
 
 import Button from "@/components/ui/button";
+import Input from "@/components/ui/input";
+
 import SelectSearch from "@/components/ui/selectSearch";
 
 import { useEffect, useState } from "react";
@@ -213,143 +215,162 @@ export default function ProductoForm({
         </button>
       </div>
 
-      {/* === TAB PRODUCTO === */}
-      {activeTab === "producto" && (
-        <div className="space-y-3">
+       {/* === TAB PRODUCTO === */}
+       {activeTab === "producto" && (
+           <div className="space-y-3">
           
-          {/* GRID GENERAL */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+              {/* GRID GENERAL */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+            
+                 {/* Código */}
+                <div className="flex flex-col w-full">
+                  <label className="text-sm font-semibold mb-1 text-gray-700">
+                    Código:
+                  </label>
+                  <Input
+                    className="border p-1.5 rounded text-sm"
+                    value={codigo}
+                    onChange={(e) => setCodigo(e.target.value)}
+                  />
+                </div>
 
-            <label className="flex flex-col">
-              <span className="mb-1">Código:</span>
-              <input
-                className="border p-1.5 rounded text-sm"
-                value={codigo}
-                onChange={(e) => setCodigo(e.target.value)}
-              />
-            </label>
+                {/* Nombre */}
+                <div className="flex flex-col w-full">
+                  <label className="text-sm font-semibold mb-1 text-gray-700">
+                    Nombre:
+                  </label>
+                  <Input
+                    className="border p-1.5 rounded text-sm"
+                    value={nombre}
+                    onChange={(e) => setNombre(e.target.value)}
+                  />
+                </div>
 
-            <label className="flex flex-col">
-              <span className="mb-1">Nombre:</span>
-              <input
-                className="border p-1.5 rounded text-sm"
-                value={nombre}
-                onChange={(e) => setNombre(e.target.value)}
-              />
-            </label>
+                {/* Estado */}
+                <div className="flex flex-col w-full">
+                  <label className="text-sm font-semibold mb-1 text-gray-700 text-center">
+                    Estado:
+                  </label>
+                  <div className="flex items-center gap-2 justify-center">
+                    <Input
+                      type="checkbox"
+                      className="w-4 h-4 accent-blue-600 border border-gray-300 rounded-md shadow-sm"
+                      checked={activo}
+                      onChange={(e) => setActivo(e.target.checked)}
+                    />
+                    <span
+                      className={`font-semibold text-base ${activo ? "text-green-700" : "text-red-600"}`}
+                    >
+                      {activo ? "Activo" : "Inactivo"}
+                    </span>
+                  </div>
+                </div>
 
-            <label className="flex flex-col text-sm">
-              <span className="mb-1 font-semibold text-gray-800 tracking-wide text-center">
-                Estado:
-              </span>
+                {/* Código de barras */}
+                <div className="flex flex-col w-full">
+                  <label className="text-sm font-semibold mb-1 text-gray-700">
+                    Código Barras:
+                  </label>
+                  <Input
+                    className="border p-1.5 rounded text-sm"
+                    value={codigoBarra}
+                    onChange={(e) => setCodigoBarra(e.target.value)}
+                  />
+                </div>
 
-              <div className="flex items-center gap-2 justify-center">
-                <input
-                  type="checkbox"
-                  className="
-                    w-4 h-4
-                    accent-blue-600
-                    border border-gray-300
-                    rounded-md
-                    shadow-sm
-                  "
-                  checked={activo}
-                  onChange={(e) => setActivo(e.target.checked)}
-                />
+                {/* Categoría */}
+                <div className="flex flex-col w-full">
+                  <label className="text-sm font-semibold mb-1 text-gray-700">
+                    Categoría:
+                  </label>
+                  <SelectSearch
+                    items={categorias}
+                    value={categoriaId}
+                    onChange={setCategoriaId}
+                  />
+                </div>
 
-                <span
-                  className={`
-                    font-semibold
-                    ${activo ? "text-green-700" : "text-red-600"}
-                    tracking-wide
-                  `}
-                >
-                  {activo ? "Activo" : "Inactivo"}
-                </span>
+                {/* Unidad de medida */}
+                <div className="flex flex-col w-full">
+                  <label className="text-sm font-semibold mb-1 text-gray-700">
+                    Unidad de Medida:
+                  </label>
+                  <SelectSearch
+                    items={unidades}
+                    value={unidadMedidaId}
+                    onChange={setUnidadMedidaId}
+                  />
+                </div>
+
+                {/* IVA */}
+                <div className="flex flex-col w-full">
+                  <label className="text-sm font-semibold mb-1 text-gray-700">
+                    IVA (%):
+                  </label>
+                  <Input
+                    type="number"
+                    step="0.01"
+                    className="border p-1.5 rounded text-sm"
+                    value={iva}
+                    onChange={(e) => setIva(Number(e.target.value))}
+                  />
+                </div>
+
+                {/* Tipo impuesto */}
+                <div className="flex flex-col w-full">
+                  <label className="text-sm font-semibold mb-1 text-gray-700">
+                    Tipo Impuesto:
+                  </label>
+                  <select
+                    className="border p-1.5 rounded text-sm"
+                    value={tipoImpuesto}
+                    onChange={(e) => setTipoImpuesto(e.target.value)}
+                  >
+                    <option value="">Seleccione…</option>
+                    <option value="GRAVADO">GRAVADO</option>
+                    <option value="NO_GRAVADO">NO GRAVADO</option>
+                    <option value="EXENTO">EXENTO</option>
+                    <option value="EXCLUIDO">EXCLUIDO</option>
+                  </select>
+                </div>
+
+                {/* Control inventario */}
+                <div className="flex flex-col w-full">
+                  <label className="text-sm font-semibold mb-1 text-gray-700">
+                    Inventario:
+                  </label>
+                  <select
+                    className="border p-1.5 rounded text-sm"
+                    value={controlInventario}
+                    onChange={(e) => setControlInventario(e.target.value)}
+                  >
+                    <option value="S">Controla inventario</option>
+                    <option value="N">No controla inventario</option>
+                  </select>
+                </div>
+
+                {/* Descripción */}
+               
+                    <div className="flex flex-col w-full md:col-span-3">
+                      <label className="text-sm font-semibold mb-1 text-gray-700">
+                        Descripción:
+                      </label>
+                      <textarea
+                        className="border p-1.5 rounded text-sm"
+                        rows={2}
+                        value={descripcion}
+                        onChange={(e) => setDescripcion(e.target.value)}
+                      />
+                    </div>              
+           
               </div>
-            </label>
 
+           
+           </div>
+        )}
 
-            <label className="flex flex-col">
-              <span className="mb-1">Código Barras:</span>
-              <input
-                className="border p-1.5 rounded text-sm"
-                value={codigoBarra}
-                onChange={(e) => setCodigoBarra(e.target.value)}
-              />
-            </label>
-
-            <label className="flex flex-col">
-              <span className="mb-1">Categoría:</span>
-              <SelectSearch
-                items={categorias}
-                value={categoriaId}
-                onChange={setCategoriaId}
-              />
-            </label>
-
-            <label className="flex flex-col">
-              <span className="mb-1">Unidad de Medida:</span>
-              <SelectSearch
-                items={unidades}
-                value={unidadMedidaId}
-                onChange={setUnidadMedidaId}
-              />
-            </label>
-
-            <label className="flex flex-col">
-              <span className="mb-1">IVA (%):</span>
-              <input
-                type="number"
-                step="0.01"
-                className="border p-1.5 rounded text-sm"
-                value={iva}
-                onChange={(e) => setIva(Number(e.target.value))}
-              />
-            </label>
-
-            <label className="flex flex-col">
-              <span className="mb-1">Tipo Impuesto:</span>
-              <select
-                className="border p-1.5 rounded text-sm"
-                value={tipoImpuesto}
-                onChange={(e) => setTipoImpuesto(e.target.value)}
-              >
-                <option value="">Seleccione…</option>
-                <option value="GRAVADO">GRAVADO</option>
-                <option value="NO_GRAVADO">NO GRAVADO</option>
-                <option value="EXENTO">EXENTO</option>
-                <option value="EXCLUIDO">EXCLUIDO</option>
-              </select>
-            </label>
-
-            <label className="flex flex-col">
-              <span className="mb-1">Inventario:</span>
-              <select
-                className="border p-1.5 rounded text-sm"
-                value={controlInventario}
-                onChange={(e) => setControlInventario(e.target.value)}
-              >
-                <option value="S">Controla inventario</option>
-                <option value="N">No controla inventario</option>
-              </select>
-            </label>
-          </div>
-
-          <label className="flex flex-col">
-            <span className="mb-1">Descripción:</span>
-            <textarea
-              className="border p-1.5 rounded text-sm"
-              rows={2}
-              value={descripcion}
-              onChange={(e) => setDescripcion(e.target.value)}
-            />
-          </label>
-        </div>
-      )}
-
-      {/* === TAB PRESENTACIONES === */}
-      {activeTab === "presentaciones" && (
+       {/* === TAB PRESENTACIONES === */}
+       {activeTab === "presentaciones" && (
         <div>
          
           {presentaciones.map((pres, index) => (
@@ -357,66 +378,76 @@ export default function ProductoForm({
 
               <div className="grid grid-cols-1 md:grid-cols-5 gap-2 text-sm">
 
-                <label className="flex flex-col">
-                  <span>Presentación:</span>
-                  <input
-                    className="border p-1.5 rounded"
-                    value={pres.tipo_presentacion}
-                    onChange={(e) =>
-                      handlePresentacionChange(index, "tipo_presentacion", e.target.value)
-                    }
-                  />
-                </label>
+                  <div className="flex flex-col w-full">  
+                      <label className="text-sm font-semibold mb-1 text-gray-700">
+                        Presentación:
+                      </label>
+                      <Input
+                        className="border p-1.5 rounded"
+                        value={pres.tipo_presentacion}
+                        onChange={(e) =>
+                          handlePresentacionChange(index, "tipo_presentacion", e.target.value)
+                        }
+                      />
+                  </div>
 
-                <label className="flex flex-col">
-                  <span>Equiv.:</span>
-                  <input
-                    type="number"
-                    className="border p-1.5 rounded"
-                    value={pres.cantidad_equivalente}
-                    onChange={(e) =>
-                      handlePresentacionChange(index, "cantidad_equivalente", Number(e.target.value))
-                    }
-                  />
-                </label>
-                
-                <label className="flex flex-col">
-                  <span className="mb-1">Unidad de Medida:</span>
-                   <SelectSearch
+                  <div className="flex flex-col w-full">
+                    <label className="text-sm font-semibold mb-1 text-gray-700">
+                      Equiv.:
+                    </label>
+                    <Input
+                      type="number"
+                      className="border p-1.5 rounded"
+                      value={pres.cantidad_equivalente}
+                      onChange={(e) =>
+                        handlePresentacionChange(index, "cantidad_equivalente", Number(e.target.value))
+                      }
+                    />
+                  </div>
+
+                  <div className="flex flex-col w-full">
+                    <label className="text-sm font-semibold mb-1 text-gray-700">
+                      Unidad de Medida:
+                    </label>
+                    <SelectSearch
                       items={unidades}
                       value={presentaciones[index].unidad_medida_id}
                       onChange={(newValue) =>
                         handlePresentacionChange(index, "unidad_medida_id", Number(newValue))
                       }
                     />
-                </label>
+                  </div>
 
-                
-                <label className="flex flex-col">
-                  <span>Precio Venta:</span>
-                  <input
-                    type="number"
-                    step="0.01"
-                    className="border p-1.5 rounded"
-                    value={pres.precio_venta}
-                    onChange={(e) =>
-                      handlePresentacionChange(index, "precio_venta", Number(e.target.value))
-                    }
-                  />
-                </label>
+                  <div className="flex flex-col w-full">
+                    <label className="text-sm font-semibold mb-1 text-gray-700">
+                      Precio Venta:
+                    </label>
+                    <Input
+                      type="number"
+                      step="0.01"
+                      className="border p-1.5 rounded"
+                      value={pres.precio_venta}
+                      onChange={(e) =>
+                        handlePresentacionChange(index, "precio_venta", Number(e.target.value))
+                      }
+                    />
+                  </div>
 
-                <label className="flex flex-col">
-                  <span>Precio Compra:</span>
-                  <input
-                    type="number"
-                    step="0.01"
-                    className="border p-1.5 rounded"
-                    value={pres.precio_compra}
-                    onChange={(e) =>
-                      handlePresentacionChange(index, "precio_compra", Number(e.target.value))
-                    }
-                  />
-                </label>
+                  <div className="flex flex-col w-full">
+                    <label className="text-sm font-semibold mb-1 text-gray-700">
+                      Precio Compra:
+                    </label>
+                    <Input
+                      type="number"
+                      step="0.01"
+                      className="border p-1.5 rounded"
+                      value={pres.precio_compra}
+                      onChange={(e) =>
+                        handlePresentacionChange(index, "precio_compra", Number(e.target.value))
+                      }
+                    />
+                  </div>
+              
               </div>
 
               <button
@@ -437,19 +468,24 @@ export default function ProductoForm({
             + Agregar Presentación
           </button>
         </div>
-      )}
+       )}
 
-      {/* BOTONES */}
-      <div className="flex justify-end gap-2 mt-3">
+      {/* ⚠️ ERRORES */}
+      {error && <p className="text-red-500">{error}</p>}
+
+
+       {/* BOTONES */}
+       <div className="flex justify-end gap-2 mt-3">
         <Button type="button" onClick={onClose} disabled={loading}>
           ❌ Cancelar
         </Button>
         <Button type="submit" disabled={loading}>
           {loading ? (producto ? "Actualizando..." : "Guardando...") : (producto ? "💾 Actualizar" : "💾 Guardar")}
         </Button>
-      </div>
-    </div>
-  </form>
+       </div>
+     </div>
+ </form>
+
 );
 
 
