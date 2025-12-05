@@ -2,6 +2,7 @@
 
 import Button from "@/components/ui/button";
 import Input from "@/components/ui/input";
+import CurrencyInput from "@/components/ui/currencyInput";
 
 import SelectSearch from "@/components/ui/selectSearch";
 
@@ -335,6 +336,7 @@ export default function ProductoForm({
                     className="border p-1.5 rounded text-sm"
                     value={codigo}
                     onChange={(e) => setCodigo(e.target.value)}
+                    required
                   />
                 </div>
 
@@ -347,6 +349,7 @@ export default function ProductoForm({
                     className="border p-1.5 rounded text-sm"
                     value={nombre}
                     onChange={(e) => setNombre(e.target.value)}
+                    required
                   />
                 </div>
 
@@ -379,6 +382,7 @@ export default function ProductoForm({
                     className="border p-1.5 rounded text-sm"
                     value={codigoBarra}
                     onChange={(e) => setCodigoBarra(e.target.value)}
+                    required
                   />
                 </div>
 
@@ -488,6 +492,7 @@ export default function ProductoForm({
                         Presentación:
                       </label>
                       <Input
+                      required
                         className="border p-1.5 rounded"
                         value={pres.tipo_presentacion}
                         onChange={(e) =>
@@ -498,9 +503,10 @@ export default function ProductoForm({
 
                   <div className="flex flex-col w-full">
                     <label className="text-sm font-semibold mb-1 text-gray-700">
-                      Equiv.:
+                      Equivalencia:
                     </label>
                     <Input
+                      required
                       type="number"
                       className="border p-1.5 rounded"
                       value={pres.cantidad_equivalente}
@@ -527,13 +533,11 @@ export default function ProductoForm({
                     <label className="text-sm font-semibold mb-1 text-gray-700">
                       Precio Venta:
                     </label>
-                    <Input
-                      type="number"
-                      step="0.01"
+                    <CurrencyInput                      
                       className="border p-1.5 rounded"
                       value={pres.precio_venta}
-                      onChange={(e) =>
-                        handlePresentacionChange(index, "precio_venta", Number(e.target.value))
+                      onChange={(val) =>
+                        handlePresentacionChange(index, "precio_venta", val)
                       }
                     />
                   </div>
@@ -542,13 +546,11 @@ export default function ProductoForm({
                     <label className="text-sm font-semibold mb-1 text-gray-700">
                       Precio Compra:
                     </label>
-                    <Input
-                      type="number"
-                      step="0.01"
+                    <CurrencyInput
                       className="border p-1.5 rounded"
                       value={pres.precio_compra}
-                      onChange={(e) =>
-                        handlePresentacionChange(index, "precio_compra", Number(e.target.value))
+                      onChange={(val) =>
+                        handlePresentacionChange(index, "precio_compra", val)
                       }
                     />
                   </div>
