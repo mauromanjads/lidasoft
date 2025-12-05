@@ -485,7 +485,7 @@ export default function ProductoForm({
           {presentaciones.map((pres, index) => (
             <div key={index} className="border rounded p-2 space-y-2 bg-gray-50">
 
-              <div className="grid grid-cols-1 md:grid-cols-5 gap-2 text-sm">
+              <div className="grid grid-cols-1 md:grid-cols-6 gap-2 text-sm"> 
 
                   <div className="flex flex-col w-full">  
                       <label className="text-sm font-semibold mb-1 text-gray-700">
@@ -554,26 +554,32 @@ export default function ProductoForm({
                       }
                     />
                   </div>
+
+                  <div className="flex justify-between items-center mb-2">
+                  <button
+                    type="button"
+                    onClick={() => eliminarPresentacionForm(index)}
+                    className="text-red-600 text-sm hover:underline"
+                  >
+                    ❌
+                  </button>
+                </div>
+
               
               </div>
-
-              <button
-                type="button"
-                onClick={() => eliminarPresentacionForm(index)}
-                className="text-red-600 text-sm"
-              >
-                Eliminar
-              </button>
             </div>
           ))}
 
-          <button
+          <Button
             type="button"
             onClick={agregarPresentacion}
             className="text-green-600 text-sm"
           >
-            + Agregar Presentación
-          </button>
+              <div className="flex items-center gap-2">
+              <img src="/icons/plus.png" alt="Pdf" className="w-6 h-6" />
+              <span>Agregar Presentación</span>
+            </div> 
+          </Button>
         </div>
        )}
 
