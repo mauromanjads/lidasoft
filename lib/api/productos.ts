@@ -51,7 +51,7 @@ export const actualizarPresentacion = (
   presentacion_id: number,
   data: Partial<ProductoPresentacion>
 ): Promise<ProductoPresentacion> => {
-  return fetchAPI<ProductoPresentacion>(`${API_URL}/presentaciones/${presentacion_id}`, {
+  return fetchAPI<ProductoPresentacion>(`${API_URL}/productos/presentaciones/${presentacion_id}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
@@ -72,12 +72,11 @@ export const obtenerCategorias = (): Promise<Categoria[]> => {
   return fetchAPI<Categoria[]>(`${API_URL}/categorias`);
 };
 
-export const eliminarPresentacion = (
-  producto_id: number,
+export const eliminarPresentacion = (  
   presentacion_id: number
 ): Promise<{ message: string }> => {
   return fetchAPI<{ message: string }>(
-    `${API_URL}/productos/${producto_id}/presentaciones/${presentacion_id}`,
+    `${API_URL}/productos/presentaciones/${presentacion_id}`,
     {
       method: "DELETE",
     }

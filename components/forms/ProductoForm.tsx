@@ -233,7 +233,7 @@ export default function ProductoForm({
           const existe = presentaciones.some((p) => p.id === presBD.id);
           if (!existe) {
             if (!presBD.id) continue;
-            await eliminarPresentacion(productoId, presBD.id);
+            await eliminarPresentacion(presBD.id);
           }
         }
 
