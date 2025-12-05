@@ -16,7 +16,7 @@ def get_db():
 
 @router.get("/", response_model=list[ProductoOut])
 def listar_productos(db: Session = Depends(get_db)):
-    return db.query(Producto).all()
+    return db.query(Producto).order_by(Producto.nombre.asc()).all()
 
 
 @router.post("/", response_model=ProductoOut)

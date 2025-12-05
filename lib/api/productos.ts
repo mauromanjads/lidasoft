@@ -71,3 +71,15 @@ export const obtenerUnidades = (): Promise<UnidadMedida[]> => {
 export const obtenerCategorias = (): Promise<Categoria[]> => {
   return fetchAPI<Categoria[]>(`${API_URL}/categorias`);
 };
+
+export const eliminarPresentacion = (
+  producto_id: number,
+  presentacion_id: number
+): Promise<{ message: string }> => {
+  return fetchAPI<{ message: string }>(
+    `${API_URL}/productos/${producto_id}/presentaciones/${presentacion_id}`,
+    {
+      method: "DELETE",
+    }
+  );
+};

@@ -8,14 +8,18 @@ import SelectSearch from "@/components/ui/selectSearch";
 import { useEffect, useState } from "react";
 import {
   crearProducto,
+  actualizarProducto,
   crearPresentacion,
   obtenerUnidades,
   obtenerCategorias,
-  listarPresentaciones
+  listarPresentaciones,
+  actualizarPresentacion,
+  eliminarPresentacion
 } from "@/lib/api/productos";
 import { Producto, UnidadMedida, Categoria } from "@/app/types";
 
 interface PresentacionForm {
+  id?: number | null;
   tipo_presentacion: string;
   cantidad_equivalente: number;
   unidad_medida_id: number;
@@ -37,6 +41,8 @@ export default function ProductoForm({
   onSaved,
   onClose,
 }: ProductoFormProps) {
+  const productoId = producto?.id ?? null;
+
   const [codigo, setCodigo] = useState("");
   const [nombre, setNombre] = useState("");
   const [descripcion, setDescripcion] = useState("");
@@ -56,6 +62,7 @@ export default function ProductoForm({
 
   const [presentaciones, setPresentaciones] = useState<PresentacionForm[]>([
     {
+      id:null,
       tipo_presentacion: "",
       cantidad_equivalente: 1,
       unidad_medida_id: 0,
@@ -110,6 +117,7 @@ export default function ProductoForm({
       .then((lista) => {
         // Convertimos la lista del backend al formato que usa el formulario
         const mapped = lista.map((p) => ({
+          id: p.id,
           tipo_presentacion: p.tipo_presentacion ?? "",
           cantidad_equivalente: p.cantidad_equivalente ?? 1,
           unidad_medida_id: p.unidad_medida_id ?? 0,
@@ -144,7 +152,7 @@ export default function ProductoForm({
     ]);
   };
 
-  const eliminarPresentacion = (index: number) => {
+  const eliminarPresentacionForm = (index: number) => {
     setPresentaciones(presentaciones.filter((_, i) => i !== index));
   };
 
@@ -164,42 +172,114 @@ export default function ProductoForm({
     if (!unidadMedidaId) return alert("Seleccione la unidad del producto");
     if (!categoriaId) return alert("Seleccione la categoría");
 
+    setLoading(true);
+
     try {
-      const producto = await crearProducto({
-        codigo,
-        nombre,
-        descripcion,
-        codigo_barra: codigoBarra,
-        categoria_id: categoriaId,
-        iva,
-        tipo_impuesto: tipoImpuesto,
-        unidad_medida_id: unidadMedidaId,
-        control_inventario: controlInventario,
-        activo: true,
-      });
-
-      if (!producto?.id) throw new Error("No se pudo crear el producto");
-
-      for (const pres of presentaciones) {
-        await crearPresentacion(producto.id, {
-          tipo_presentacion: pres.tipo_presentacion,
-          cantidad_equivalente: pres.cantidad_equivalente,
-          unidad_medida_id: pres.unidad_medida_id,
-          precio_venta: pres.precio_venta,
-          precio_compra: pres.precio_compra,
-          activo: pres.activo,
+      
+      // ==========================================================
+      // 🟩 PRIMERO: CREAR si NO hay productoId
+      // ==========================================================
+      if (!productoId) {
+        producto = await crearProducto({
+          codigo,
+          nombre,
+          descripcion,
+          codigo_barra: codigoBarra,
+          categoria_id: categoriaId,
+          iva,
+          tipo_impuesto: tipoImpuesto,
+          unidad_medida_id: unidadMedidaId,
+          control_inventario: controlInventario,
+          activo,
         });
+
+        if (!producto?.id) throw new Error("No se pudo crear el producto");
+
+        // Crear presentaciones solo cuando es un producto nuevo
+        for (const pres of presentaciones) {
+          await crearPresentacion(producto.id, {
+            tipo_presentacion: pres.tipo_presentacion,
+            cantidad_equivalente: pres.cantidad_equivalente,
+            unidad_medida_id: pres.unidad_medida_id,
+            precio_venta: pres.precio_venta,
+            precio_compra: pres.precio_compra,
+            activo: pres.activo,
+          });
+        }
       }
 
+      // ==========================================================
+      // 🟦 SEGUNDO: ACTUALIZAR si SÍ hay productoId
+      // ==========================================================
+      else {
+        producto = await actualizarProducto(productoId, {
+          codigo,
+          nombre,
+          descripcion,
+          codigo_barra: codigoBarra,
+          categoria_id: categoriaId,
+          iva,
+          tipo_impuesto: tipoImpuesto,
+          unidad_medida_id: unidadMedidaId,
+          control_inventario: controlInventario,
+          activo,
+        });
+
+        // === cargar presentaciones existentes desde BD ===
+       const presentacionesBD = await listarPresentaciones(Number(producto.id));
+
+        // === eliminar presentaciones quitadas en el front ===
+        for (const presBD of presentacionesBD) {
+          const existe = presentaciones.some((p) => p.id === presBD.id);
+          if (!existe) {
+            if (!presBD.id) continue;
+            await eliminarPresentacion(productoId, presBD.id);
+          }
+        }
+
+        // === crear o actualizar presentaciones ===
+        for (const pres of presentaciones) {
+          // actualizar si tiene ID
+          if (pres.id) {
+            await actualizarPresentacion( pres.id, {
+              tipo_presentacion: pres.tipo_presentacion,
+              cantidad_equivalente: pres.cantidad_equivalente,
+              unidad_medida_id: pres.unidad_medida_id,
+              precio_venta: pres.precio_venta,
+              precio_compra: pres.precio_compra,
+              activo: pres.activo,
+            });
+          }
+
+          // crear si NO tiene ID
+          else {
+            await crearPresentacion(productoId, {
+              tipo_presentacion: pres.tipo_presentacion,
+              cantidad_equivalente: pres.cantidad_equivalente,
+              unidad_medida_id: pres.unidad_medida_id,
+              precio_venta: pres.precio_venta,
+              precio_compra: pres.precio_compra,
+              activo: pres.activo,
+            });
+          }
+        }
+      }
+
+      // ==========================================================
+      // Callbacks
+      // ==========================================================
       if (onSubmit) await onSubmit(producto);
       if (onSaved) onSaved();
       if (onClose) onClose();
 
-      alert("Producto creado correctamente");
+      alert(productoId ? "Producto actualizado" : "Producto creado correctamente");
     } catch (error: any) {
       alert("Error: " + error.message);
+    } finally {
+      setLoading(false);
     }
   }
+
 
     return (
   <form
@@ -477,7 +557,7 @@ export default function ProductoForm({
 
               <button
                 type="button"
-                onClick={() => eliminarPresentacion(index)}
+                onClick={() => eliminarPresentacionForm(index)}
                 className="text-red-600 text-sm"
               >
                 Eliminar
