@@ -24,6 +24,7 @@ def listar_presentaciones_producto(producto_id: int, db: Session = Depends(get_d
     return (
         db.query(ProductoPresentacion)
         .filter(ProductoPresentacion.producto_id == producto_id)
+        .order_by(ProductoPresentacion.id.asc())
         .all()
     )
 
