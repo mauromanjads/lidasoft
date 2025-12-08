@@ -50,7 +50,7 @@ export default function Sidebar() {
                 🏠 Inicio
               </a>
 
-              {/* SUBMENÚ CONFIGURACIÓN */}
+              {/* SUBMENÚ TERCEROS */}
               <div>
                 <div
                   className="flex justify-between items-center bg-[#0d2f5a]/70 hover:bg-[#103766]/90 
@@ -90,7 +90,7 @@ export default function Sidebar() {
                 </AnimatePresence>
               </div>
 
-              {/* SUBMENÚ PRODUCTOS */}
+              {/* SUBMENÚ CATALOGOS */}
               <div>
                 <div
                   className="flex justify-between items-center bg-[#0d2f5a]/70 hover:bg-[#103766]/90 
@@ -138,6 +138,49 @@ export default function Sidebar() {
                   )}
                 </AnimatePresence>
               </div>
+
+               {/* SUBMENÚ DIAN */}
+              <div>
+                <div
+                  className="flex justify-between items-center bg-[#0d2f5a]/70 hover:bg-[#103766]/90 
+                  p-2 rounded-lg cursor-pointer transition-all shadow-md"
+                  onClick={() => toggleSubMenu("configdian")}
+                >
+                  📘 Dian
+                  <span className="text-sm">
+                    {subMenuOpen === "configdian" ? "▲" : "▼"}
+                  </span>
+                </div>
+
+                <AnimatePresence>
+                  {subMenuOpen === "configdian" && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      className="pl-4 mt-2 space-y-2"
+                    >
+                      <a
+                        href="/dashboard/configuracionesdian"
+                        className="block bg-[#0d2f5a]/70 hover:bg-[#103766]/90 
+                        p-2 rounded-lg transition-all shadow-md"
+                      >
+                        ⚙️ Configuración
+                      </a>
+
+                      <a
+                        href="/dashboard/resolucionesdian"
+                        className="block bg-[#0d2f5a]/70 hover:bg-[#103766]/90 
+                        p-2 rounded-lg transition-all shadow-md"
+                      >
+                        🔤 Resoluciones
+                      </a>
+                     
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
             </nav>
           </motion.aside>
         )}
