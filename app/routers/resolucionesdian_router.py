@@ -1,0 +1,156 @@
+# app/routers/resolucionesdian_router.py
+
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
+from sqlalchemy.orm import Session
+from sqlalchemy import or_
+from datetime import datetime, timezone
+
+from app.database import get_db
+from app.models.resoluciones import ResolucionDian
+from app.schemas.resoluciones_schema import (
+    ResolucionDianCreate,
+    ResolucionDianResponse
+)
+
+router = APIRouter(prefix="/resolucionesdian", tags=["resoluciones_dian"])
+
+
+# 👉 Crear resolución DIAN
+@router.post("/", response_model=ResolucionDianResponse)
+def crear_resolucion(
+    request: Request,
+    data: ResolucionDianCreate,
+    db: Session = Depends(get_db)
+):
+    usuario_logueado = request.cookies.get("usuario")
+
+    # Validar duplicado por nit + prefijo + nro_resolucion
+    existe = db.query(ResolucionDian).filter(
+        ResolucionDian.nit_emisor == data.nit_emisor,
+        ResolucionDian.prefijo == data.prefijo,
+        ResolucionDian.numero_resolucion == data.numero_resolucion
+    ).first()
+
+    if existe:
+        raise HTTPException(status_code=409,
+                            detail="La resolución ya existe para este NIT y prefijo")
+
+    db_res = ResolucionDian(
+        **data.model_dump(),
+        usuario_creacion=usuario_logueado,
+        fecha_creacion=datetime.now(timezone.utc)
+    )
+
+    db.add(db_res)
+    db.commit()
+    db.refresh(db_res)
+    return db_res
+
+
+# 👉 Listar todas o por tipo de documento
+@router.get("/", response_model=list[ResolucionDianResponse])
+def listar_resoluciones(
+    tipodoc: str | None = None,
+    db: Session = Depends(get_db)
+):
+    query = db.query(ResolucionDian)
+
+    if tipodoc:
+        query = query.filter(ResolucionDian.tipo_documento.ilike(f"%{tipodoc}%"))
+
+    return query.order_by(ResolucionDian.prefijo.asc()).all()
+
+
+# 👉 Buscar por prefijo o número resolución
+@router.get("/buscar", response_model=list[ResolucionDianResponse])
+def buscar_resolucion(
+    query: str = Query(..., description="Prefijo o número de resolución"),
+    db: Session = Depends(get_db)
+):
+
+    regs = db.query(ResolucionDian).filter(
+        or_(
+            ResolucionDian.prefijo.ilike(f"%{query}%"),
+            ResolucionDian.numero_resolucion.ilike(f"%{query}%")
+        )
+    ).all()
+
+    if not regs:
+        raise HTTPException(status_code=404, detail="No se encontraron resultados")
+
+    return regs
+
+
+# 👉 Obtener por ID
+@router.get("/{resolucion_id}", response_model=ResolucionDianResponse)
+def obtener_resolucion(resolucion_id: int, db: Session = Depends(get_db)):
+    res = db.query(ResolucionDian).filter(
+        ResolucionDian.id == resolucion_id
+    ).first()
+
+    if not res:
+        raise HTTPException(status_code=404, detail="Resolución no encontrada")
+
+    return res
+
+
+# 👉 Actualizar resolución DIAN
+@router.put("/{resolucion_id}", response_model=ResolucionDianResponse)
+def actualizar_resolucion(
+    request: Request,
+    resolucion_id: int,
+    data: ResolucionDianCreate,
+    db: Session = Depends(get_db)
+):
+    try:
+        usuario_logueado = request.cookies.get("usuario")
+
+        res = db.query(ResolucionDian).filter(
+            ResolucionDian.id == resolucion_id
+        ).first()
+
+        if not res:
+            raise HTTPException(status_code=404, detail="Resolución no existe")
+
+        # Validación duplicado excepto sí mismo
+        existe = db.query(ResolucionDian).filter(
+            ResolucionDian.nit_emisor == data.nit_emisor,
+            ResolucionDian.prefijo == data.prefijo,
+            ResolucionDian.numero_resolucion == data.numero_resolucion,
+            ResolucionDian.id != resolucion_id
+        ).first()
+
+        if existe:
+            raise HTTPException(status_code=409,
+                                detail="Ya existe una resolución con ese NIT, prefijo y número")
+
+        # Actualizar campos
+        for key, value in data.model_dump().items():
+            setattr(res, key, value)
+
+        res.usuario_modifico = usuario_logueado
+        res.fecha_modificacion = datetime.now(timezone.utc)
+
+        db.commit()
+        db.refresh(res)
+        return res
+
+    except Exception as e:
+        print("❌ ERROR EN ENDPOINT:", e)
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# 👉 Eliminar
+@router.delete("/{resolucion_id}")
+def eliminar_resolucion(resolucion_id: int, db: Session = Depends(get_db)):
+    res = db.query(ResolucionDian).filter(
+        ResolucionDian.id == resolucion_id
+    ).first()
+
+    if not res:
+        raise HTTPException(status_code=404, detail="Resolución no encontrada")
+
+    db.delete(res)
+    db.commit()
+
+    return {"msg": "Resolución DIAN eliminada correctamente"}
