@@ -47,7 +47,7 @@ export default function ConfiguracionesDianPage() {
   return (
     <div>
       <h1 className="flex items-center gap-2 text-lg font-semibold">
-        ⚙️ Configuraciones DIAN
+        ⚙️ Configuración DIAN
       </h1>
 
       <ConfiguracionesDianTable

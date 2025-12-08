@@ -15,7 +15,8 @@ import Modal from "@/components/ui/modal";
 import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
-//import CategoriaForm from "@/components/forms/CategoriaForm";
+import ConfiguraciondianForm from "@/components/forms/ConfiguraciondianForm";
+import ConfiguraciondianaForm from "@/components/forms/ConfiguraciondianForm";
 
 interface Configuraciondian {
   id: number;
@@ -41,7 +42,7 @@ export default function ConfiguracionesdianTable({ configuraciondian, onEdit, on
   const [pageIndex, setPageIndex] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
  
-   const [cconfiguraciondianEdit, setConfiguraciondianEdit] = useState<any | null>(null);
+   const [configuraciondianEdit, setConfiguraciondianEdit] = useState<any | null>(null);
 
   const columns = useMemo<ColumnDef<Configuraciondian>[]>(
         () => [
@@ -142,17 +143,34 @@ export default function ConfiguracionesdianTable({ configuraciondian, onEdit, on
           className="border px-3 py-2 rounded-lg shadow-sm w-1/3"
         />
 
-         {/* Crear */}
-        <Button
-          onClick={() => setIsOpen(true)} // <-- Aquí podrías abrir modal o ir a formulario
-          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 shadow-md"
-        >  <div className="flex items-center gap-2">
-            <img src="/icons/plus.png" alt="Pdf" className="w-6 h-6" />
-            <span>Nuevo</span>
-          </div>
-        </Button>
 
-        MODAL
+        <Modal 
+            isOpen={isOpen} 
+            onClose={() => {
+              setIsOpen(false);
+              setConfiguraciondianEdit(null);   // 👈 Ahora sí se limpia              
+            }}
+          >
+            <h2 className="text-xl font-semibold mb-4">
+              {configuraciondianEdit ? "Editar Configuración Dian" : "Crear Nueva Configuración Dian"}
+            </h2>
+
+            <ConfiguraciondianaForm
+                configuraciondian={configuraciondianEdit}
+                onSubmit={async (data) => {
+                  console.log("Datos de la configuracion:", data);  
+                  setIsOpen(false);
+                  setConfiguraciondianEdit(null);   // 👈 también al guardar
+                }}
+                onClose={() => {
+                  setIsOpen(false);
+                  setConfiguraciondianEdit(null);
+                }}
+                onSaved={onSaved}
+              />
+                
+          </Modal>
+       
 
          
         {/* Exportar */}
