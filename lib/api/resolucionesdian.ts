@@ -5,29 +5,29 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL;
 ============================================ */
 export interface ResolucionDian {
   id: number;
-  nit_emisor: string;
-  tipo_documento: string;
-  prefijo: string;
   numero_resolucion: string;
-  fecha_inicio: string;
-  fecha_fin: string;
-  rango_desde: number;
-  rango_hasta: number;
-  usuario_creacion?: string;
-  fecha_creacion?: string;
-  usuario_modifico?: string;
-  fecha_modificacion?: string;
+  prefijo: string;   
+  rango_inicial: number;
+  rango_final: number;
+  fecha_resolucion: Date;
+  fecha_inicio: Date;
+  fecha_fin: Date;
+  llave_tecnica: string
+  tipo_documento: string;
+  activo: number
 }
 
 export interface ResolucionDianData {
-  nit_emisor: string;
-  tipo_documento: string;
-  prefijo: string;
   numero_resolucion: string;
-  fecha_inicio: string;
-  fecha_fin: string;
-  rango_desde: number;
-  rango_hasta: number;
+  prefijo: string;   
+  rango_inicial: number;
+  rango_final: number;
+  fecha_resolucion: Date;
+  fecha_inicio: Date;
+  fecha_fin: Date;
+  llave_tecnica: string
+  tipo_documento: string;
+  activo: number
 }
 
 /* ============================================

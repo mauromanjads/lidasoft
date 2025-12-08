@@ -9,6 +9,7 @@ from app.database import get_db
 from app.models.resoluciones import ResolucionDian
 from app.schemas.resoluciones_schema import (
     ResolucionDianCreate,
+    ResolucionDianUpdate,
     ResolucionDianResponse
 )
 
@@ -25,8 +26,7 @@ def crear_resolucion(
     usuario_logueado = request.cookies.get("usuario")
 
     # Validar duplicado por nit + prefijo + nro_resolucion
-    existe = db.query(ResolucionDian).filter(
-        ResolucionDian.nit_emisor == data.nit_emisor,
+    existe = db.query(ResolucionDian).filter(      
         ResolucionDian.prefijo == data.prefijo,
         ResolucionDian.numero_resolucion == data.numero_resolucion
     ).first()
@@ -36,9 +36,7 @@ def crear_resolucion(
                             detail="La resolución ya existe para este NIT y prefijo")
 
     db_res = ResolucionDian(
-        **data.model_dump(),
-        usuario_creacion=usuario_logueado,
-        fecha_creacion=datetime.now(timezone.utc)
+        **data.model_dump(),        
     )
 
     db.add(db_res)
@@ -99,7 +97,7 @@ def obtener_resolucion(resolucion_id: int, db: Session = Depends(get_db)):
 def actualizar_resolucion(
     request: Request,
     resolucion_id: int,
-    data: ResolucionDianCreate,
+    data: ResolucionDianUpdate,
     db: Session = Depends(get_db)
 ):
     try:
@@ -113,8 +111,7 @@ def actualizar_resolucion(
             raise HTTPException(status_code=404, detail="Resolución no existe")
 
         # Validación duplicado excepto sí mismo
-        existe = db.query(ResolucionDian).filter(
-            ResolucionDian.nit_emisor == data.nit_emisor,
+        existe = db.query(ResolucionDian).filter(           
             ResolucionDian.prefijo == data.prefijo,
             ResolucionDian.numero_resolucion == data.numero_resolucion,
             ResolucionDian.id != resolucion_id
@@ -127,10 +124,6 @@ def actualizar_resolucion(
         # Actualizar campos
         for key, value in data.model_dump().items():
             setattr(res, key, value)
-
-        res.usuario_modifico = usuario_logueado
-        res.fecha_modificacion = datetime.now(timezone.utc)
-
         db.commit()
         db.refresh(res)
         return res

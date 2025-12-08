@@ -1,0 +1,309 @@
+"use client";
+
+import { useState } from "react";
+import { useEffect,useRef} from "react";
+import Button from "@/components/ui/button";
+import Input from "@/components/ui/input";
+
+
+import { guardarResolucionDian,actualizarResolucionDian} from "@/lib/api/resolucionesdian";
+import { usePathname } from "next/navigation";
+
+interface ResoluciondianFormProps {
+  resoluciondian?: {
+  id: number;
+  numero_resolucion: string;
+  prefijo: string;   
+  rango_inicial: number;
+  rango_final: number;
+  fecha_resolucion: Date;
+  fecha_inicio: Date;
+  fecha_fin: Date;
+  llave_tecnica: string
+  tipo_documento: string;
+  activo: number
+  };
+  onSubmit: (data: {    
+    numero_resolucion: string;
+    prefijo: string;   
+    rango_inicial: number;
+    rango_final: number;
+    fecha_resolucion: Date;
+    fecha_inicio: Date;
+    fecha_fin: Date;
+    llave_tecnica: string
+    tipo_documento: string;
+    activo: number
+   
+  }) => Promise<void>;
+  onClose?: () => void;
+  onSaved?: () => void;  
+}
+
+export default function ResoluciondianForm({resoluciondian, onClose,onSaved }: ResoluciondianFormProps) {  
+  
+  const [formData, setFormData] = useState( resoluciondian || { 
+    
+    numero_resolucion: "",
+    prefijo: "",   
+    rango_inicial: 1,
+    rango_final: 1,
+    fecha_resolucion: "",
+    fecha_inicio: "",
+    fecha_fin: "",
+    llave_tecnica: "",
+    tipo_documento: "",
+    activo: 1
+  });
+
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+     
+  const handleChange = (
+      e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    ) => {
+      const target = e.target;  // 👈 guardamos la referencia
+
+      let val: any;
+
+      if (target instanceof HTMLInputElement && target.type === "checkbox") {
+        val = target.checked;  // 👌 ya no da error
+      } 
+      else if (target instanceof HTMLInputElement && target.type === "number") {
+        val = target.value === "" ? undefined : Number(target.value);
+      } 
+      else if (target instanceof HTMLInputElement && target.type === "date") {        
+        val = target.value === "" ? null : target.value; 
+      }
+      else {
+        val = target.value; 
+      }
+
+      setFormData((prev: any) => ({
+        ...prev,
+        [target.name]: val,
+      }));
+    };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+       setError(null);
+      setLoading(true);
+
+    try {        
+       if (resoluciondian) {
+          await actualizarResolucionDian(resoluciondian.id, formData); // EDITAR
+        } else {
+          await guardarResolucionDian(formData); // CREAR
+        }
+      
+      if (onClose) onClose();  
+      if (onSaved) onSaved();
+    } catch (err:any) {
+      console.error(err);
+      const mensajeError =
+        err.response?.data?.detail ||
+        err.response?.data?.message ||
+        err.message ||
+        "Error desconocido";
+      setError(mensajeError);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const [openIndex, setOpenIndex] = useState<number | null>(0);
+  const handleToggle = (index: number) => {
+  setOpenIndex(openIndex === index ? null : index); 
+  }
+
+  return (
+   
+   <form onSubmit={handleSubmit} className="space-y-4 ">
+  {/* 🧑 DATOS PERSONALES */}
+  
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full">
+  
+         {/* Número de Resolución */}
+        <div className="flex flex-col w-full">
+          <label className="text-sm font-semibold mb-1 text-gray-700">
+            Número de Resolución
+          </label>
+          <Input
+            name="numero_resolucion"
+            value={formData.numero_resolucion || ""}
+            onChange={handleChange}
+            placeholder="Número de Resolución"
+            className="w-full"
+            required
+          />
+        </div>
+
+        {/* Prefijo */}
+        <div className="flex flex-col w-full">
+          <label className="text-sm font-semibold mb-1 text-gray-700">
+            Prefijo
+          </label>
+          <Input
+            name="prefijo"
+            value={formData.prefijo || ""}
+            onChange={handleChange}
+            placeholder="Prefijo"
+            className="w-full"
+            required
+          />
+        </div>
+
+        {/* Rango Inicial */}
+        <div className="flex flex-col w-full">
+          <label className="text-sm font-semibold mb-1 text-gray-700">
+            Rango Inicial
+          </label>
+          <Input
+            type="number"
+            name="rango_inicial"
+            value={formData.rango_inicial || ""}
+            onChange={handleChange}
+            placeholder="Rango Inicial"
+            className="w-full"
+            required
+          />
+        </div>
+
+        {/* Rango Final */}
+        <div className="flex flex-col w-full">
+          <label className="text-sm font-semibold mb-1 text-gray-700">
+            Rango Final
+          </label>
+          <Input
+            type="number"
+            name="rango_final"
+            value={formData.rango_final || ""}
+            onChange={handleChange}
+            placeholder="Rango Final"
+            className="w-full"
+            required
+          />
+        </div>
+
+        {/* Fecha Resolución */}
+        <div className="flex flex-col w-full">
+          <label className="text-sm font-semibold mb-1 text-gray-700">
+            Fecha de Resolución
+          </label>
+          <Input
+            type="date"
+            name="fecha_resolucion"
+            value={formData.fecha_resolucion || ""}
+            onChange={handleChange}
+            className="w-full"
+            required
+          />
+        </div>
+       
+        {/* Fecha Inicio */}
+        <div className="flex flex-col w-full">
+          <label className="text-sm font-semibold mb-1 text-gray-700">
+            Fecha Inicio
+          </label>
+          <Input
+            type="date"
+            name="fecha_inicio"
+            value={formData.fecha_inicio || ""}
+            onChange={handleChange}
+            className="w-full"
+            required
+          />
+        </div>
+
+        {/* Fecha Fin */}
+        <div className="flex flex-col w-full">
+          <label className="text-sm font-semibold mb-1 text-gray-700">
+            Fecha Fin
+          </label>
+          <Input
+            type="date"
+            name="fecha_fin"
+            value={formData.fecha_fin || ""}
+            onChange={handleChange}
+            className="w-full"
+            required
+          />
+        </div>
+
+        {/* Llave Técnica */}
+        <div className="flex flex-col w-full">
+          <label className="text-sm font-semibold mb-1 text-gray-700">
+            Llave Técnica
+          </label>
+          <Input
+            name="llave_tecnica"
+            value={formData.llave_tecnica || ""}
+            onChange={handleChange}
+            placeholder="Llave Técnica"
+            className="w-full"
+            required
+          />
+        </div>
+
+       
+       {/* TipoDocumento */}
+        <div className="flex flex-col w-full">
+          <label className="text-sm font-semibold mb-1 text-gray-700">
+            Tipo de Documento
+          </label>
+
+          <select
+            name="tipo_documento"
+            value={formData.tipo_documento || ""}
+            onChange={handleChange}
+            className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            required
+          >
+            <option value="">Seleccione...</option>
+            <option value="FV">Factura Venta</option>
+            <option value="NC">Nota Crédito</option>
+            <option value="ND">Nota Débito</option>
+          </select>
+        </div>
+
+        {/* Activo */}
+        <div className="flex flex-col w-full">
+          <label className="text-sm font-semibold mb-1 text-gray-700">
+            Activo
+          </label>
+
+          <select
+            name="activo"
+            value={formData.activo ?? ""}
+            onChange={handleChange}
+            className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            required
+          >
+            <option value="">Seleccione...</option>
+            <option value="1">Activo</option>
+            <option value="0">Inactivo</option>
+          </select>
+        </div>
+
+
+    </div>
+
+ 
+  
+  {/* ⚠️ ERRORES */}
+  {error && <p className="text-red-500">{error}</p>}
+
+  {/* BOTONES */}
+  <div className="flex justify-end gap-2">
+    <Button type="button" onClick={onClose} disabled={loading}>
+      ❌ Cancelar
+    </Button>
+    <Button type="submit" disabled={loading}>
+      {loading ? (resoluciondian ? "Actualizando..." : "Guardando...") : (resoluciondian ? "💾 Actualizar" : "💾 Guardar")}
+    </Button>
+  </div>
+   </form>
+
+  );
+}
