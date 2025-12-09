@@ -37,6 +37,9 @@ const FacturaFormComponent: React.FC = () => {
     total: 0,
   });
 
+  // ------------------------
+  // Manejar cambios de inputs generales
+  // ------------------------
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
@@ -44,12 +47,17 @@ const FacturaFormComponent: React.FC = () => {
     setFormData((prev) => ({
       ...prev,
       [name]:
-        name === "tercero_id" || name === "resolucion_id" || name === "consecutivo"
+        name === "tercero_id" ||
+        name === "resolucion_id" ||
+        name === "consecutivo"
           ? Number(value)
           : value,
     }));
   };
 
+  // ------------------------
+  // Manejar cambios de detalle
+  // ------------------------
   const handleDetalleChange = (
     index: number,
     field: keyof FacturaDetalleForm,
@@ -57,33 +65,33 @@ const FacturaFormComponent: React.FC = () => {
   ) => {
     setFormData((prev) => ({
       ...prev,
-      detalles: prev.detalles.map((det, i) =>
-        i === index
-          ? {
-              ...det,
-              [field]: value,
-              subtotal:
-                field === "cantidad" || field === "precio_unitario"
-                  ? Number(det.cantidad) * Number(det.precio_unitario)
-                  : det.subtotal,
-              total:
-                field === "cantidad" ||
-                field === "precio_unitario" ||
-                field === "descuento" ||
-                field === "iva"
-                  ? Number(det.cantidad) * Number(det.precio_unitario) +
-                    (Number(det.cantidad) *
-                      Number(det.precio_unitario) *
-                      Number(det.iva)) /
-                      100 -
-                    Number(det.descuento)
-                  : det.total,
-            }
-          : det
-      ),
+      detalles: prev.detalles.map((det, i) => {
+        if (i !== index) return det;
+
+        // Valores actualizados
+        const cantidad = field === "cantidad" ? Number(value) : det.cantidad;
+        const precio_unitario =
+          field === "precio_unitario" ? Number(value) : det.precio_unitario;
+        const descuento = field === "descuento" ? Number(value) : det.descuento;
+        const iva = field === "iva" ? Number(value) : det.iva;
+
+        const subtotal = cantidad * precio_unitario;
+        const iva_monto = (subtotal - descuento) * iva / 100;
+        const total = subtotal - descuento + iva_monto;
+
+        return {
+          ...det,
+          [field]: value,
+          subtotal,
+          total,
+        };
+      }),
     }));
   };
 
+  // ------------------------
+  // Agregar fila de producto
+  // ------------------------
   const agregarDetalle = () => {
     setFormData((prev) => ({
       ...prev,
@@ -104,6 +112,9 @@ const FacturaFormComponent: React.FC = () => {
     }));
   };
 
+  // ------------------------
+  // Eliminar fila de producto
+  // ------------------------
   const eliminarDetalle = (index: number) => {
     setFormData((prev) => ({
       ...prev,
@@ -111,6 +122,9 @@ const FacturaFormComponent: React.FC = () => {
     }));
   };
 
+  // ------------------------
+  // Calcular totales de la factura
+  // ------------------------
   useEffect(() => {
     let subtotal = 0;
     let descuento_total = 0;
@@ -120,13 +134,16 @@ const FacturaFormComponent: React.FC = () => {
     formData.detalles.forEach((d) => {
       subtotal += d.subtotal;
       descuento_total += d.descuento;
-      iva_total += (d.subtotal * d.iva) / 100;
+      iva_total += (d.subtotal - d.descuento) * d.iva / 100;
       total += d.total;
     });
 
     setTotales({ subtotal, descuento_total, iva_total, total });
   }, [formData.detalles]);
 
+  // ------------------------
+  // Submit al backend
+  // ------------------------
   const handleSubmit = async () => {
     try {
       const payload = { ...formData, ...totales };
@@ -143,6 +160,9 @@ const FacturaFormComponent: React.FC = () => {
     }
   };
 
+  // ------------------------
+  // Render
+  // ------------------------
   return (
     <div className="max-w-7xl mx-auto p-6 bg-white shadow-lg rounded-lg">
       <h2 className="text-2xl font-bold mb-4">Crear Factura</h2>
@@ -237,7 +257,9 @@ const FacturaFormComponent: React.FC = () => {
                 <Input
                   type="number"
                   value={det.producto_id}
-                  onChange={(e) => handleDetalleChange(i, "producto_id", Number(e.target.value))}
+                  onChange={(e) =>
+                    handleDetalleChange(i, "producto_id", Number(e.target.value))
+                  }
                 />
               </td>
               <td className="border p-1">
@@ -266,7 +288,9 @@ const FacturaFormComponent: React.FC = () => {
                 <Input
                   type="number"
                   value={det.precio_unitario}
-                  onChange={(e) => handleDetalleChange(i, "precio_unitario", Number(e.target.value))}
+                  onChange={(e) =>
+                    handleDetalleChange(i, "precio_unitario", Number(e.target.value))
+                  }
                 />
               </td>
               <td className="border p-1">
