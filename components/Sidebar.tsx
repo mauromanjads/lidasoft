@@ -50,6 +50,48 @@ export default function Sidebar() {
                 🏠 Inicio
               </a>
 
+               {/* SUBMENÚ VENTAS */}
+              <div>
+                <div
+                  className="flex justify-between items-center bg-[#0d2f5a]/70 hover:bg-[#103766]/90 
+                  p-2 rounded-lg cursor-pointer transition-all shadow-md"
+                  onClick={() => toggleSubMenu("ventas")}
+                >
+                  👥 Ventas
+                  <span className="text-sm">
+                    {subMenuOpen === "ventas" ? "▲" : "▼"}
+                  </span>
+                </div>
+
+                <AnimatePresence>
+                  {subMenuOpen === "ventas" && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      className="pl-4 mt-2 space-y-2"
+                    >
+                      <a
+                        href="/dashboard/facturas"
+                        className="block bg-[#0d2f5a]/70 hover:bg-[#103766]/90 
+                        p-2 rounded-lg transition-all shadow-md"
+                      >
+                        🧑‍🤝‍🧑 Facturar Ventas
+                      </a>
+                      <a
+                        href="/dashboard/facturas"
+                        className="block bg-[#0d2f5a]/70 hover:bg-[#103766]/90 
+                        p-2 rounded-lg transition-all shadow-md"
+                      >
+                        🏪 Listar facturas
+                      </a>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
+
+
               {/* SUBMENÚ TERCEROS */}
               <div>
                 <div
