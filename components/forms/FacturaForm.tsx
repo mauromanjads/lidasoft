@@ -5,6 +5,7 @@ import Input from "@/components/ui/input";
 import SelectSearch from "@/components/ui/selectSearch";
 import { FacturaForm, FacturaDetalleForm } from "@/app/types/factura";
 import { Terceros,obtenerTerceros } from "@/lib/api/terceros";
+import { FaIdCard, FaMapMarkerAlt, FaPhone, FaMobileAlt, FaEnvelope } from "react-icons/fa";
 
 const formasPago = ["EFECTIVO", "TARJETA", "TRANSFERENCIA"];
 
@@ -196,80 +197,121 @@ const FacturaFormComponent: React.FC = () => {
   // Render
   // ------------------------
   return (
-    <div className="max-w-7xl mx-auto p-6 bg-white shadow-lg rounded-lg">
+    <div className="max-w-7xl mx-auto p-1 bg-white shadow-lg rounded-lg">
       <h2 className="text-2xl font-bold mb-4">Factura de Venta</h2>
-
+  
       {/* Información general */}
-      <div className="grid grid-cols-3 gap-4 mb-6">
-        <div>
-          <label className="font-semibold">Cliente</label>
-          <SelectSearch            
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+
+        {/* Columna 1: Cliente */}
+        <div className="space-y-2">
+          <label className="font-semibold block">Cliente</label>
+          <SelectSearch
             items={clientes}
             value={clienteId}
             onChange={setClienteId}
             className="w-full border rounded p-2"
-            />
-        </div>
-       
-        <div className="mt-2 p-2 border rounded bg-gray-50">
-          {clienteId && (
-            (() => {
-              const cliente = clientes.find(c => c.id === clienteId);
-              if (!cliente) return null;
-              return (
-                <div className="flex flex-col gap-1">
-                  <div><span className="font-semibold">Documento:</span> {cliente.documento}</div>
-                  <div><span className="font-semibold">Dirección:</span> {cliente.direccion || "---"}</div>
-                  <div><span className="font-semibold">Teléfono:</span> {cliente.telefono || "---"}</div>
-                   <div><span className="font-semibold">Celular:</span> {cliente.celular || "---"}</div>
-                   <div><span className="font-semibold">Correo:</span> {cliente.correo || "---"}</div>
-                </div>
-              );
-            })()
-          )}
+          />
+
+          {clienteId && (() => {
+            const c = clientes.find(x => x.id === clienteId);
+            if (!c) return null;
+
+            return (
+              <div className="p-2 border rounded bg-gray-50 text-sm space-y-1">
+                <div className="flex items-center gap-2"><FaIdCard className="text-gray-500" /> <span><b>Documento:</b> {c.documento}</span></div>
+                <div className="flex items-center gap-2"><FaMapMarkerAlt className="text-gray-500" /> <span><b>Dirección:</b> {c.direccion || "---"}</span></div>
+                <div className="flex items-center gap-2"><FaPhone className="text-gray-500" /> <span><b>Teléfono:</b> {c.telefono || "---"}</span></div>
+                <div className="flex items-center gap-2"><FaMobileAlt className="text-gray-500" /> <span><b>Celular:</b> {c.celular || "---"}</span></div>
+                <div className="flex items-center gap-2"><FaEnvelope className="text-gray-500" /> <span><b>Correo:</b> {c.correo || "---"}</span></div>
+              </div>
+            );
+          })()}
         </div>
 
-        <div>
-          <label className="font-semibold">Prefijo</label>
-          <Input name="prefijo" value={formData.prefijo} onChange={handleChange} />
+        {/* Columna 2: Vendedor / Fecha / Prefijo */}
+        <div className="space-y-2">
+          <div>
+            <label className="font-semibold block">Vendedor</label>
+            <Input
+              name="vendedor"
+              value={formData.vendedor || ""}
+              onChange={handleChange}
+              className="w-full border rounded p-2"
+            />
+          </div>
+
+          <div>
+            <label className="font-semibold block">Fecha</label>
+            <Input
+              type="date"
+              name="fecha"
+              value={formData.fecha || ""}
+              onChange={handleChange}
+              className="w-full border rounded p-2"
+            />
+          </div>
+
+          <div>
+            <label className="font-semibold block">Prefijo</label>
+            <Input
+              name="prefijo"
+              value={formData.prefijo}
+              readOnly
+              className="w-full border rounded p-2 bg-gray-100 text-gray-700 cursor-not-allowed"
+            />
+          </div>
         </div>
-        <div>
-          <label className="font-semibold">Consecutivo</label>
-          <Input
-            type="number"
-            name="consecutivo"
-            value={formData.consecutivo}
-            onChange={handleChange}
-          />
+
+        {/* Columna 3: Pagos y Consecutivo */}
+        <div className="space-y-2">
+          <div>
+            <label className="font-semibold block">Forma de Pago</label>
+            <select
+              name="forma_pago"
+              value={formData.forma_pago}
+              onChange={handleChange}
+              className="w-full border rounded p-2"
+            >
+              {formasPago.map(f => (
+                <option key={f} value={f}>{f}</option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="font-semibold block">Medio de Pago</label>
+            <Input
+              name="medio_pago"
+              value={formData.medio_pago || ""}
+              onChange={handleChange}
+              className="w-full border rounded p-2"
+            />
+          </div>
+
+          <div>
+            <label className="font-semibold block">Consecutivo</label>
+            <Input
+              type="number"
+              name="consecutivo"
+              value={formData.consecutivo}
+              readOnly
+              className="w-full border rounded p-2 bg-gray-100 text-gray-700 cursor-not-allowed"
+            />
+          </div>
         </div>
-        <div>
-          <label className="font-semibold">Forma de Pago</label>
-          <select
-            name="forma_pago"
-            value={formData.forma_pago}
-            onChange={handleChange}
-            className="w-full border rounded p-2"
-          >
-            {formasPago.map((f) => (
-              <option key={f} value={f}>
-                {f}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div>
-          <label className="font-semibold">Medio de Pago</label>
-          <Input name="medio_pago" value={formData.medio_pago} onChange={handleChange} />
-        </div>
-        <div className="col-span-3">
-          <label className="font-semibold">Notas</label>
+
+        {/* Columna 4: Notas */}
+        <div className="flex flex-col">
+          <label className="font-semibold mb-1 block">Notas</label>
           <textarea
             name="notas"
             value={formData.notas}
             onChange={handleChange}
-            className="w-full border rounded p-2"
+            className="w-full border rounded p-2 flex-1 min-h-[140px]"
           />
         </div>
+
       </div>
 
       {/* Tabla de detalles */}
