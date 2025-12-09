@@ -6,7 +6,7 @@ import Button from "@/components/ui/button";
 import Input from "@/components/ui/input";
 
 
-import { guardarResolucionDian,actualizarResolucionDian} from "@/lib/api/resolucionesdian";
+import { guardarResolucionDian,actualizarResolucionDian,ResolucionDianData} from "@/lib/api/resolucionesdian";
 import { usePathname } from "next/navigation";
 
 interface ResoluciondianFormProps {
@@ -88,13 +88,22 @@ export default function ResoluciondianForm({resoluciondian, onClose,onSaved }: R
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
        setError(null);
-      setLoading(true);
+      setLoading(true);     
 
     try {        
+
+          // Convertir strings a Date
+        const payload: ResolucionDianData = {
+          ...formData,
+          fecha_resolucion: new Date(formData.fecha_resolucion),
+          fecha_inicio: new Date(formData.fecha_inicio),
+          fecha_fin: new Date(formData.fecha_fin),
+        };
+
        if (resoluciondian) {
-          await actualizarResolucionDian(resoluciondian.id, formData); // EDITAR
+          await actualizarResolucionDian(resoluciondian.id, payload); // EDITAR
         } else {
-          await guardarResolucionDian(formData); // CREAR
+          await guardarResolucionDian(payload); // CREAR
         }
       
       if (onClose) onClose();  
@@ -194,7 +203,12 @@ export default function ResoluciondianForm({resoluciondian, onClose,onSaved }: R
           <Input
             type="date"
             name="fecha_resolucion"
-            value={formData.fecha_resolucion || ""}
+           value={
+              formData.fecha_resolucion
+                ? (formData.fecha_resolucion instanceof Date
+                    ? formData.fecha_resolucion.toISOString().split("T")[0]
+                    : formData.fecha_resolucion)
+                : ""  }
             onChange={handleChange}
             className="w-full"
             required
@@ -209,7 +223,12 @@ export default function ResoluciondianForm({resoluciondian, onClose,onSaved }: R
           <Input
             type="date"
             name="fecha_inicio"
-            value={formData.fecha_inicio || ""}
+           value={
+              formData.fecha_inicio
+                ? (formData.fecha_inicio instanceof Date
+                    ? formData.fecha_inicio.toISOString().split("T")[0]
+                    : formData.fecha_inicio)
+                : ""  }
             onChange={handleChange}
             className="w-full"
             required
@@ -224,7 +243,12 @@ export default function ResoluciondianForm({resoluciondian, onClose,onSaved }: R
           <Input
             type="date"
             name="fecha_fin"
-            value={formData.fecha_fin || ""}
+             value={
+              formData.fecha_inicio
+                ? (formData.fecha_fin instanceof Date
+                    ? formData.fecha_fin.toISOString().split("T")[0]
+                    : formData.fecha_fin)
+                : ""  }
             onChange={handleChange}
             className="w-full"
             required
