@@ -5,6 +5,7 @@ import Input from "@/components/ui/input";
 import SelectSearch from "@/components/ui/selectSearch";
 import { FacturaForm, FacturaDetalleForm } from "@/app/types/factura";
 import { Terceros,obtenerTerceros } from "@/lib/api/terceros";
+import { obtenerResolucionesPorTipo } from "@/lib/api/resolucionesdian";
 import { FaIdCard, FaMapMarkerAlt, FaPhone, FaMobileAlt, FaEnvelope } from "react-icons/fa";
 
 const formasPago = ["EFECTIVO", "TARJETA", "TRANSFERENCIA"];
@@ -34,6 +35,19 @@ const FacturaFormComponent: React.FC = () => {
         setVendedores(vend ?? []); // si cl es null, usamos un array vacío
         setVendedorId(vend?.[0]?.id ?? null);
         
+        // ---------------------------------------
+        // 🚀 TRAER PREFIJO RESOLUCIÓN SI ES NUEVO REGISTRO
+        // ---------------------------------------
+        if (!formData.id) {   // <-- Solo si es NUEVA factura
+          const res = await obtenerResolucionesPorTipo("FV");           
+          if (res[0]?.prefijo) {
+            setFormData(prev => ({
+              ...prev,
+              prefijo: res[0].prefijo
+            }));
+          }
+        }
+
         //PARA EL DETALLE
         //setPresentaciones((prev) =>
         //  prev.map((p) => ({
@@ -48,6 +62,7 @@ const FacturaFormComponent: React.FC = () => {
 
 
   const [formData, setFormData] = useState<FacturaForm>({
+    id:null,
     tercero_id: 0,
     vendedor_id:0,
     resolucion_id: 0,
@@ -267,6 +282,7 @@ const FacturaFormComponent: React.FC = () => {
               name="prefijo"
               value={formData.prefijo}
               readOnly
+              required
               className="w-full border rounded p-2 bg-gray-100 text-gray-700 cursor-not-allowed"
             />
           </div>

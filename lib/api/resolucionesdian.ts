@@ -54,7 +54,7 @@ export const obtenerResolucionesDian = async (): Promise<ResolucionDian[] | null
 ============================================ */
 export const obtenerResolucionesPorTipo = async (tipodoc: string) => {
   try {
-    const res = await fetch(`${API_URL}/resolucionesdian?tipodoc=${tipodoc}`);
+    const res = await fetch(`${API_URL}/resolucionesdian/?tipodoc=${tipodoc}`);
 
     if (!res.ok) {
       throw new Error(`Error al listar resoluciones por tipo: ${res.status}`);

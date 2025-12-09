@@ -11,6 +11,7 @@ export interface FacturaDetalleForm {
 }
 
 export interface FacturaForm {
+  id:null,
   tercero_id: number;
   vendedor_id:number;
   fecha:string;

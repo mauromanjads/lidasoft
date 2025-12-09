@@ -54,7 +54,10 @@ def listar_resoluciones(
     query = db.query(ResolucionDian)
 
     if tipodoc:
-        query = query.filter(ResolucionDian.tipo_documento.ilike(f"%{tipodoc}%"))
+         query = query.filter(
+        ResolucionDian.tipo_documento == tipodoc,
+        ResolucionDian.activo == 1
+    )
 
     return query.order_by(ResolucionDian.prefijo.asc()).all()
 
