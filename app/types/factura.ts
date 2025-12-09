@@ -12,6 +12,8 @@ export interface FacturaDetalleForm {
 
 export interface FacturaForm {
   tercero_id: number;
+  vendedor_id:number;
+  fecha:string;
   resolucion_id: number;
   prefijo: string;
   consecutivo: number;

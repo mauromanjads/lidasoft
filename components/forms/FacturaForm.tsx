@@ -15,9 +15,13 @@ const FacturaFormComponent: React.FC = () => {
   const [clientes, setClientes] = useState<Terceros[]>([]);
   const [clienteId, setClienteId] = useState<number | null>(null);
 
+  const [vendedores, setVendedores] = useState<Terceros[]>([]);
+  const [vendedorId, setVendedorId] = useState<number | null>(null);
+
   useEffect(() => {
       async function loadData() {
         const cl = await obtenerTerceros("clientes");
+        const vend = await obtenerTerceros("vendedores");
 
         // Buscar el cliente "CONSUMIDOR FINAL"
         const consumidorFinal = cl?.find(c => c.nombre === "CONSUMIDOR FINAL");
@@ -27,6 +31,9 @@ const FacturaFormComponent: React.FC = () => {
         // Si existe "CONSUMIDOR FINAL", se selecciona; si no, el primero
         setClienteId(consumidorFinal?.id ?? cl?.[0]?.id ?? null);
   
+        setVendedores(vend ?? []); // si cl es null, usamos un array vacío
+        setVendedorId(vend?.[0]?.id ?? null);
+        
         //PARA EL DETALLE
         //setPresentaciones((prev) =>
         //  prev.map((p) => ({
@@ -42,12 +49,14 @@ const FacturaFormComponent: React.FC = () => {
 
   const [formData, setFormData] = useState<FacturaForm>({
     tercero_id: 0,
+    vendedor_id:0,
     resolucion_id: 0,
     prefijo: "",
     consecutivo: 1,
     forma_pago: "EFECTIVO",
     medio_pago: "",
     notas: "",
+    fecha: "",
     detalles: [
       {
         producto_id: 0,
@@ -233,12 +242,12 @@ const FacturaFormComponent: React.FC = () => {
         <div className="space-y-2">
           <div>
             <label className="font-semibold block">Vendedor</label>
-            <Input
-              name="vendedor"
-              value={formData.vendedor || ""}
-              onChange={handleChange}
-              className="w-full border rounded p-2"
-            />
+            <SelectSearch
+            items={vendedores}
+            value={vendedorId}
+            onChange={setVendedorId}
+            className="w-full border rounded p-2"
+          />
           </div>
 
           <div>

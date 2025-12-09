@@ -2,6 +2,8 @@ from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
 from typing import List
 from decimal import Decimal
+from datetime import datetime,timezone
+from fastapi import Request
 
 from app.models.facturas import Factura
 from app.models.factura_detalle import FacturaDetalle
@@ -19,7 +21,7 @@ router = APIRouter(
 # Crear factura con cálculos automáticos
 # -----------------------
 @router.post("/", response_model=FacturaResponse)
-def crear_factura(factura_data: FacturaSchema, db: Session = Depends(get_db)):
+def crear_factura(request: Request, factura_data: FacturaSchema, db: Session = Depends(get_db)):
     # Calcular subtotales y totales de la factura
     subtotal_total = Decimal(0)
     descuento_total = Decimal(0)
@@ -57,6 +59,7 @@ def crear_factura(factura_data: FacturaSchema, db: Session = Depends(get_db)):
     # Crear instancia Factura
     factura = Factura(
         tercero_id=factura_data.tercero_id,
+        vendedor_id=factura_data.vendedor_id,
         resolucion_id=factura_data.resolucion_id,
         prefijo=factura_data.prefijo,
         consecutivo=factura_data.consecutivo,
@@ -72,6 +75,11 @@ def crear_factura(factura_data: FacturaSchema, db: Session = Depends(get_db)):
 
     # Asignar detalles
     factura.detalles = detalles_model
+
+    usuario_logueado = request.cookies.get("usuario") 
+    factura.usuario_creacion = usuario_logueado
+    factura.fecha_creacion = datetime.now(timezone.utc)
+
 
     db.add(factura)
     db.commit()
@@ -101,7 +109,7 @@ def obtener_factura(factura_id: int, db: Session = Depends(get_db)):
 # Actualizar factura
 # -----------------------
 @router.put("/{factura_id}", response_model=FacturaResponse)
-def actualizar_factura(factura_id: int, factura_data: FacturaSchema, db: Session = Depends(get_db)):
+def actualizar_factura(request: Request, factura_id: int, factura_data: FacturaSchema, db: Session = Depends(get_db)):
     factura = db.query(Factura).filter(Factura.id == factura_id).first()
     if not factura:
         raise HTTPException(status_code=404, detail="Factura no encontrada")
@@ -142,6 +150,7 @@ def actualizar_factura(factura_id: int, factura_data: FacturaSchema, db: Session
 
     # Actualizar factura
     factura.tercero_id = factura_data.tercero_id
+    factura.vendedor_id = factura_data.tercero_id
     factura.resolucion_id = factura_data.resolucion_id
     factura.prefijo = factura_data.prefijo
     factura.consecutivo = factura_data.consecutivo
@@ -154,6 +163,10 @@ def actualizar_factura(factura_id: int, factura_data: FacturaSchema, db: Session
     factura.total = total_total
     factura.notas = factura_data.notas
     factura.detalles = detalles_model
+
+    usuario_logueado = request.cookies.get("usuario") 
+    factura.usuario_modifico = usuario_logueado
+    factura.fecha_modificacion = datetime.now(timezone.utc)
 
     db.commit()
     db.refresh(factura)

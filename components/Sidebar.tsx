@@ -57,7 +57,7 @@ export default function Sidebar() {
                   p-2 rounded-lg cursor-pointer transition-all shadow-md"
                   onClick={() => toggleSubMenu("ventas")}
                 >
-                  👥 Ventas
+                  🛍️ Ventas
                   <span className="text-sm">
                     {subMenuOpen === "ventas" ? "▲" : "▼"}
                   </span>
@@ -76,14 +76,14 @@ export default function Sidebar() {
                         className="block bg-[#0d2f5a]/70 hover:bg-[#103766]/90 
                         p-2 rounded-lg transition-all shadow-md"
                       >
-                        🧑‍🤝‍🧑 Facturar Ventas
+                        🛒 Facturar Ventas
                       </a>
                       <a
                         href="/dashboard/facturas"
                         className="block bg-[#0d2f5a]/70 hover:bg-[#103766]/90 
                         p-2 rounded-lg transition-all shadow-md"
                       >
-                        🏪 Listar facturas
+                        📋 Listar facturas
                       </a>
                     </motion.div>
                   )}
@@ -127,6 +127,15 @@ export default function Sidebar() {
                       >
                         🏪 Proveedores
                       </a>
+
+                       <a
+                        href="/dashboard/terceros/vendedores"
+                        className="block bg-[#0d2f5a]/70 hover:bg-[#103766]/90 
+                        p-2 rounded-lg transition-all shadow-md"
+                      >
+                        🧑‍💼 Vendedores
+                      </a>
+
                     </motion.div>
                   )}
                 </AnimatePresence>

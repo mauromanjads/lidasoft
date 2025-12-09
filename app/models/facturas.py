@@ -9,6 +9,7 @@ class Factura(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     fecha = Column(DateTime, nullable=False, server_default=func.now())
     tercero_id = Column(Integer, nullable=False)
+    vendedor_id = Column(Integer, nullable=False)
     resolucion_id = Column(Integer, nullable=False)
     prefijo = Column(String(10), nullable=False)
     consecutivo = Column(BigInteger, nullable=False)
@@ -19,7 +20,10 @@ class Factura(Base):
     descuento_total = Column(Numeric(14,2), nullable=False, default=0)
     iva_total = Column(Numeric(14,2), nullable=False, default=0)
     total = Column(Numeric(14,2), nullable=False, default=0)
-    notas = Column(Text, nullable=True)
-    creado_en = Column(DateTime, server_default=func.now())
-
+    notas = Column(Text, nullable=True)    
+    usuario_creacion = Column(String(100), nullable=True)
+    fecha_creacion = Column(DateTime, server_default=func.now())
+    usuario_modifico = Column(String(100), nullable=True)
+    fecha_modificacion = Column(DateTime, nullable=True)
+    
     detalles = relationship("FacturaDetalle", back_populates="factura", cascade="all, delete-orphan")

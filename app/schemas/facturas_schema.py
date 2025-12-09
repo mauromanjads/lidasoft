@@ -6,6 +6,7 @@ from app.schemas.factura_detalle_schema import FacturaDetalleSchema
 
 class FacturaSchema(BaseModel):
     tercero_id: int
+    vendedor_id: int
     resolucion_id: int
     prefijo: str
     consecutivo: int
@@ -22,4 +23,7 @@ class FacturaResponse(FacturaSchema):
     id: int
     numero_completo: str
     fecha: datetime
-    creado_en: datetime
+    usuario_creacion: Optional[str] = None
+    fecha_creacion: Optional[datetime] = None
+    usuario_modifico: Optional[str] = None
+    fecha_modificacion: Optional[datetime] = None
