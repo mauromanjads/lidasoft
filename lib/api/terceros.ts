@@ -5,6 +5,8 @@ export interface Terceros {
   nombre: string;
   telefono: string;
   direccion: string;
+  celular:string;
+  correo:string;
 }
 
 export interface TercerosData {  

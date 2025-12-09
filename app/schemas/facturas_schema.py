@@ -2,7 +2,7 @@ from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime
 from decimal import Decimal
-from factura_detalle_schema import FacturaDetalleSchema
+from app.schemas.factura_detalle_schema import FacturaDetalleSchema
 
 class FacturaSchema(BaseModel):
     tercero_id: int

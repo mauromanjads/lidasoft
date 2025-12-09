@@ -2,11 +2,43 @@
 import React, { useState, useEffect } from "react";
 import Button from "@/components/ui/button";
 import Input from "@/components/ui/input";
+import SelectSearch from "@/components/ui/selectSearch";
 import { FacturaForm, FacturaDetalleForm } from "@/app/types/factura";
+import { Terceros,obtenerTerceros } from "@/lib/api/terceros";
 
 const formasPago = ["EFECTIVO", "TARJETA", "TRANSFERENCIA"];
 
+
 const FacturaFormComponent: React.FC = () => {
+  
+  const [clientes, setClientes] = useState<Terceros[]>([]);
+  const [clienteId, setClienteId] = useState<number | null>(null);
+
+  useEffect(() => {
+      async function loadData() {
+        const cl = await obtenerTerceros("clientes");
+
+        // Buscar el cliente "CONSUMIDOR FINAL"
+        const consumidorFinal = cl?.find(c => c.nombre === "CONSUMIDOR FINAL");
+
+        setClientes(cl ?? []); // si cl es null, usamos un array vacío
+         
+        // Si existe "CONSUMIDOR FINAL", se selecciona; si no, el primero
+        setClienteId(consumidorFinal?.id ?? cl?.[0]?.id ?? null);
+  
+        //PARA EL DETALLE
+        //setPresentaciones((prev) =>
+        //  prev.map((p) => ({
+          //  ...p,
+          //  unidad_medida_id: u[0]?.id || 0,
+         // }))
+        //);
+      }
+  
+      loadData();
+    }, []);
+
+
   const [formData, setFormData] = useState<FacturaForm>({
     tercero_id: 0,
     resolucion_id: 0,
@@ -165,32 +197,38 @@ const FacturaFormComponent: React.FC = () => {
   // ------------------------
   return (
     <div className="max-w-7xl mx-auto p-6 bg-white shadow-lg rounded-lg">
-      <h2 className="text-2xl font-bold mb-4">Crear Factura</h2>
+      <h2 className="text-2xl font-bold mb-4">Factura de Venta</h2>
 
       {/* Información general */}
       <div className="grid grid-cols-3 gap-4 mb-6">
         <div>
           <label className="font-semibold">Cliente</label>
-          <select
-            name="tercero_id"
-            value={formData.tercero_id}
-            onChange={handleChange}
+          <SelectSearch            
+            items={clientes}
+            value={clienteId}
+            onChange={setClienteId}
             className="w-full border rounded p-2"
-          >
-            <option value={0}>Seleccione cliente</option>
-          </select>
+            />
         </div>
-        <div>
-          <label className="font-semibold">Resolución DIAN</label>
-          <select
-            name="resolucion_id"
-            value={formData.resolucion_id}
-            onChange={handleChange}
-            className="w-full border rounded p-2"
-          >
-            <option value={0}>Seleccione resolución</option>
-          </select>
+       
+        <div className="mt-2 p-2 border rounded bg-gray-50">
+          {clienteId && (
+            (() => {
+              const cliente = clientes.find(c => c.id === clienteId);
+              if (!cliente) return null;
+              return (
+                <div className="flex flex-col gap-1">
+                  <div><span className="font-semibold">Documento:</span> {cliente.documento}</div>
+                  <div><span className="font-semibold">Dirección:</span> {cliente.direccion || "---"}</div>
+                  <div><span className="font-semibold">Teléfono:</span> {cliente.telefono || "---"}</div>
+                   <div><span className="font-semibold">Celular:</span> {cliente.celular || "---"}</div>
+                   <div><span className="font-semibold">Correo:</span> {cliente.correo || "---"}</div>
+                </div>
+              );
+            })()
+          )}
         </div>
+
         <div>
           <label className="font-semibold">Prefijo</label>
           <Input name="prefijo" value={formData.prefijo} onChange={handleChange} />
