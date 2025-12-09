@@ -51,10 +51,45 @@ export default function ResolucionesdianTable({ resoluciondian, onEdit, onDelete
             { accessorKey: "numero_resolucion", header: "Resolución" },
             { accessorKey: "prefijo", header: "Prefijo" },
             { accessorKey: "rango_inicial", header: "Rango Inicial" },
-            { accessorKey: "rango_final", header: "Rango Final" },
-            { accessorKey: "fecha_resolucion", header: "Fecha Resolución" },
-             { accessorKey: "tipo_documento", header: "Tipo" },
-            { accessorKey: "activo", header: "Activo" },
+            { accessorKey: "rango_final", header: "Rango Final" },            
+           {
+              accessorKey: "fecha_resolucion",
+              header: "Fecha Resolución",
+              cell: ({ row }) => {
+                const fecha = row.original.fecha_resolucion;
+                if (!fecha) return "-";
+
+                const d = new Date(fecha); // convierte cualquier input válido a Date
+
+                if (isNaN(d.getTime())) return fecha; // fallback si no es válido
+
+                const meses = ["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"];
+
+                // Usar UTC para evitar corrimiento de zona horaria
+                const dia = d.getUTCDate();
+                const mes = meses[d.getUTCMonth()];
+                const año = d.getUTCFullYear();
+
+                return `${dia} de ${mes} de ${año}`;
+              }
+            },
+
+            { accessorKey: "tipo_documento", header: "Tipo" },
+            {
+              accessorKey: "activo",
+              header: "Activo",
+              cell: ({ row }) => {
+                const value = !!row.original.activo;
+                return (
+                  <input
+                    type="checkbox"
+                    checked={value}
+                    disabled
+                    className="w-4 h-4 accent-green-600"
+                  />
+                );
+              },
+            },    
 
             {
             id: "acciones",
