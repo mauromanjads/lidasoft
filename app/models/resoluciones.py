@@ -11,6 +11,8 @@ class ResolucionDian(Base):
 
     rango_inicial = Column(BigInteger, nullable=False)
     rango_final = Column(BigInteger, nullable=False)
+    rango_actual = Column(BigInteger, nullable=False)
+
 
     fecha_resolucion = Column(Date, nullable=False)
     fecha_inicio = Column(Date, nullable=False)

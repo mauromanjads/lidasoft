@@ -23,6 +23,7 @@ interface Resoluciondian {
   prefijo: string;   
   rango_inicial: number;
   rango_final: number;
+  rango_actual: number;
   fecha_resolucion: Date;
   fecha_inicio: Date;
   fecha_fin: Date;
@@ -51,7 +52,8 @@ export default function ResolucionesdianTable({ resoluciondian, onEdit, onDelete
             { accessorKey: "numero_resolucion", header: "Resolución" },
             { accessorKey: "prefijo", header: "Prefijo" },
             { accessorKey: "rango_inicial", header: "Rango Inicial" },
-            { accessorKey: "rango_final", header: "Rango Final" },            
+            { accessorKey: "rango_final", header: "Rango Final" },
+            { accessorKey: "rango_actual", header: "Rango Actual" },            
            {
               accessorKey: "fecha_resolucion",
               header: "Fecha Resolución",

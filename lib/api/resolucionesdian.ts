@@ -9,6 +9,7 @@ export interface ResolucionDian {
   prefijo: string;   
   rango_inicial: number;
   rango_final: number;
+  rango_actual: number;
   fecha_resolucion: Date;
   fecha_inicio: Date;
   fecha_fin: Date;
@@ -22,6 +23,7 @@ export interface ResolucionDianData {
   prefijo: string;   
   rango_inicial: number;
   rango_final: number;
+  rango_actual: number;
   fecha_resolucion: Date;
   fecha_inicio: Date;
   fecha_fin: Date;

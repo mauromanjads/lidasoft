@@ -8,8 +8,21 @@ import { Terceros,obtenerTerceros } from "@/lib/api/terceros";
 import { obtenerResolucionesPorTipo } from "@/lib/api/resolucionesdian";
 import { FaIdCard, FaMapMarkerAlt, FaPhone, FaMobileAlt, FaEnvelope } from "react-icons/fa";
 
-const formasPago = ["EFECTIVO", "TARJETA", "TRANSFERENCIA"];
+const formasDePago = [
+  { id: 1, nombre: "Contado" },
+  { id: 2, nombre: "Crédito" }
+];
 
+const mediosDePago = [
+  { id: 10, nombre: "Efectivo" },
+  { id: 20, nombre: "Transferencia bancaria" },
+  { id: 30, nombre: "Tarjeta de crédito" },
+  { id: 31, nombre: "Tarjeta débito" },
+  { id: 40, nombre: "Cheque" },
+  { id: 50, nombre: "Consignación" },
+  { id: 60, nombre: "Billetera digital (Nequi / Daviplata)" },
+  { id: 70, nombre: "Crédito de la empresa" }, // si manejas cartera interna
+];
 
 const FacturaFormComponent: React.FC = () => {
   
@@ -38,15 +51,34 @@ const FacturaFormComponent: React.FC = () => {
         // ---------------------------------------
         // 🚀 TRAER PREFIJO RESOLUCIÓN SI ES NUEVO REGISTRO
         // ---------------------------------------
-        if (!formData.id) {   // <-- Solo si es NUEVA factura
-          const res = await obtenerResolucionesPorTipo("FV");           
-          if (res[0]?.prefijo) {
-            setFormData(prev => ({
-              ...prev,
-              prefijo: res[0].prefijo
-            }));
+        if (!formData.id) {
+
+           if (!formData.fecha) {
+              const hoy = new Date().toLocaleDateString("en-CA");
+              setFormData(prev => ({ ...prev, fecha: hoy }));
+            }
+
+            const res = await obtenerResolucionesPorTipo("FV");
+
+            if (res?.length > 0) {
+              const r = res[0];
+
+              const next = (r.rango_actual ?? 0) + 1;
+
+              // 🚨 Validación de rango DIAN
+              if (next > r.rango_final) {
+                alert("Se agotó la numeración autorizada por la DIAN");
+                return; // <-- Detiene el proceso
+              }
+
+              // ✔ Actualiza prefijo y consecutivo
+              setFormData(prev => ({
+                ...prev,
+                prefijo: r.prefijo,
+                consecutivo: next,
+              }));
+            }
           }
-        }
 
         //PARA EL DETALLE
         //setPresentaciones((prev) =>
@@ -292,26 +324,46 @@ const FacturaFormComponent: React.FC = () => {
         <div className="space-y-2">
           <div>
             <label className="font-semibold block">Forma de Pago</label>
-            <select
-              name="forma_pago"
-              value={formData.forma_pago}
-              onChange={handleChange}
-              className="w-full border rounded p-2"
-            >
-              {formasPago.map(f => (
-                <option key={f} value={f}>{f}</option>
-              ))}
-            </select>
+           <select
+                value={formData.forma_pago || ""}
+                onChange={e =>
+                  setFormData(prev => ({
+                    ...prev,
+                    forma_pago: e.target.value
+                  }))
+                }
+                className="w-full border rounded p-2"
+              >
+                <option value="">Seleccione...</option>
+
+                {formasDePago.map(fp => (
+                  <option key={fp.id} value={fp.id}>
+                    {fp.nombre}
+                  </option>
+                ))}
+              </select>
           </div>
 
           <div>
             <label className="font-semibold block">Medio de Pago</label>
-            <Input
-              name="medio_pago"
-              value={formData.medio_pago || ""}
-              onChange={handleChange}
-              className="w-full border rounded p-2"
-            />
+             <select
+                value={formData.medio_pago || ""}
+                onChange={e =>
+                  setFormData(prev => ({
+                    ...prev,
+                    medio_pago: e.target.value
+                  }))
+                }
+                className="w-full border rounded p-2"
+              >
+                <option value="">Seleccione...</option>
+
+                {mediosDePago.map(mp => (
+                  <option key={mp.id} value={mp.id}>
+                    {mp.nombre}
+                  </option>
+                ))}
+              </select>
           </div>
 
           <div>

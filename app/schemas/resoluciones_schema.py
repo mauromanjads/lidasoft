@@ -7,6 +7,7 @@ class ResolucionDianBase(BaseModel):
     prefijo: str | None = None
     rango_inicial: int
     rango_final: int
+    rango_actual: int
     fecha_resolucion: date
     fecha_inicio: date
     fecha_fin: date

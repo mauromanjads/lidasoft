@@ -16,6 +16,7 @@ interface ResoluciondianFormProps {
   prefijo: string;   
   rango_inicial: number;
   rango_final: number;
+  rango_actual: number;
   fecha_resolucion: Date;
   fecha_inicio: Date;
   fecha_fin: Date;
@@ -28,6 +29,7 @@ interface ResoluciondianFormProps {
     prefijo: string;   
     rango_inicial: number;
     rango_final: number;
+    rango_actual: number;
     fecha_resolucion: Date;
     fecha_inicio: Date;
     fecha_fin: Date;
@@ -48,6 +50,7 @@ export default function ResoluciondianForm({resoluciondian, onClose,onSaved }: R
     prefijo: "",   
     rango_inicial: 1,
     rango_final: 1,
+    rango_actual: 1,
     fecha_resolucion: "",
     fecha_inicio: "",
     fecha_fin: "",
@@ -194,6 +197,22 @@ export default function ResoluciondianForm({resoluciondian, onClose,onSaved }: R
             required
           />
         </div>
+
+         <div className="flex flex-col w-full">
+          <label className="text-sm font-semibold mb-1 text-gray-700">
+            Rango Actual
+          </label>
+          <Input
+            type="number"
+            name="rango_actual"
+            value={formData.rango_actual || ""}
+            onChange={handleChange}
+            placeholder="rango_actual Final"
+            className="w-full"
+            required
+          />
+        </div>
+
 
         {/* Fecha Resolución */}
         <div className="flex flex-col w-full">
