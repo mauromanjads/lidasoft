@@ -15,7 +15,7 @@ export default function FormasPagoSelect({ formData, handleChange }: Props) {
     const cargar = async () => {
       try {
         const data = await obtenerFormasPago();
-        setFormaPago(data);
+         setFormaPago(data);
       } catch (error) {
         console.error(error);
       }
@@ -28,7 +28,7 @@ export default function FormasPagoSelect({ formData, handleChange }: Props) {
       <label className="block mb-1 font-medium">Formas de Pago</label>
       <select
         name="forma_pago_id"
-        value={formData.forma_pago_id ?? 0}
+        value={formData.forma_pago_id ?? ""}
         onChange={handleChange}
         required
         className="w-full border rounded-md p-2"

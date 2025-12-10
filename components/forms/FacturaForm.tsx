@@ -137,6 +137,8 @@ const FacturaFormComponent: React.FC<FacturaFormProps> = ({ factura }) => {
       [name]:
         name === "tercero_id" ||
         name === "resolucion_id" ||
+        name === "forma_pago_id" ||
+        name === "medio_pago_id" ||
         name === "consecutivo"
           ? Number(value)
           : value,
@@ -292,7 +294,7 @@ const FacturaFormComponent: React.FC<FacturaFormProps> = ({ factura }) => {
             value={clienteId}
             onChange={(value) => {
               setClienteId(value);
-              setFormData(prev => ({ ...prev, tercero_id: value }));
+              setFormData(prev => ({ ...prev, tercero_id: Number(value) }));
             }}
             className="w-full border rounded p-2"
           />

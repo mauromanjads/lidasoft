@@ -28,7 +28,7 @@ export default function MediosPagoSelect({ formData, handleChange }: Props) {
       <label className="block mb-1 font-medium">Medios de Pago</label>
       <select
         name="medio_pago_id"
-        value={formData.medio_pago_id ?? 0}
+       value={formData.medio_pago_id ?? ""}
         onChange={handleChange}
         required
         className="w-full border rounded-md p-2"
