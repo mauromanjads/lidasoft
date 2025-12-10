@@ -6,25 +6,20 @@ import SelectSearch from "@/components/ui/selectSearch";
 import { FacturaForm, FacturaDetalleForm } from "@/app/types/factura";
 import { Terceros,obtenerTerceros } from "@/lib/api/terceros";
 import { obtenerResolucionesPorTipo } from "@/lib/api/resolucionesdian";
+import SelectFormasPago from "@/components/ui/selects/FormasPagoSelect";
+import SelectMedioPago from "@/components/ui/selects/MediosPagoSelect";
 import { FaIdCard, FaMapMarkerAlt, FaPhone, FaMobileAlt, FaEnvelope } from "react-icons/fa";
+import { actualizarFactura, crearFactura } from "@/lib/api/facturas";
 
-const formasDePago = [
-  { id: 1, nombre: "Contado" },
-  { id: 2, nombre: "Crédito" }
-];
 
-const mediosDePago = [
-  { id: 10, nombre: "Efectivo" },
-  { id: 20, nombre: "Transferencia bancaria" },
-  { id: 30, nombre: "Tarjeta de crédito" },
-  { id: 31, nombre: "Tarjeta débito" },
-  { id: 40, nombre: "Cheque" },
-  { id: 50, nombre: "Consignación" },
-  { id: 60, nombre: "Billetera digital (Nequi / Daviplata)" },
-  { id: 70, nombre: "Crédito de la empresa" }, // si manejas cartera interna
-];
+interface FacturaFormProps {
+  factura?: FacturaForm | null;
+  onSubmit?: (data: any) => Promise<void> | void;
+  onSaved?: () => void;
+  onClose?: () => void;
+}
 
-const FacturaFormComponent: React.FC = () => {
+const FacturaFormComponent: React.FC<FacturaFormProps> = ({ factura }) => {
   
   const [clientes, setClientes] = useState<Terceros[]>([]);
   const [clienteId, setClienteId] = useState<number | null>(null);
@@ -32,7 +27,10 @@ const FacturaFormComponent: React.FC = () => {
   const [vendedores, setVendedores] = useState<Terceros[]>([]);
   const [vendedorId, setVendedorId] = useState<number | null>(null);
 
-  useEffect(() => {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
       async function loadData() {
         const cl = await obtenerTerceros("clientes");
         const vend = await obtenerTerceros("vendedores");
@@ -76,6 +74,7 @@ const FacturaFormComponent: React.FC = () => {
                 ...prev,
                 prefijo: r.prefijo,
                 consecutivo: next,
+                resolucion_id: r.id
               }));
             }
           }
@@ -100,8 +99,8 @@ const FacturaFormComponent: React.FC = () => {
     resolucion_id: 0,
     prefijo: "",
     consecutivo: 1,
-    forma_pago: "EFECTIVO",
-    medio_pago: "",
+    forma_pago_id: 0,
+    medio_pago_id: 0,
     notas: "",
     fecha: "",
     detalles: [
@@ -233,21 +232,47 @@ const FacturaFormComponent: React.FC = () => {
   // ------------------------
   // Submit al backend
   // ------------------------
-  const handleSubmit = async () => {
-    try {
-      const payload = { ...formData, ...totales };
-      const res = await fetch("/api/facturas", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      if (!res.ok) throw new Error("Error al crear factura");
-      const data = await res.json();
-      alert(`Factura ${data.numero_completo} creada con éxito`);
-    } catch (err: any) {
-      alert(err.message);
-    }
-  };
+  const handleSubmit = async (e: React.FormEvent) => {
+      e.preventDefault();
+         setError(null);
+        setLoading(true);
+  
+      try {      
+        
+          const payload = {
+            ...formData,
+            forma_pago_id: formData.forma_pago_id ?? 0,
+            medio_pago_id: formData.medio_pago_id ?? 0,
+            detalles: formData.detalles.map(d => ({
+              producto_id: d.producto_id,
+              presentacion_id: d.presentacion_id,
+              descripcion: d.descripcion,
+              cantidad: d.cantidad,
+              precio_unitario: d.precio_unitario,
+              descuento: d.descuento,
+              iva: d.iva
+            }))
+          };
+
+         if (factura?.id) {
+            await actualizarFactura(factura.id, payload); // EDITAR
+          } else {
+            await crearFactura(payload); // CREAR
+          }
+        
+       
+      } catch (err:any) {
+        console.error(err);
+        const mensajeError =
+          err.response?.data?.detail ||
+          err.response?.data?.message ||
+          err.message ||
+          "Error desconocido";
+        setError(mensajeError);
+      } finally {
+        setLoading(false);
+      }
+    };
 
   // ------------------------
   // Render
@@ -265,7 +290,10 @@ const FacturaFormComponent: React.FC = () => {
           <SelectSearch
             items={clientes}
             value={clienteId}
-            onChange={setClienteId}
+            onChange={(value) => {
+              setClienteId(value);
+              setFormData(prev => ({ ...prev, tercero_id: value }));
+            }}
             className="w-full border rounded p-2"
           />
 
@@ -292,7 +320,10 @@ const FacturaFormComponent: React.FC = () => {
             <SelectSearch
             items={vendedores}
             value={vendedorId}
-            onChange={setVendedorId}
+            onChange={(value) => {
+              setVendedorId(value);
+              setFormData(prev => ({ ...prev, vendedor_id: value }));
+            }}
             className="w-full border rounded p-2"
           />
           </div>
@@ -322,49 +353,9 @@ const FacturaFormComponent: React.FC = () => {
 
         {/* Columna 3: Pagos y Consecutivo */}
         <div className="space-y-2">
-          <div>
-            <label className="font-semibold block">Forma de Pago</label>
-           <select
-                value={formData.forma_pago || ""}
-                onChange={e =>
-                  setFormData(prev => ({
-                    ...prev,
-                    forma_pago: e.target.value
-                  }))
-                }
-                className="w-full border rounded p-2"
-              >
-                <option value="">Seleccione...</option>
+          <div><SelectFormasPago formData={formData} handleChange={handleChange} /> </div>
 
-                {formasDePago.map(fp => (
-                  <option key={fp.id} value={fp.id}>
-                    {fp.nombre}
-                  </option>
-                ))}
-              </select>
-          </div>
-
-          <div>
-            <label className="font-semibold block">Medio de Pago</label>
-             <select
-                value={formData.medio_pago || ""}
-                onChange={e =>
-                  setFormData(prev => ({
-                    ...prev,
-                    medio_pago: e.target.value
-                  }))
-                }
-                className="w-full border rounded p-2"
-              >
-                <option value="">Seleccione...</option>
-
-                {mediosDePago.map(mp => (
-                  <option key={mp.id} value={mp.id}>
-                    {mp.nombre}
-                  </option>
-                ))}
-              </select>
-          </div>
+          <div> <SelectMedioPago formData ={formData} handleChange={handleChange} /> </div>
 
           <div>
             <label className="font-semibold block">Consecutivo</label>

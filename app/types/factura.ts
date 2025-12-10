@@ -18,8 +18,8 @@ export interface FacturaForm {
   resolucion_id: number;
   prefijo: string;
   consecutivo: number;
-  forma_pago: string;
-  medio_pago?: string;
+  forma_pago_id?: number;
+  medio_pago_id?: number;
   notas?: string;
   detalles: FacturaDetalleForm[];
 }

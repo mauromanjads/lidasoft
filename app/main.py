@@ -14,6 +14,8 @@ from app.routers import producto_presentacion_router
 from app.routers import configuracionesdian_router
 from app.routers import resolucionesdian_router
 from app.routers import facturas_router
+from app.routers import formasdepago_router
+from app.routers import mediosdepago_router
 
 
 from fastapi.middleware.cors import CORSMiddleware
@@ -46,6 +48,8 @@ app.include_router(producto_presentacion_router.router)
 app.include_router(configuracionesdian_router.router)
 app.include_router(resolucionesdian_router.router)
 app.include_router(facturas_router.router)
+app.include_router(formasdepago_router.router)
+app.include_router(mediosdepago_router.router)
 
 
 @app.get("/")

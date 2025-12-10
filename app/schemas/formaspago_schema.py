@@ -1,0 +1,11 @@
+from pydantic import BaseModel
+from typing import Optional
+
+class FormasDePagoBase(BaseModel):
+    id: int
+    codigo: str  
+    nombre:str 
+    descripcion:  Optional[str] = None
+        
+    class Config:
+        orm_mode = True  

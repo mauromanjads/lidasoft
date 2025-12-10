@@ -10,8 +10,8 @@ class FacturaSchema(BaseModel):
     resolucion_id: int
     prefijo: str
     consecutivo: int
-    forma_pago: str
-    medio_pago: Optional[str] = None
+    forma_pago_id: int
+    medio_pago_id: int
     subtotal: Decimal
     descuento_total: Decimal
     iva_total: Decimal
