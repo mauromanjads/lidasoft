@@ -180,6 +180,22 @@ export default function ProductoForm({
       // ==========================================================
       // 🟩 PRIMERO: CREAR si NO hay productoId
       // ==========================================================
+
+      // Validar presentaciones antes de crear producto
+      if (!presentaciones || presentaciones.length === 0) {
+        throw new Error("El producto debe tener al menos una presentación.");
+      }
+
+      for (const pres of presentaciones) {
+        if (!pres.tipo_presentacion || pres.tipo_presentacion.trim() === "") {
+          throw new Error("Cada presentación debe tener un nombre.");
+        }
+
+        if (!pres.precio_venta || pres.precio_venta <= 0) {
+          throw new Error(`La presentación "${pres.tipo_presentacion}" debe tener un precio de venta válido.`);
+        }
+      }
+
       if (!productoId) {
         producto = await crearProducto({
           codigo,
