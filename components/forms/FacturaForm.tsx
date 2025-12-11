@@ -41,10 +41,14 @@ const FacturaFormComponent: React.FC<FacturaFormProps> = ({ factura }) => {
         setClientes(cl ?? []); // si cl es null, usamos un array vacío
          
         // Si existe "CONSUMIDOR FINAL", se selecciona; si no, el primero
-        setClienteId(consumidorFinal?.id ?? cl?.[0]?.id ?? null);
-  
-        setVendedores(vend ?? []); // si cl es null, usamos un array vacío
-        setVendedorId(vend?.[0]?.id ?? null);
+        const idcliente = consumidorFinal?.id ?? cl?.[0]?.id ?? null
+        setClienteId(idcliente);        
+        setFormData(prev => ({ ...prev, tercero_id: Number(idcliente) }));
+
+        const idvend = vend?.[0]?.id ?? null
+        setVendedores(vend ?? []);  
+        setVendedorId(idvend);        
+        setFormData(prev => ({ ...prev, vendedor_id: Number(idvend) }));
         
         // ---------------------------------------
         // 🚀 TRAER PREFIJO RESOLUCIÓN SI ES NUEVO REGISTRO
@@ -245,14 +249,22 @@ const FacturaFormComponent: React.FC<FacturaFormProps> = ({ factura }) => {
             ...formData,
             forma_pago_id: formData.forma_pago_id ?? 0,
             medio_pago_id: formData.medio_pago_id ?? 0,
+            subtotal:10,
+            descuento_total:20,
+            iva_total:30,
+            total:40,
             detalles: formData.detalles.map(d => ({
               producto_id: d.producto_id,
               presentacion_id: d.presentacion_id,
               descripcion: d.descripcion,
               cantidad: d.cantidad,
               precio_unitario: d.precio_unitario,
-              descuento: d.descuento,
-              iva: d.iva
+              //descuento: d.descuento,
+              //iva: d.iva
+              descuento: 5,
+              iva: 10,
+              subtotal : 20,
+              total:40
             }))
           };
 

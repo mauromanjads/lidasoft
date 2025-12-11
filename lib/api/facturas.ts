@@ -84,6 +84,9 @@ export const obtenerFactura = async (id: number): Promise<Factura | null> => {
 ============================================ */
 export async function crearFactura(data: FacturaData) {
   try {
+    
+    console.log("➡️ DATA QUE LLEGA A crearFactura:", data)
+    
     const response = await fetch(`${API_URL}/facturas`, {
       method: "POST",
       headers: {
