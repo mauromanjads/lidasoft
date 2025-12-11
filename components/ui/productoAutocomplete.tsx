@@ -27,6 +27,7 @@ interface Props {
     presentacion_id: number;
     descripcion: string;
     precio_unitario: number;
+    presentacion_nombre: string,
   }) => void;
   placeholder?: string;
 }
@@ -113,6 +114,7 @@ const ProductWithPresentation: React.FC<Props> = ({
         presentacion_id: presentacionSeleccionada.id,
         descripcion: `${productoSeleccionado.nombre} - ${presentacionSeleccionada.tipo_presentacion}`,
         precio_unitario: presentacionSeleccionada.precio_venta,
+        presentacion_nombre: presentacionSeleccionada.tipo_presentacion, // ⭐ agregado
       });
     }
   }, [productoSeleccionado, presentacionSeleccionada]);

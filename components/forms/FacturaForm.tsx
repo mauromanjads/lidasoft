@@ -119,6 +119,7 @@ const FacturaFormComponent: React.FC<FacturaFormProps> = ({ factura }) => {
         iva: 0,
         subtotal: 0,
         total: 0,
+        
       },
     ],
   });
@@ -433,8 +434,15 @@ const FacturaFormComponent: React.FC<FacturaFormProps> = ({ factura }) => {
 
                     const cantidad = formData.detalles[i].cantidad || 1;
                     handleDetalleChange(i, "subtotal", cantidad * d.precio_unitario);
+                    handleDetalleChange(i, "presentacion_nombre", d.presentacion_nombre);
                   }}
                 />
+                {/* ⭐ Badge de presentación (visual, moderno) */}
+                  {det.presentacion_nombre && (
+                    <span className="bg-blue-100 text-blue-700 text-xs px-2 py-1 rounded ml-1 mt-1 inline-block">
+                      {det.presentacion_nombre}
+                    </span>
+                  )}
               </td>
 
               {/* ======= CANTIDAD ======= */}

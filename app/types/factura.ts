@@ -8,6 +8,7 @@ export interface FacturaDetalleForm {
   iva: number; // porcentaje, ej: 19
   subtotal: number;
   total: number;
+  presentacion_nombre?: string;
 }
 
 export interface FacturaForm {
