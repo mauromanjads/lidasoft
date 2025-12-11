@@ -403,62 +403,52 @@ const FacturaFormComponent: React.FC<FacturaFormProps> = ({ factura }) => {
       </div>
 
       {/* Tabla de detalles */}
-      <table className="w-full table-fixed border border-gray-300 mb-4">
+        <table className="w-full table-fixed border border-gray-300 mb-4">
         <thead className="bg-gray-100">
           <tr>
-            <th className="border p-2">Producto</th>
-            <th className="border p-2">Presentación</th>
-            <th className="border p-2">Descripción</th>
-            <th className="border p-2">Cantidad</th>
-            <th className="border p-2">Precio Unitario</th>
-            <th className="border p-2">Descuento</th>
-            <th className="border p-2">IVA (%)</th>
-            <th className="border p-2">Subtotal</th>
-            <th className="border p-2">Total</th>
-            <th className="border p-2">Acciones</th>
+            <th className="border p-2 w-[350px]">Producto</th>
+            <th className="border p-2 w-[80px]">Cantidad</th>
+            <th className="border p-2 w-[120px]">Precio Unitario</th>
+            <th className="border p-2 w-[100px]">Descuento</th>
+            <th className="border p-2 w-[90px]">IVA (%)</th>
+            <th className="border p-2 w-[120px]">Subtotal</th>
+            <th className="border p-2 w-[120px]">Total</th>
+            <th className="border p-2 w-[60px]">Acc</th>
           </tr>
         </thead>
+
         <tbody>
           {formData.detalles.map((det, i) => (
             <tr key={i}>
-              <td className="border p-1">
-                <ProductoConPresentacion                  
+              {/* ======= PRODUCTO + PRESENTACIÓN ======= */}
+              <td className="border p-1 w-[350px]">
+                <ProductoConPresentacion
                   valueProductoId={det.producto_id}
                   valuePresentacionId={det.presentacion_id}
-                   onSelect={(d) => {
-                  // d = { producto_id, presentacion_id, descripcion, precio_unitario }
+                  onSelect={(d) => {
                     handleDetalleChange(i, "producto_id", d.producto_id);
-                    handleDetalleChange(i, "presentacion_id", d.presentacion_id);
-                    handleDetalleChange(i, "descripcion", d.descripcion);
+                    handleDetalleChange(i, "presentacion_id", d.presentacion_id);                    
                     handleDetalleChange(i, "precio_unitario", d.precio_unitario);
-                   handleDetalleChange(i,"subtotal",(formData.detalles[i].cantidad ?? 1) * d.precio_unitario );
+                    handleDetalleChange(i, "descripcion", d.descripcion);
 
-                   }}
-                  
+                    const cantidad = formData.detalles[i].cantidad || 1;
+                    handleDetalleChange(i, "subtotal", cantidad * d.precio_unitario);
+                  }}
                 />
               </td>
-              <td className="border p-1">
-                <Input
-                  type="number"
-                  value={det.presentacion_id}
-                  onChange={(e) =>
-                    handleDetalleChange(i, "presentacion_id", Number(e.target.value))
-                  }
-                />
-              </td>
-              <td className="border p-1">
-                <Input
-                  value={det.descripcion}
-                  onChange={(e) => handleDetalleChange(i, "descripcion", e.target.value)}
-                />
-              </td>
+
+              {/* ======= CANTIDAD ======= */}
               <td className="border p-1">
                 <Input
                   type="number"
                   value={det.cantidad}
-                  onChange={(e) => handleDetalleChange(i, "cantidad", Number(e.target.value))}
+                  onChange={(e) =>
+                    handleDetalleChange(i, "cantidad", Number(e.target.value))
+                  }
                 />
               </td>
+
+              {/* ======= PRECIO UNITARIO ======= */}
               <td className="border p-1">
                 <Input
                   type="number"
@@ -468,24 +458,44 @@ const FacturaFormComponent: React.FC<FacturaFormProps> = ({ factura }) => {
                   }
                 />
               </td>
+
+              {/* ======= DESCUENTO ======= */}
               <td className="border p-1">
                 <Input
                   type="number"
                   value={det.descuento}
-                  onChange={(e) => handleDetalleChange(i, "descuento", Number(e.target.value))}
+                  onChange={(e) =>
+                    handleDetalleChange(i, "descuento", Number(e.target.value))
+                  }
                 />
               </td>
+
+              {/* ======= IVA ======= */}
               <td className="border p-1">
                 <Input
                   type="number"
                   value={det.iva}
-                  onChange={(e) => handleDetalleChange(i, "iva", Number(e.target.value))}
+                  onChange={(e) =>
+                    handleDetalleChange(i, "iva", Number(e.target.value))
+                  }
                 />
               </td>
+
+              {/* ======= SUBTOTAL ======= */}
               <td className="border p-1 text-right">{det.subtotal.toFixed(2)}</td>
+
+              {/* ======= TOTAL ======= */}
               <td className="border p-1 text-right">{det.total.toFixed(2)}</td>
-              <td className="border p-1">
-                <Button onClick={() => eliminarDetalle(i)}>Eliminar</Button>
+
+              {/* ======= ACCIÓN ======= */}
+              <td className="border p-1 text-center">
+                <button
+                  type="button"
+                  onClick={() => eliminarDetalle(i)}
+                  className="text-red-600 text-xl hover:scale-125 transition"
+                >
+                  ❌
+                </button>
               </td>
             </tr>
           ))}
