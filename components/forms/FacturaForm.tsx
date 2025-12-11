@@ -238,33 +238,35 @@ const FacturaFormComponent: React.FC<FacturaFormProps> = ({ factura }) => {
   // ------------------------
   // Submit al backend
   // ------------------------
-  const handleSubmit = async (e: React.FormEvent) => {
-      e.preventDefault();
-         setError(null);
-        setLoading(true);
-  
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+     if (!e.currentTarget.checkValidity()) {
+        e.preventDefault();
+        e.stopPropagation();
+        return;
+      }
+
+      e.preventDefault();    
+
       try {      
         
           const payload = {
             ...formData,
             forma_pago_id: formData.forma_pago_id ?? 0,
             medio_pago_id: formData.medio_pago_id ?? 0,
-            subtotal:10,
-            descuento_total:20,
-            iva_total:30,
-            total:40,
+            subtotal:0,
+            descuento_total:0,
+            iva_total:0,
+            total:0,
             detalles: formData.detalles.map(d => ({
               producto_id: d.producto_id,
               presentacion_id: d.presentacion_id,
               descripcion: d.descripcion,
               cantidad: d.cantidad,
               precio_unitario: d.precio_unitario,
-              //descuento: d.descuento,
-              //iva: d.iva
-              descuento: 5,
-              iva: 10,
-              subtotal : 20,
-              total:40
+              descuento: d.descuento,
+              iva: d.iva,              
+              subtotal : 0,
+              total:0
             }))
           };
 
@@ -292,6 +294,9 @@ const FacturaFormComponent: React.FC<FacturaFormProps> = ({ factura }) => {
   // Render
   // ------------------------
   return (
+
+   <form onSubmit={handleSubmit} className="space-y-4 ">
+
     <div className="max-w-7xl mx-auto p-1 bg-white shadow-lg rounded-lg">
       <h2 className="text-2xl font-bold mb-4">Factura de Venta</h2>
   
@@ -490,10 +495,11 @@ const FacturaFormComponent: React.FC<FacturaFormProps> = ({ factura }) => {
         <div className="font-bold">Total: {totales.total.toFixed(2)}</div>
       </div>
 
-      <Button onClick={handleSubmit} className="w-full">
+     <Button type="submit" className="w-full">
         Guardar Factura
       </Button>
     </div>
+   </form>
   );
 };
 

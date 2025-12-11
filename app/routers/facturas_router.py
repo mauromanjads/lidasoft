@@ -29,16 +29,25 @@ def crear_factura(request: Request, factura_data: FacturaSchema, db: Session = D
     total_total = Decimal(0)
 
     detalles_model = []
-    for det in factura_data.detalles:
-        # Calcular subtotal del detalle
+    for det in factura_data.detalles:        
+       # Calcular subtotal del renglón
         detalle_subtotal = det.cantidad * det.precio_unitario
-        detalle_iva = detalle_subtotal * det.iva / 100  # si IVA viene en porcentaje
-        detalle_total = detalle_subtotal + detalle_iva - det.descuento
 
+        # El descuento se aplica al subtotal
+        base_gravable = detalle_subtotal - det.descuento
+
+        # El IVA se calcula sobre la base gravable
+        detalle_iva = base_gravable * det.iva / 100
+
+        # Total del renglón
+        detalle_total = base_gravable + detalle_iva
+
+        # Acumular totales
         subtotal_total += detalle_subtotal
         descuento_total += det.descuento
         iva_total += detalle_iva
         total_total += detalle_total
+
 
         detalle_model = FacturaDetalle(
             producto_id=det.producto_id,
