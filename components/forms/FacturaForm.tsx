@@ -10,6 +10,7 @@ import SelectFormasPago from "@/components/ui/selects/FormasPagoSelect";
 import SelectMedioPago from "@/components/ui/selects/MediosPagoSelect";
 import { FaIdCard, FaMapMarkerAlt, FaPhone, FaMobileAlt, FaEnvelope } from "react-icons/fa";
 import { actualizarFactura, crearFactura } from "@/lib/api/facturas";
+import ProductoConPresentacion from "@/components/ui/productoAutocomplete";
 
 
 interface FacturaFormProps {
@@ -421,12 +422,19 @@ const FacturaFormComponent: React.FC<FacturaFormProps> = ({ factura }) => {
           {formData.detalles.map((det, i) => (
             <tr key={i}>
               <td className="border p-1">
-                <Input
-                  type="number"
-                  value={det.producto_id}
-                  onChange={(e) =>
-                    handleDetalleChange(i, "producto_id", Number(e.target.value))
-                  }
+                <ProductoConPresentacion                  
+                  valueProductoId={det.producto_id}
+                  valuePresentacionId={det.presentacion_id}
+                   onSelect={(d) => {
+                  // d = { producto_id, presentacion_id, descripcion, precio_unitario }
+                    handleDetalleChange(i, "producto_id", d.producto_id);
+                    handleDetalleChange(i, "presentacion_id", d.presentacion_id);
+                    handleDetalleChange(i, "descripcion", d.descripcion);
+                    handleDetalleChange(i, "precio_unitario", d.precio_unitario);
+                   handleDetalleChange(i,"subtotal",(formData.detalles[i].cantidad ?? 1) * d.precio_unitario );
+
+                   }}
+                  
                 />
               </td>
               <td className="border p-1">

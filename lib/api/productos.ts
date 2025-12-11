@@ -17,6 +17,12 @@ export const obtenerProductos = (): Promise<Producto[]> => {
   return fetchAPI<Producto[]>(`${API_URL}/productos`);
 };
 
+// ===================== PRODUCTOS ACTIVOS =====================
+export const obtenerProductosActivos = async (): Promise<Producto[]> => {
+  const productos = await fetchAPI<Producto[]>(`${API_URL}/productos`);
+  return productos.filter(producto => producto.activo);
+};
+
 export const crearProducto = (data: Partial<Producto>): Promise<Producto> => {
   return fetchAPI<Producto>(`${API_URL}/productos`, {
     method: "POST",
