@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Button from "@/components/ui/button";
 import Input from "@/components/ui/input";
+import Swal from "sweetalert2";
 
 import { guardarUnidad, actualizarUnidad } from "@/lib/api/unidadesmedida";
 
@@ -50,6 +51,19 @@ export default function UnidadForm({ unidad, onClose, onSaved }: UnidadFormProps
 
       onSaved?.();
       onClose?.();
+
+      const mensaje = unidad ? "Unidad actualizada" : "Unidad creada correctamente"
+            
+      Swal.fire({
+        title: "¡Listo!",
+        text: mensaje,
+        icon: "success",
+        confirmButtonText: "Aceptar",
+        timer: 4000,
+        timerProgressBar: true,
+      });
+
+
     } catch (err: any) {
       const mensajeError =
         err.response?.data?.detail ||
@@ -57,6 +71,17 @@ export default function UnidadForm({ unidad, onClose, onSaved }: UnidadFormProps
         err.message ||
         "Error desconocido";
       setError(mensajeError);
+
+       Swal.fire({
+          title: "Oops...!",
+          text: mensajeError,
+          icon: "error",
+          confirmButtonText: "Entendido",
+          timer: 4000,
+          timerProgressBar: true,
+        });
+           
+
     } finally {
       setLoading(false);
     }

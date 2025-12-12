@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useEffect,useRef} from "react";
 import Button from "@/components/ui/button";
 import Input from "@/components/ui/input";
-
+import Swal from "sweetalert2";
 
 
 import { guardarCategoria,actualizarCategoria} from "@/lib/api/categorias";
@@ -78,6 +78,19 @@ export default function CategoriaForm({categoria, onClose,onSaved }: CategoriaFo
       
       if (onClose) onClose();  
       if (onSaved) onSaved();
+
+      const mensaje = categoria ? "Categoría actualizada" : "Categoría creada correctamente"
+      Swal.fire({
+        title: "¡Listo!",
+        text: mensaje,
+        icon: "success",
+        confirmButtonText: "Aceptar",
+        timer: 4000,
+        timerProgressBar: true,
+      });
+
+
+
     } catch (err:any) {
       console.error(err);
       const mensajeError =
@@ -85,6 +98,15 @@ export default function CategoriaForm({categoria, onClose,onSaved }: CategoriaFo
         err.response?.data?.message ||
         err.message ||
         "Error desconocido";
+
+        Swal.fire({
+                title: "Oops...!",
+                text: err.message,
+                icon: "error",
+                confirmButtonText: "Entendido",
+                timer: 4000,
+                timerProgressBar: true,
+        });
       setError(mensajeError);
     } finally {
       setLoading(false);

@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useEffect,useRef} from "react";
 import Button from "@/components/ui/button";
 import Input from "@/components/ui/input";
-
+import Swal from "sweetalert2";
 
 import { guardarResolucionDian,actualizarResolucionDian,ResolucionDianData} from "@/lib/api/resolucionesdian";
 import { usePathname } from "next/navigation";
@@ -111,6 +111,18 @@ export default function ResoluciondianForm({resoluciondian, onClose,onSaved }: R
       
       if (onClose) onClose();  
       if (onSaved) onSaved();
+
+      const mensaje = resoluciondian ? "Resolución actualizada" : "Resolución creada correctamente"
+      
+      Swal.fire({
+        title: "¡Listo!",
+        text: mensaje,
+        icon: "success",
+        confirmButtonText: "Aceptar",
+        timer: 4000,
+        timerProgressBar: true,
+      });
+
     } catch (err:any) {
       console.error(err);
       const mensajeError =
@@ -119,6 +131,17 @@ export default function ResoluciondianForm({resoluciondian, onClose,onSaved }: R
         err.message ||
         "Error desconocido";
       setError(mensajeError);
+
+      Swal.fire({
+              title: "Oops...!",
+              text: mensajeError,
+              icon: "error",
+              confirmButtonText: "Entendido",
+              timer: 4000,
+              timerProgressBar: true,
+            });
+      
+
     } finally {
       setLoading(false);
     }
@@ -210,6 +233,7 @@ export default function ResoluciondianForm({resoluciondian, onClose,onSaved }: R
             placeholder="rango_actual Final"
             className="w-full"
             required
+            disabled={!!resoluciondian}
           />
         </div>
 

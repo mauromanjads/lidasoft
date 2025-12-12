@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useEffect,useRef} from "react";
 import Button from "@/components/ui/button";
 import Input from "@/components/ui/input";
-
+import Swal from "sweetalert2";
 
 
 import { actualizarConfiguracionDian} from "@/lib/api/configuracionesdian";
@@ -88,6 +88,19 @@ export default function ConfiguraciondianaForm({configuraciondian, onClose,onSav
       
       if (onClose) onClose();  
       if (onSaved) onSaved();
+      
+      const mensaje = configuraciondian ? "Configuración actualizada" : "NA"
+
+      Swal.fire({
+              title: "¡Listo!",
+              text: mensaje,
+              icon: "success",
+              confirmButtonText: "Aceptar",
+              timer: 4000,
+              timerProgressBar: true,
+            });
+
+
     } catch (err:any) {
       console.error(err);
       const mensajeError =
@@ -96,6 +109,17 @@ export default function ConfiguraciondianaForm({configuraciondian, onClose,onSav
         err.message ||
         "Error desconocido";
       setError(mensajeError);
+
+      Swal.fire({
+              title: "Oops...!",
+              text: mensajeError,
+              icon: "error",
+              confirmButtonText: "Entendido",
+              timer: 4000,
+              timerProgressBar: true,
+            });
+
+
     } finally {
       setLoading(false);
     }
