@@ -3,7 +3,7 @@
 import Button from "@/components/ui/button";
 import Input from "@/components/ui/input";
 import CurrencyInput from "@/components/ui/currencyInput";
-
+import Swal from "sweetalert2";
 import SelectSearch from "@/components/ui/selectSearch";
 
 import { useEffect, useState } from "react";
@@ -289,9 +289,30 @@ export default function ProductoForm({
       if (onSaved) onSaved();
       if (onClose) onClose();
 
-      alert(productoId ? "Producto actualizado" : "Producto creado correctamente");
+      const mensaje = productoId ? "Producto actualizado" : "Producto creado correctamente"
+
+      Swal.fire({
+        title: "¡Listo!",
+        text: mensaje,
+        icon: "success",
+        confirmButtonText: "Aceptar",
+        timer: 4000,
+        timerProgressBar: true,
+      });
+
+
+
     } catch (error: any) {
-      alert("Error: " + error.message);
+        Swal.fire({
+        title: "Oops...!",
+        text: error.message,
+        icon: "error",
+        confirmButtonText: "Entendido",
+        timer: 4000,
+        timerProgressBar: true,
+      });
+
+
     } finally {
       setLoading(false);
     }
