@@ -1,22 +1,27 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
+/* ============================
+   INTERFACES
+============================= */
 export interface Categoria {
   id: number;
   nombre: string;
   descripcion?: string;
   estado: string;
+  parametros: any | null;
   creado: string;
 }
 
 export interface CategoriaData {
   nombre: string;
   descripcion?: string;
-  estado?: string;
+  estado?: string; 
+  parametros?: any | null;
 }
 
-/* ============================================
+/* ============================
    OBTENER TODAS LAS CATEGORIAS
-============================================ */
+============================= */
 export const obtenerCategorias = async (): Promise<Categoria[] | null> => {
   try {
     const res = await fetch(`${API_URL}/categorias`);
@@ -25,8 +30,7 @@ export const obtenerCategorias = async (): Promise<Categoria[] | null> => {
       throw new Error(`Error al cargar categorías: ${res.status}`);
     }
 
-    const data = await res.json();
-    return data;
+    return await res.json();
 
   } catch (error) {
     console.error("Error obteniendo categorías:", error);
@@ -34,10 +38,9 @@ export const obtenerCategorias = async (): Promise<Categoria[] | null> => {
   }
 };
 
-
-/* ============================================
-   OBTENER UNA CATEGORIA POR ID
-============================================ */
+/* ============================
+   OBTENER CATEGORIA POR ID
+============================= */
 export const obtenerCategoria = async (id: number): Promise<Categoria | null> => {
   try {
     const res = await fetch(`${API_URL}/categorias/${id}`);
@@ -54,24 +57,21 @@ export const obtenerCategoria = async (id: number): Promise<Categoria | null> =>
   }
 };
 
-
-/* ============================================
+/* ============================
    GUARDAR CATEGORIA
-============================================ */
+============================= */
 export async function guardarCategoria(data: CategoriaData) {
   try {
     const response = await fetch(`${API_URL}/categorias`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       credentials: "include",
       body: JSON.stringify(data),
     });
 
     if (!response.ok) {
-      const errorData = await response.json().catch(() => null);
-      throw new Error(errorData?.detail || "Error al guardar categoría");
+      const err = await response.json().catch(() => null);
+      throw new Error(err?.detail || "Error al guardar categoría");
     }
 
     return await response.json();
@@ -82,11 +82,12 @@ export async function guardarCategoria(data: CategoriaData) {
   }
 }
 
-
-/* ============================================
+/* ============================
    ACTUALIZAR CATEGORIA
-============================================ */
-export async function actualizarCategoria(id: string, data: Partial<CategoriaData>) {
+============================= */
+export async function actualizarCategoria(id: number, data: Partial<CategoriaData>) {
+  console.log("➡️ DATA QUE LLEGA A ACTUALIZAR CATEGORIA:", data)
+    
   try {
     const response = await fetch(`${API_URL}/categorias/${id}`, {
       method: "PUT",
@@ -96,8 +97,8 @@ export async function actualizarCategoria(id: string, data: Partial<CategoriaDat
     });
 
     if (!response.ok) {
-      const errorData = await response.json().catch(() => null);
-      throw new Error(errorData?.detail || "Error al actualizar categoría");
+      const err = await response.json().catch(() => null);
+      throw new Error(err?.detail || "Error al actualizar categoría");
     }
 
     return await response.json();
@@ -108,10 +109,9 @@ export async function actualizarCategoria(id: string, data: Partial<CategoriaDat
   }
 }
 
-
-/* ============================================
+/* ============================
    ELIMINAR CATEGORIA
-============================================ */
+============================= */
 export async function eliminarCategoria(id: number) {
   try {
     const response = await fetch(`${API_URL}/categorias/${id}`, {
@@ -120,8 +120,8 @@ export async function eliminarCategoria(id: number) {
     });
 
     if (!response.ok) {
-      const errorData = await response.json().catch(() => null);
-      throw new Error(errorData?.detail || "Error al eliminar categoría");
+      const err = await response.json().catch(() => null);
+      throw new Error(err?.detail || "Error al eliminar categoría");
     }
 
     return true;

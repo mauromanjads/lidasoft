@@ -2,19 +2,22 @@
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from sqlalchemy.orm import Session
-from sqlalchemy import or_
 from app.database import get_db
-from app.models.categorias import Categoria  
-from app.schemas.categorias_schema import CategoriaCreate, CategoriaResponse
-from datetime import datetime, timezone
+from app.models.categorias import Categoria
+from app.schemas.categorias_schema import (
+    CategoriaCreate,
+    CategoriaUpdate,
+    CategoriaResponse
+)
 
 router = APIRouter(prefix="/categorias", tags=["categorias"])
 
+
 # ------------------------------------------------------------
-# 👉 Crear categoría (validando que NO exista el nombre)
+# 👉 Crear categoría
 # ------------------------------------------------------------
 @router.post("/", response_model=CategoriaResponse)
-def crear_categoria(    
+def crear_categoria(
     categoria: CategoriaCreate,
     db: Session = Depends(get_db)
 ):
@@ -25,9 +28,7 @@ def crear_categoria(
     if existe:
         raise HTTPException(status_code=409, detail="La categoría ya existe")
 
-    db_cat = Categoria(
-        **categoria.model_dump()
-    )
+    db_cat = Categoria(**categoria.model_dump())
 
     db.add(db_cat)
     db.commit()
@@ -76,23 +77,21 @@ def obtener_categoria(categoria_id: int, db: Session = Depends(get_db)):
 
 
 # ------------------------------------------------------------
-# 👉 Actualizar
+# 👉 Actualizar categoría
 # ------------------------------------------------------------
 @router.put("/{categoria_id}", response_model=CategoriaResponse)
 def actualizar_categoria(
-    request: Request,
     categoria_id: int,
-    categoria_data: CategoriaCreate,
+    categoria_data: CategoriaUpdate,
     db: Session = Depends(get_db)
 ):
-    try:
-        usuario_logueado = request.cookies.get("usuario")
-        categoria = db.query(Categoria).filter(Categoria.id == categoria_id).first()
+    categoria = db.query(Categoria).filter(Categoria.id == categoria_id).first()
 
-        if not categoria:
-            raise HTTPException(status_code=404, detail="Categoría no existe")
+    if not categoria:
+        raise HTTPException(status_code=404, detail="Categoría no existe")
 
-        # Validar duplicado excepto la misma categoría
+    # Validar duplicado solo si se envía nombre
+    if categoria_data.nombre:
         existe = db.query(Categoria).filter(
             Categoria.nombre.ilike(categoria_data.nombre),
             Categoria.id != categoria_id
@@ -101,16 +100,13 @@ def actualizar_categoria(
         if existe:
             raise HTTPException(status_code=409, detail="Otra categoría ya tiene ese nombre")
 
-        for key, value in categoria_data.model_dump().items():
-            setattr(categoria, key, value)        
+    # Actualizar solo los campos enviados
+    for key, value in categoria_data.model_dump(exclude_unset=True).items():
+        setattr(categoria, key, value)
 
-        db.commit()
-        db.refresh(categoria)
-        return categoria
-
-    except Exception as e:
-        print("❌ ERROR EN ENDPOINT:", e)
-        raise HTTPException(status_code=500, detail=str(e))
+    db.commit()
+    db.refresh(categoria)
+    return categoria
 
 
 # ------------------------------------------------------------
