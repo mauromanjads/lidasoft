@@ -10,6 +10,8 @@ import SelectGeneros from "@/components/ui/selects/GeneroSelect";
 import SelectRegimenes from "@/components/ui/selects/RegimenesSelect";
 import { guardarTercero,actualizarTercero } from "@/lib/api/terceros";
 import { usePathname } from "next/navigation";
+import Swal from "sweetalert2";
+import { useParams } from "next/navigation";
 
 interface TerceroFormProps {
   tercero?: {
@@ -100,6 +102,7 @@ interface TerceroFormProps {
   onClose?: () => void;
   onSaved?: () => void;  
 }
+
 
 export default function TerceroForm({tercero, onClose,onSaved }: TerceroFormProps) {  
   
@@ -232,7 +235,7 @@ export default function TerceroForm({tercero, onClose,onSaved }: TerceroFormProp
         [target.name]: val,
       }));
     };
-
+   const params = useParams();       // 👈 aquí 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -253,6 +256,32 @@ export default function TerceroForm({tercero, onClose,onSaved }: TerceroFormProp
       
       if (onClose) onClose();  
       if (onSaved) onSaved();
+
+      
+      const tipoTerceroRaw = params?.tipo;
+      
+        // Garantizamos que sea string
+        const tipoT = Array.isArray(tipoTerceroRaw)
+          ? tipoTerceroRaw[0]
+          : tipoTerceroRaw || "";
+      
+        const labels: Record<string, string> = {
+        clientes: "Cliente",
+        proveedores: "Proveedor",
+        vendedores: "Vendedor",
+      };
+      const label = labels[tipoT] || "Tercero";
+      const mensaje = tercero ? `${label} actualizado`  : `${label} creado correctamente`
+      
+            Swal.fire({
+              title: "¡Listo!",
+              text: mensaje,
+              icon: "success",
+              confirmButtonText: "Aceptar",
+              timer: 4000,
+              timerProgressBar: true,
+            });
+
     } catch (err:any) {
       console.error(err);
       const mensajeError =
@@ -261,6 +290,17 @@ export default function TerceroForm({tercero, onClose,onSaved }: TerceroFormProp
         err.message ||
         "Error desconocido";
       setError(mensajeError);
+
+       Swal.fire({
+              title: "Oops...!",
+              text: mensajeError.message,
+              icon: "error",
+              confirmButtonText: "Entendido",
+              timer: 4000,
+              timerProgressBar: true,
+            });
+      
+
     } finally {
       setLoading(false);
     }

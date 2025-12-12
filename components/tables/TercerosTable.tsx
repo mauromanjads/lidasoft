@@ -156,6 +156,7 @@ export default function TercerosTable({ terceros, onEdit, onDelete,onSaved }: Pr
 const labels: Record<string, string> = {
   clientes: "Cliente",
   proveedores: "Proveedor",
+  vendedores: "Vendedor",
 };
   const label = labels[tipoTercero] || "Tercero";
   const titulo = terceroEdit
