@@ -2,8 +2,11 @@
 
 import React, { useState, useEffect } from "react";
 import Input from "./input";
-import SelectSearch from "./selectSearch";
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
 import { obtenerProductosActivos, listarPresentaciones } from "@/lib/api/productos";
+
+const ReactSwal = withReactContent(Swal);
 
 interface Producto {
   id: number;
@@ -13,7 +16,7 @@ interface Producto {
 }
 
 interface Presentacion {
-  id: number;  
+  id: number;
   tipo_presentacion: string;
   cantidad_equivalente: number;
   precio_venta: number;
@@ -27,7 +30,7 @@ interface Props {
     presentacion_id: number;
     descripcion: string;
     precio_unitario: number;
-    presentacion_nombre: string,
+    presentacion_nombre: string;
   }) => void;
   placeholder?: string;
 }
@@ -39,18 +42,15 @@ const ProductWithPresentation: React.FC<Props> = ({
   placeholder,
 }) => {
   const [productos, setProductos] = useState<Producto[]>([]);
-  const [presentaciones, setPresentaciones] = useState<Presentacion[]>([]);
   const [productoSeleccionado, setProductoSeleccionado] = useState<Producto | null>(null);
-  const [presentacionSeleccionada, setPresentacionSeleccionada] = useState<Presentacion | null>(null);
   const [query, setQuery] = useState("");
 
-  // Cargar productos activos
   useEffect(() => {
     async function loadProductos() {
       try {
         const prodsRaw = await obtenerProductosActivos();
         const prods: Producto[] = prodsRaw
-          .filter(p => p.id != null) // eliminar productos sin id
+          .filter(p => p.id != null)
           .map(p => ({
             id: p.id!,
             nombre: p.nombre || "",
@@ -59,7 +59,6 @@ const ProductWithPresentation: React.FC<Props> = ({
           }));
         setProductos(prods);
 
-        // Preseleccionar producto si valueProductoId existe
         if (valueProductoId) {
           const prod = prods.find(p => p.id === valueProductoId) || null;
           setProductoSeleccionado(prod);
@@ -71,53 +70,63 @@ const ProductWithPresentation: React.FC<Props> = ({
     loadProductos();
   }, [valueProductoId]);
 
-  // Cargar presentaciones solo si hay producto seleccionado
-  useEffect(() => {
-    async function loadPresentaciones() {
-      if (!productoSeleccionado?.id) {
-        setPresentaciones([]);
-        setPresentacionSeleccionada(null);
-        return;
-      }
+  // Función para abrir modal de presentaciones
+  const abrirModalPresentaciones = async (producto: Producto) => {
+    try {
+      const presRaw = await listarPresentaciones(producto.id);
+      const presentaciones: Presentacion[] = presRaw
+        .filter(p => p.id != null)
+        .map(p => ({
+          id: p.id!,
+          tipo_presentacion: p.tipo_presentacion || "",
+          cantidad_equivalente: p.cantidad_equivalente ?? 1,
+          precio_venta: p.precio_venta ?? 0,
+        }));
 
-      try {
-        const presRaw = await listarPresentaciones(productoSeleccionado.id);
-        const pres: Presentacion[] = presRaw
-          .filter(p => p.id != null)
-          .map(p => ({
-            id: p.id!,            
-            cantidad_equivalente: p.cantidad_equivalente ?? 1,
-            precio_venta: p.precio_venta ?? 0,
-             tipo_presentacion: p.tipo_presentacion || "",
-          }));
-        setPresentaciones(pres);
+      if (presentaciones.length === 0) return;
 
-        // Preseleccionar presentación si valuePresentacionId existe
-        if (valuePresentacionId) {
-          const presSel = pres.find(p => p.id === valuePresentacionId) || null;
-          setPresentacionSeleccionada(presSel);
-        } else {
-          setPresentacionSeleccionada(null);
-        }
-      } catch (err) {
-        console.error("Error cargando presentaciones:", err);
-      }
-    }
-    loadPresentaciones();
-  }, [productoSeleccionado, valuePresentacionId]);
-
-  // Llamar onSelect cuando haya producto y presentación seleccionados
-  useEffect(() => {
-    if (productoSeleccionado && presentacionSeleccionada) {
-      onSelect({
-        producto_id: productoSeleccionado.id,
-        presentacion_id: presentacionSeleccionada.id,
-        descripcion: `${productoSeleccionado.nombre} - ${presentacionSeleccionada.tipo_presentacion}`,
-        precio_unitario: presentacionSeleccionada.precio_venta,
-        presentacion_nombre: presentacionSeleccionada.tipo_presentacion, // ⭐ agregado
+      // Modal SweetAlert2
+      ReactSwal.fire({
+        title: <p>Selecciona la presentación</p>,
+        html: (
+          <div>
+            {presentaciones.map((p) => (
+              <button
+                key={p.id}
+                style={{
+                  width: "100%",
+                  padding: "10px",
+                  margin: "5px 0",
+                  borderRadius: "8px",
+                  border: "1px solid #ddd",
+                  cursor: "pointer",
+                }}
+                onClick={() => {
+                  ReactSwal.close();
+                  onSelect({
+                    producto_id: producto.id,
+                    presentacion_id: p.id,
+                    descripcion: `${producto.nombre} - ${p.tipo_presentacion}`,
+                    precio_unitario: p.precio_venta,
+                    presentacion_nombre: p.tipo_presentacion,
+                  });
+                }}
+              >
+                <div style={{ display: "flex", justifyContent: "space-between" }}>
+                  <span>{p.tipo_presentacion}</span>
+                  <strong>${p.precio_venta.toLocaleString()}</strong>
+                </div>
+              </button>
+            ))}
+          </div>
+        ),
+        showConfirmButton: false,
+        width: 400,
       });
+    } catch (err) {
+      console.error("Error cargando presentaciones:", err);
     }
-  }, [productoSeleccionado, presentacionSeleccionada]);
+  };
 
   // Filtrar productos por búsqueda
   const filteredProducts = query
@@ -137,7 +146,6 @@ const ProductWithPresentation: React.FC<Props> = ({
         onChange={(e) => {
           setQuery(e.target.value);
           setProductoSeleccionado(null);
-          setPresentacionSeleccionada(null);
         }}
         onFocus={() => setQuery(query)}
         className="w-full border rounded p-2"
@@ -148,27 +156,16 @@ const ProductWithPresentation: React.FC<Props> = ({
             <li
               key={p.id}
               className="p-2 hover:bg-gray-100 cursor-pointer"
-              onClick={() => setProductoSeleccionado(p)}
+              onClick={() => {
+                setProductoSeleccionado(p);
+                setQuery(""); // limpia búsqueda
+                abrirModalPresentaciones(p); // abrir modal automáticamente
+              }}
             >
               {p.nombre} ({p.codigo})
             </li>
           ))}
         </ul>
-      )}
-
-      {/* Select de presentaciones */}
-      {productoSeleccionado && presentaciones.length > 0 && (
-        <SelectSearch
-          items={presentaciones.map((pres) => ({
-            id: pres.id,
-            nombre: `${pres.tipo_presentacion} - ${pres.precio_venta.toFixed(2)}`,
-          }))}
-          value={presentacionSeleccionada?.id || 0}
-          onChange={(id) => {
-            const pres = presentaciones.find((p) => p.id === id);
-            if (pres) setPresentacionSeleccionada(pres);
-          }}
-        />
       )}
     </div>
   );
