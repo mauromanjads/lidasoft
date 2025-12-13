@@ -1,4 +1,4 @@
-import { Producto, ProductoPresentacion, UnidadMedida, Categoria } from "@/app/types";
+import { Producto, ProductoPresentacion, UnidadMedida, Categoria, ProductoVariante } from "@/app/types";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -67,6 +67,45 @@ export const actualizarPresentacion = (
 export const listarPresentaciones = (producto_id: number): Promise<ProductoPresentacion[]> => {
   return fetchAPI<ProductoPresentacion[]>(`${API_URL}/productos/${producto_id}/presentaciones`);
 };
+
+
+// ===================== VARIANTES =====================
+export const crearVariante = (
+  producto_id: number,
+  data: Partial<ProductoVariante>
+): Promise<ProductoVariante> => {
+  return fetchAPI<ProductoVariante>(`${API_URL}/productos/${producto_id}/variantes`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ ...data }),
+  });
+};
+
+export const actualizarVariante = (
+  variante_id: number,
+  data: Partial<ProductoVariante>
+): Promise<ProductoVariante> => {
+  return fetchAPI<ProductoVariante>(`${API_URL}/productos/variantes/${variante_id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+};
+
+export const listarVariantes = (producto_id: number): Promise<ProductoVariante[]> => {
+  return fetchAPI<ProductoVariante[]>(`${API_URL}/productos/${producto_id}/variantes`);
+};
+
+export const obtenerVariante = (variante_id: number): Promise<ProductoVariante> => {
+  return fetchAPI<ProductoVariante>(`${API_URL}/productos/variantes/${variante_id}`);
+};
+
+export const eliminarVariante = (variante_id: number): Promise<{ message: string }> => {
+  return fetchAPI<{ message: string }>(`${API_URL}/productos/variantes/${variante_id}`, {
+    method: "DELETE",
+  });
+};
+
 
 // ===================== UNIDADES DE MEDIDA =====================
 export const obtenerUnidades = (): Promise<UnidadMedida[]> => {

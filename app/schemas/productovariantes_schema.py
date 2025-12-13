@@ -8,6 +8,7 @@ from datetime import datetime
 # -----------------------------
 class ProductoVarianteBase(BaseModel):
     producto_id: int
+    sku: str
     parametros: Optional[Dict[str, Any]] = Field(default_factory=dict)  # campo: valor
     precio_venta: float = 0
     precio_compra: float = 0
@@ -23,6 +24,7 @@ class ProductoVarianteCreate(ProductoVarianteBase):
 # Actualizar Variante
 # -----------------------------
 class ProductoVarianteUpdate(BaseModel):
+    sku: Optional[str] = None
     parametros: Optional[Dict[str, Any]] = None
     precio_venta: Optional[float] = None
     precio_compra: Optional[float] = None
@@ -33,8 +35,8 @@ class ProductoVarianteUpdate(BaseModel):
 # -----------------------------
 class ProductoVarianteResponse(ProductoVarianteBase):
     id: int
-    creado: datetime
-    actualizado: datetime
+    created_at: datetime
+    updated_at: datetime
 
     class Config:
         from_attributes = True  # pydantic v2

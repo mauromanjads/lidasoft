@@ -44,3 +44,19 @@ export interface ProductoPresentacion {
 export interface ProductoConPresentaciones extends Producto {
   presentaciones: ProductoPresentacion[];
 }
+
+// ===================== VARIANTES =====================
+export interface ProductoVariante {
+  id?: number; // opcional en creación
+  producto_id: number;
+  sku: string; // SKU único
+  parametros?: Record<string, any>; // campo: valor
+  precio_venta?: number;
+  precio_compra?: number;
+  activo?: boolean;
+}
+
+// ===================== PRODUCTO + VARIANTES =====================
+export interface ProductoConVariantes extends Producto {
+  variantes: ProductoVariante[];
+}
