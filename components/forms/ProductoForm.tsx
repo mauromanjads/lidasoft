@@ -518,106 +518,104 @@ export default function ProductoForm({
 
        {/* === TAB PRESENTACIONES === */}
        {activeTab === "presentaciones" && (
-        <div>
-         
-          {presentaciones.map((pres, index) => (
-            <div key={index} className="border rounded p-2 space-y-2 bg-gray-50">
+       <div className="flex flex-col max-h-[500px]"> 
+  {/* Contenedor principal con flex-col */}
 
-              <div className="grid grid-cols-1 md:grid-cols-6 gap-2 text-sm"> 
+  <div className="overflow-y-auto pr-2 space-y-2">
+    {presentaciones.map((pres, index) => (
+      <div key={index} className="border rounded p-2 bg-gray-50">
+        <div className="grid grid-cols-1 md:grid-cols-6 gap-2 text-sm">
+          <div className="flex flex-col w-full">
+            <label className="text-sm font-semibold mb-1 text-gray-700">
+              Presentación:
+            </label>
+            <Input
+              required
+              className="border p-1.5 rounded"
+              value={pres.tipo_presentacion}
+              onChange={(e) =>
+                handlePresentacionChange(index, "tipo_presentacion", e.target.value)
+              }
+            />
+          </div>
 
-                  <div className="flex flex-col w-full">  
-                      <label className="text-sm font-semibold mb-1 text-gray-700">
-                        Presentación:
-                      </label>
-                      <Input
-                      required
-                        className="border p-1.5 rounded"
-                        value={pres.tipo_presentacion}
-                        onChange={(e) =>
-                          handlePresentacionChange(index, "tipo_presentacion", e.target.value)
-                        }
-                      />
-                  </div>
+          <div className="flex flex-col w-full">
+            <label className="text-sm font-semibold mb-1 text-gray-700">
+              Equivalencia:
+            </label>
+            <Input
+              required
+              type="number"
+              className="border p-1.5 rounded"
+              value={pres.cantidad_equivalente}
+              onChange={(e) =>
+                handlePresentacionChange(index, "cantidad_equivalente", Number(e.target.value))
+              }
+            />
+          </div>
 
-                  <div className="flex flex-col w-full">
-                    <label className="text-sm font-semibold mb-1 text-gray-700">
-                      Equivalencia:
-                    </label>
-                    <Input
-                      required
-                      type="number"
-                      className="border p-1.5 rounded"
-                      value={pres.cantidad_equivalente}
-                      onChange={(e) =>
-                        handlePresentacionChange(index, "cantidad_equivalente", Number(e.target.value))
-                      }
-                    />
-                  </div>
+          <div className="flex flex-col w-full">
+            <label className="text-sm font-semibold mb-1 text-gray-700">
+              Unidad de Medida:
+            </label>
+            <SelectSearch
+              items={unidades}
+              value={presentaciones[index].unidad_medida_id}
+              onChange={(newValue) =>
+                handlePresentacionChange(index, "unidad_medida_id", Number(newValue))
+              }
+            />
+          </div>
 
-                  <div className="flex flex-col w-full">
-                    <label className="text-sm font-semibold mb-1 text-gray-700">
-                      Unidad de Medida:
-                    </label>
-                    <SelectSearch
-                      items={unidades}
-                      value={presentaciones[index].unidad_medida_id}
-                      onChange={(newValue) =>
-                        handlePresentacionChange(index, "unidad_medida_id", Number(newValue))
-                      }
-                    />
-                  </div>
+          <div className="flex flex-col w-full">
+            <label className="text-sm font-semibold mb-1 text-gray-700">
+              Precio Venta:
+            </label>
+            <CurrencyInput
+              className="border p-1.5 rounded"
+              value={pres.precio_venta}
+              onChange={(val) =>
+                handlePresentacionChange(index, "precio_venta", val)
+              }
+            />
+          </div>
 
-                  <div className="flex flex-col w-full">
-                    <label className="text-sm font-semibold mb-1 text-gray-700">
-                      Precio Venta:
-                    </label>
-                    <CurrencyInput                      
-                      className="border p-1.5 rounded"
-                      value={pres.precio_venta}
-                      onChange={(val) =>
-                        handlePresentacionChange(index, "precio_venta", val)
-                      }
-                    />
-                  </div>
+          <div className="flex flex-col w-full">
+            <label className="text-sm font-semibold mb-1 text-gray-700">
+              Precio Compra:
+            </label>
+            <CurrencyInput
+              className="border p-1.5 rounded"
+              value={pres.precio_compra}
+              onChange={(val) =>
+                handlePresentacionChange(index, "precio_compra", val)
+              }
+            />
+          </div>
 
-                  <div className="flex flex-col w-full">
-                    <label className="text-sm font-semibold mb-1 text-gray-700">
-                      Precio Compra:
-                    </label>
-                    <CurrencyInput
-                      className="border p-1.5 rounded"
-                      value={pres.precio_compra}
-                      onChange={(val) =>
-                        handlePresentacionChange(index, "precio_compra", val)
-                      }
-                    />
-                  </div>
-
-                  <div className="flex justify-between items-center mb-2">
-                  <button
-                    type="button"
-                    onClick={() => eliminarPresentacionForm(index)}
-                    className="text-red-600 text-sm hover:underline"
-                  >
-                    ❌
-                  </button>
-                </div>
-
-              
-              </div>
-            </div>
-          ))}
-
-          <Buttonsec
-            type="button"
-            onClick={agregarPresentacion}            
-          >
-              
-              <img src="/icons/plus.png" alt="Pdf" className="w-6 h-6" />
-              <span>Agregar Presentación</span>
-             
-          </Buttonsec>
+          <div className="flex justify-between items-center mb-2">
+            <button
+              type="button"
+              onClick={() => eliminarPresentacionForm(index)}
+              className="text-red-600 text-sm hover:underline"
+            >
+              ❌
+            </button>
+          </div>
         </div>
+      </div>
+    ))}
+  </div>
+
+  {/* Botón fijo debajo */}
+  <div className="mt-2">
+    <Buttonsec type="button" onClick={agregarPresentacion}>
+      <img src="/icons/plus.png" alt="Agregar" className="w-6 h-6" />
+      <span>Agregar Presentación</span>
+    </Buttonsec>
+  </div>
+        </div>
+
        )}
 
       {/* ⚠️ ERRORES */}
