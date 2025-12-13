@@ -1,0 +1,78 @@
+# app/routers/productos_variantes.py
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.orm import Session
+from app.database import SessionLocal
+
+from app.schemas.productovariantes_schema import (
+    ProductoVarianteCreate,
+    ProductoVarianteUpdate,
+    ProductoVarianteResponse
+)
+from app.models.producto_variantes import ProductoVariante
+
+router = APIRouter(prefix="/productos", tags=["Productos - Variantes"])
+
+# -----------------------------
+# Dependencia de DB
+# -----------------------------
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+# 🔥 LISTAR variantes de un producto
+@router.get("/{producto_id}/variantes", response_model=list[ProductoVarianteResponse])
+def listar_variantes_producto(producto_id: int, db: Session = Depends(get_db)):
+    return (
+        db.query(ProductoVariante)
+        .filter(ProductoVariante.producto_id == producto_id)
+        .order_by(ProductoVariante.id.asc())
+        .all()
+    )
+
+# 🔥 CREAR variante
+@router.post("/{producto_id}/variantes", response_model=ProductoVarianteResponse)
+def crear_variante(producto_id: int, data: ProductoVarianteCreate, db: Session = Depends(get_db)):
+    nueva = ProductoVariante(
+        producto_id=producto_id,
+        **data.model_dump()
+    )
+    db.add(nueva)
+    db.commit()
+    db.refresh(nueva)
+    return nueva
+
+# 🔥 OBTENER una variante por ID
+@router.get("/variantes/{id}", response_model=ProductoVarianteResponse)
+def obtener_variante(id: int, db: Session = Depends(get_db)):
+    variante = db.query(ProductoVariante).filter(ProductoVariante.id == id).first()
+    if not variante:
+        raise HTTPException(status_code=404, detail="Variante no encontrada")
+    return variante
+
+# 🔥 ACTUALIZAR variante
+@router.put("/variantes/{id}", response_model=ProductoVarianteResponse)
+def actualizar_variante(id: int, data: ProductoVarianteUpdate, db: Session = Depends(get_db)):
+    variante = db.query(ProductoVariante).filter(ProductoVariante.id == id).first()
+    if not variante:
+        raise HTTPException(status_code=404, detail="Variante no encontrada")
+
+    for k, v in data.model_dump(exclude_unset=True).items():
+        setattr(variante, k, v)
+
+    db.commit()
+    db.refresh(variante)
+    return variante
+
+# 🔥 ELIMINAR variante
+@router.delete("/variantes/{id}")
+def eliminar_variante(id: int, db: Session = Depends(get_db)):
+    variante = db.query(ProductoVariante).filter(ProductoVariante.id == id).first()
+    if not variante:
+        raise HTTPException(status_code=404, detail="Variante no encontrada")
+
+    db.delete(variante)
+    db.commit()
+    return {"mensaje": "Variante eliminada"}
