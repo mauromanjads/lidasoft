@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Button from "@/components/ui/button";
+import Buttonsec from "@/components/ui/buttonsec";
 import Input from "@/components/ui/input";
 import Swal from "sweetalert2";
 import { guardarCategoria, actualizarCategoria } from "@/lib/api/categorias";
@@ -244,30 +245,19 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 
   {/* Add button */}
   <div className="mt-4">
-      <button
-  type="button"
-  onClick={() =>
-    setParametros((prev) => [
-      ...prev,
-      { nombre: "", tipo: "string" },
-    ])
-  }
-  className="
-    inline-flex items-center gap-2
-    px-4 py-2
-    text-sm font-medium
-    text-white
-    bg-green-600
-    rounded-lg
-    shadow-sm
-    hover:bg-green-700
-    focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2
-    transition-colors
-  "
->
-  <span className="text-base leading-none">+</span>
-  Agregar
-</button>
+      <Buttonsec
+          type="button"
+          onClick={() =>
+            setParametros((prev) => [
+              ...prev,
+              { nombre: "", tipo: "string" },
+            ])
+          }
+         
+        >
+          <span className="text-base leading-none">+</span>
+          Agregar
+      </Buttonsec>
   </div>
           </div>
 

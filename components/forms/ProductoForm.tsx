@@ -1,6 +1,7 @@
 "use client";
 
 import Button from "@/components/ui/button";
+import Buttonsec from "@/components/ui/buttonsec";
 import Input from "@/components/ui/input";
 import CurrencyInput from "@/components/ui/currencyInput";
 import Swal from "sweetalert2";
@@ -607,16 +608,15 @@ export default function ProductoForm({
             </div>
           ))}
 
-          <Button
+          <Buttonsec
             type="button"
-            onClick={agregarPresentacion}
-            className="text-green-600 text-sm"
+            onClick={agregarPresentacion}            
           >
-              <div className="flex items-center gap-2">
+              
               <img src="/icons/plus.png" alt="Pdf" className="w-6 h-6" />
               <span>Agregar Presentación</span>
-            </div> 
-          </Button>
+             
+          </Buttonsec>
         </div>
        )}
 
