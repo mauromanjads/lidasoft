@@ -159,12 +159,7 @@ export default function CategoriasTable({ categorias, onEdit, onDelete,onSaved }
             </h2>
 
             <CategoriaForm
-                categoria={categoriaEdit}
-                onSubmit={async (data) => {
-                  console.log("Datos de la categoria:", data);  
-                  setIsOpen(false);
-                  setCategoriaEdit(null);   // 👈 también al guardar
-                }}
+                categoria={categoriaEdit}                
                 onClose={() => {
                   setIsOpen(false);
                   setCategoriaEdit(null);
