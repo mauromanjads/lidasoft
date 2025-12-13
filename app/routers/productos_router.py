@@ -4,6 +4,7 @@ from app.database import SessionLocal
 
 from app.schemas.productos_schema import ProductoCreate, ProductoUpdate, ProductoOut
 from app.models.productos import Producto
+from sqlalchemy.orm import joinedload
 
 router = APIRouter(prefix="/productos", tags=["Productos"])
 
@@ -15,8 +16,14 @@ def get_db():
         db.close()
 
 @router.get("/", response_model=list[ProductoOut])
+
 def listar_productos(db: Session = Depends(get_db)):
-    return db.query(Producto).order_by(Producto.nombre.asc()).all()
+    return (
+        db.query(Producto)
+        .options(joinedload(Producto.categoria))
+        .order_by(Producto.nombre.asc())
+        .all()
+    )
 
 
 @router.post("/", response_model=ProductoOut)

@@ -1,5 +1,7 @@
 from pydantic import BaseModel
-from typing import Optional, List
+from typing import Optional
+from app.schemas.categorias_schema import CategoriaResponse
+
 
 class ProductoBase(BaseModel):
     codigo: str
@@ -22,5 +24,7 @@ class ProductoUpdate(ProductoBase):
 class ProductoOut(ProductoBase):
     id: int
 
+    categoria: Optional[CategoriaResponse]
+    
     class Config:
         from_attributes = True

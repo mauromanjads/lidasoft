@@ -24,6 +24,8 @@ interface Producto {
   nombre: string;
   descripcion?: string;
   activo: boolean;
+  categoria?: Categoria; // 👈 objeto
+
 }
 
 
@@ -33,6 +35,12 @@ interface Props {
   onDelete?: (id: number) => void;
   onSaved?: () => void; 
 }
+
+export interface Categoria {
+  id: number;
+  nombre: string;
+}
+
 
 export default function ProductoTable({ productos, onEdit, onDelete,onSaved }: Props) {
   const [filter, setFilter] = useState("");
@@ -47,7 +55,11 @@ export default function ProductoTable({ productos, onEdit, onDelete,onSaved }: P
   const columns = useMemo<ColumnDef<Producto>[]>(() => [    
     { accessorKey: "codigo", header: "Código" },
     { accessorKey: "nombre", header: "Nombre" },
-    { accessorKey: "descripcion", header: "Descripción" },    
+    { accessorKey: "descripcion", header: "Descripción" },
+    {
+      header: "Categoría",
+      accessorFn: (row) => row.categoria?.nombre ?? "-"
+    },        
     {
       accessorKey: "activo",
       header: "Activo",

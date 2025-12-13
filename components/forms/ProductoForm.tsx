@@ -37,6 +37,15 @@ interface ProductoFormProps {
   onClose?: () => void;
 }
 
+interface VarianteForm {
+    id?: number | null;
+    sku: string;
+    parametros: Record<string, any>; // campo: valor
+    precio_venta: number;
+    precio_compra: number;
+    activo: boolean;
+  }
+
 export default function ProductoForm({
   producto,
   onSubmit,
@@ -319,8 +328,35 @@ export default function ProductoForm({
     }
   }
 
+  const [variantes, setVariantes] = useState<VarianteForm[]>([
+    { id: null, sku: "", parametros: {}, precio_venta: 0, precio_compra: 0, activo: true }
+  ]);
 
-    return (
+  // Agregar variante
+  const agregarVariante = () => {
+    setVariantes([
+      ...variantes,
+      { sku: "", parametros: {}, precio_venta: 0, precio_compra: 0, activo: true }
+    ]);
+  };
+
+  // Eliminar variante
+  const eliminarVariante = (index: number) => {
+    setVariantes(variantes.filter((_, i) => i !== index));
+  };
+
+  // Manejar cambio
+  const handleVarianteChange = <K extends keyof VarianteForm>(
+    index: number,
+    field: K,
+    value: VarianteForm[K]
+  ) => {
+    setVariantes((prev) =>
+      prev.map((v, i) => (i === index ? { ...v, [field]: value } : v))
+    );
+  };
+
+   return (
   <form
     onSubmit={handleSubmit}
     className="p-2 border rounded-md space-y-3 text-sm max-w-5xl mx-auto"
@@ -356,6 +392,21 @@ export default function ProductoForm({
             >
           ⚖️ Presentaciones
         </button>
+
+        <button
+              type="button"
+              onClick={() => setActiveTab("variantes")}
+              className={`
+                flex items-center gap-2 px-4 py-2 text-sm font-medium
+                transition-colors relative
+                ${activeTab === "variantes"
+                  ? "text-[#1d4e89] border-b-2 border-[#1d4e89] font-semibold"
+                  : "text-gray-600 hover:text-[#1d4e89]"}
+              `}
+            >
+          🎨 Variantes
+        </button>
+
       </div>
 
        {/* === TAB PRODUCTO === */}
@@ -519,104 +570,211 @@ export default function ProductoForm({
        {/* === TAB PRESENTACIONES === */}
        {activeTab === "presentaciones" && (
        <div className="flex flex-col max-h-[500px]"> 
-  {/* Contenedor principal con flex-col */}
+       {/* Contenedor principal con flex-col */}
 
-  <div className="overflow-y-auto pr-2 space-y-2">
-    {presentaciones.map((pres, index) => (
-      <div key={index} className="border rounded p-2 bg-gray-50">
-        <div className="grid grid-cols-1 md:grid-cols-6 gap-2 text-sm">
-          <div className="flex flex-col w-full">
-            <label className="text-sm font-semibold mb-1 text-gray-700">
-              Presentación:
-            </label>
-            <Input
-              required
-              className="border p-1.5 rounded"
-              value={pres.tipo_presentacion}
-              onChange={(e) =>
-                handlePresentacionChange(index, "tipo_presentacion", e.target.value)
-              }
-            />
-          </div>
+      <div className="overflow-y-auto pr-2 space-y-2">
+        {presentaciones.map((pres, index) => (
+          <div key={index} className="border rounded p-2 bg-gray-50">
+            <div className="grid grid-cols-1 md:grid-cols-6 gap-2 text-sm">
+              <div className="flex flex-col w-full">
+                <label className="text-sm font-semibold mb-1 text-gray-700">
+                  Presentación:
+                </label>
+                <Input
+                  required
+                  className="border p-1.5 rounded"
+                  value={pres.tipo_presentacion}
+                  onChange={(e) =>
+                    handlePresentacionChange(index, "tipo_presentacion", e.target.value)
+                  }
+                />
+              </div>
 
-          <div className="flex flex-col w-full">
-            <label className="text-sm font-semibold mb-1 text-gray-700">
-              Equivalencia:
-            </label>
-            <Input
-              required
-              type="number"
-              className="border p-1.5 rounded"
-              value={pres.cantidad_equivalente}
-              onChange={(e) =>
-                handlePresentacionChange(index, "cantidad_equivalente", Number(e.target.value))
-              }
-            />
-          </div>
+              <div className="flex flex-col w-full">
+                <label className="text-sm font-semibold mb-1 text-gray-700">
+                  Equivalencia:
+                </label>
+                <Input
+                  required
+                  type="number"
+                  className="border p-1.5 rounded"
+                  value={pres.cantidad_equivalente}
+                  onChange={(e) =>
+                    handlePresentacionChange(index, "cantidad_equivalente", Number(e.target.value))
+                  }
+                />
+              </div>
 
-          <div className="flex flex-col w-full">
-            <label className="text-sm font-semibold mb-1 text-gray-700">
-              Unidad de Medida:
-            </label>
-            <SelectSearch
-              items={unidades}
-              value={presentaciones[index].unidad_medida_id}
-              onChange={(newValue) =>
-                handlePresentacionChange(index, "unidad_medida_id", Number(newValue))
-              }
-            />
-          </div>
+              <div className="flex flex-col w-full">
+                <label className="text-sm font-semibold mb-1 text-gray-700">
+                  Unidad de Medida:
+                </label>
+                <SelectSearch
+                  items={unidades}
+                  value={presentaciones[index].unidad_medida_id}
+                  onChange={(newValue) =>
+                    handlePresentacionChange(index, "unidad_medida_id", Number(newValue))
+                  }
+                />
+              </div>
 
-          <div className="flex flex-col w-full">
-            <label className="text-sm font-semibold mb-1 text-gray-700">
-              Precio Venta:
-            </label>
-            <CurrencyInput
-              className="border p-1.5 rounded"
-              value={pres.precio_venta}
-              onChange={(val) =>
-                handlePresentacionChange(index, "precio_venta", val)
-              }
-            />
-          </div>
+              <div className="flex flex-col w-full">
+                <label className="text-sm font-semibold mb-1 text-gray-700">
+                  Precio Venta:
+                </label>
+                <CurrencyInput
+                  className="border p-1.5 rounded"
+                  value={pres.precio_venta}
+                  onChange={(val) =>
+                    handlePresentacionChange(index, "precio_venta", val)
+                  }
+                />
+              </div>
 
-          <div className="flex flex-col w-full">
-            <label className="text-sm font-semibold mb-1 text-gray-700">
-              Precio Compra:
-            </label>
-            <CurrencyInput
-              className="border p-1.5 rounded"
-              value={pres.precio_compra}
-              onChange={(val) =>
-                handlePresentacionChange(index, "precio_compra", val)
-              }
-            />
-          </div>
+              <div className="flex flex-col w-full">
+                <label className="text-sm font-semibold mb-1 text-gray-700">
+                  Precio Compra:
+                </label>
+                <CurrencyInput
+                  className="border p-1.5 rounded"
+                  value={pres.precio_compra}
+                  onChange={(val) =>
+                    handlePresentacionChange(index, "precio_compra", val)
+                  }
+                />
+              </div>
 
-          <div className="flex justify-between items-center mb-2">
-            <button
-              type="button"
-              onClick={() => eliminarPresentacionForm(index)}
-              className="text-red-600 text-sm hover:underline"
-            >
-              ❌
-            </button>
+              <div className="flex justify-between items-center mb-2">
+                <button
+                  type="button"
+                  onClick={() => eliminarPresentacionForm(index)}
+                  className="text-red-600 text-sm hover:underline"
+                >
+                  ❌
+                </button>
+              </div>
+            </div>
           </div>
+        ))}
+      </div>
+
+        {/* Botón fijo debajo */}
+        <div className="mt-2">
+          <Buttonsec type="button" onClick={agregarPresentacion}>
+            <img src="/icons/plus.png" alt="Agregar" className="w-6 h-6" />
+            <span>Agregar Presentación</span>
+          </Buttonsec>
         </div>
       </div>
-    ))}
-  </div>
-
-  {/* Botón fijo debajo */}
-  <div className="mt-2">
-    <Buttonsec type="button" onClick={agregarPresentacion}>
-      <img src="/icons/plus.png" alt="Agregar" className="w-6 h-6" />
-      <span>Agregar Presentación</span>
-    </Buttonsec>
-  </div>
-        </div>
 
        )}
+
+      {/* === TAB VARIANTES === */}
+        {activeTab === "variantes" && (
+          <div className="flex flex-col max-h-[500px]">
+            {/* ⬆️ CONTENIDO CON SCROLL */}
+            <div className="overflow-y-auto pr-2 space-y-2">
+              {variantes.map((v, index) => (
+                <div key={index} className="border rounded p-2 bg-gray-50">
+                  <div className="grid grid-cols-1 md:grid-cols-6 gap-2 text-sm">
+                    
+                    {/* SKU */}
+                    <div className="flex flex-col w-full">
+                      <label className="text-sm font-semibold mb-1 text-gray-700">
+                        SKU:
+                      </label>
+                      <Input
+                        required
+                        value={v.sku}
+                        onChange={(e) =>
+                          handleVarianteChange(index, "sku", e.target.value)
+                        }
+                      />
+                    </div>
+
+                    {/* Parámetros JSON dinámicos */}
+                    {Object.keys(v.parametros).map((campo) => (
+                      <div key={campo} className="flex flex-col w-full">
+                        <label className="text-sm font-semibold mb-1 text-gray-700">
+                          {campo}:
+                        </label>
+                        <Input
+                          value={v.parametros[campo]}
+                          onChange={(e) =>
+                            handleVarianteChange(index, "parametros", {
+                              ...v.parametros,
+                              [campo]: e.target.value,
+                            })
+                          }
+                        />
+                      </div>
+                    ))}
+
+                    {/* Precio Venta */}
+                    <div className="flex flex-col w-full">
+                      <label className="text-sm font-semibold mb-1 text-gray-700">
+                        Precio Venta:
+                      </label>
+                      <CurrencyInput
+                        value={v.precio_venta}
+                        onChange={(val) =>
+                          handleVarianteChange(index, "precio_venta", val)
+                        }
+                      />
+                    </div>
+
+                    {/* Precio Compra */}
+                    <div className="flex flex-col w-full">
+                      <label className="text-sm font-semibold mb-1 text-gray-700">
+                        Precio Compra:
+                      </label>
+                      <CurrencyInput
+                        value={v.precio_compra}
+                        onChange={(val) =>
+                          handleVarianteChange(index, "precio_compra", val)
+                        }
+                      />
+                    </div>
+
+                    {/* Activo */}
+                    <div className="flex items-center gap-2">
+                      <label className="text-sm font-semibold text-gray-700">
+                        Activo:
+                      </label>
+                      <input
+                        type="checkbox"
+                        checked={v.activo}
+                        onChange={(e) =>
+                          handleVarianteChange(index, "activo", e.target.checked)
+                        }
+                      />
+                    </div>
+
+                    {/* Eliminar */}
+                    <div className="flex justify-end items-end">
+                      <button
+                        type="button"
+                        onClick={() => eliminarVariante(index)}
+                        className="text-red-600 text-sm hover:underline"
+                      >
+                        ❌
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* ⬇️ BOTÓN FIJO */}
+            <div className="mt-2 border-t pt-2 bg-white">
+              <Buttonsec type="button" onClick={agregarVariante}>
+                <img src="/icons/plus.png" alt="Agregar" className="w-6 h-6" />
+                <span>Agregar Variante</span>
+              </Buttonsec>
+            </div>
+          </div>
+      )}
+
 
       {/* ⚠️ ERRORES */}
       {error && <p className="text-red-500">{error}</p>}
