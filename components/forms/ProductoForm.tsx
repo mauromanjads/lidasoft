@@ -16,7 +16,10 @@ import {
   obtenerCategorias,
   listarPresentaciones,
   actualizarPresentacion,
-  eliminarPresentacion
+  eliminarPresentacion,
+  crearVariante,
+  actualizarVariante,
+  listarVariantes
 } from "@/lib/api/productos";
 import { Producto, UnidadMedida, Categoria } from "@/app/types";
 
@@ -88,27 +91,64 @@ export default function ProductoForm({
    const [loading, setLoading] = useState(false);
    const [error, setError] = useState<string | null>(null);
   
+   const mergeParametrosCategoria = (
+      categoriaId: number | null,
+      categorias: Categoria[],
+      parametrosActuales?: Record<string, string>
+    ): Record<string, string> => {
+      if (!categoriaId) return parametrosActuales ?? {};
+
+      const categoria = categorias.find(c => c.id === categoriaId);
+      if (!categoria || !categoria.parametros) return parametrosActuales ?? {};
+
+      const resultado: Record<string, string> = {};
+
+      // 🔹 recorrer estructura de la categoría
+      Object.keys(categoria.parametros).forEach((campo) => {
+        resultado[campo] = parametrosActuales?.[campo] ?? "";
+      });
+
+      return resultado;
+    };
 
   useEffect(() => {
-    async function loadData() {
-      const u = await obtenerUnidades();
-      setUnidades(u);
-      setUnidadMedidaId(u[0]?.id ?? null);
+  async function loadData() {
+    // 🔹 Cargar catálogos
+    const [u, c] = await Promise.all([
+      obtenerUnidades(),
+      obtenerCategorias(),
+    ]);
 
-      const c = await obtenerCategorias();
-      setCategorias(c);
-      setCategoriaId(c[0]?.id ?? null);
+    setUnidades(u);
+    setCategorias(c);
 
-      setPresentaciones((prev) =>
-        prev.map((p) => ({
-          ...p,
-          unidad_medida_id: u[0]?.id || 0,
-        }))
-      );
-    }
+    const unidadDefault = u[0]?.id ?? null;
+    setUnidadMedidaId(unidadDefault);
 
-    loadData();
-  }, []);
+    // 🔹 Cargar producto + variantes guardadas (YA EXISTEN)
+    // suponiendo que ya tienes variantes desde backend
+    setVariantes(prev =>
+      prev.map(v => ({
+        ...v,
+        parametros: mergeParametrosCategoria(
+          categoriaId,
+          c,
+          v.parametros
+        ),
+      }))
+    );
+
+    // 🔹 Presentaciones
+    setPresentaciones(prev =>
+      prev.map(p => ({
+        ...p,
+        unidad_medida_id: unidadDefault || 0,
+      }))
+    );
+  }
+
+  loadData();
+}, []);
 
   useEffect(() => {
     if (producto) {
@@ -222,7 +262,7 @@ export default function ProductoForm({
 
         if (!producto?.id) throw new Error("No se pudo crear el producto");
 
-        // Crear presentaciones solo cuando es un producto nuevo
+        // ===================== PRESENTACIONES =====================
         for (const pres of presentaciones) {
           await crearPresentacion(producto.id, {
             tipo_presentacion: pres.tipo_presentacion,
@@ -233,12 +273,26 @@ export default function ProductoForm({
             activo: pres.activo,
           });
         }
+
+        // ===================== VARIANTES =====================
+        for (const v of variantes) {
+          if (!v.sku || v.sku.trim() === "") continue;
+
+          await crearVariante(producto.id, {
+            sku: v.sku.trim(),
+            parametros: v.parametros ?? {},
+            precio_venta: v.precio_venta ?? 0,
+            precio_compra: v.precio_compra ?? 0,
+            activo: v.activo ?? true,
+          });
+        }
       }
 
       // ==========================================================
       // 🟦 SEGUNDO: ACTUALIZAR si SÍ hay productoId
       // ==========================================================
       else {
+  // ===================== ACTUALIZAR PRODUCTO =====================
         producto = await actualizarProducto(productoId, {
           codigo,
           nombre,
@@ -252,23 +306,30 @@ export default function ProductoForm({
           activo,
         });
 
-        // === cargar presentaciones existentes desde BD ===
-       const presentacionesBD = await listarPresentaciones(Number(producto.id));
+        // ===================== PRESENTACIONES =====================
+        const presentacionesBD = await listarPresentaciones(Number(producto.id));
 
-        // === eliminar presentaciones quitadas en el front ===
+        // eliminar presentaciones quitadas
         for (const presBD of presentacionesBD) {
-          const existe = presentaciones.some((p) => p.id === presBD.id);
-          if (!existe) {
-            if (!presBD.id) continue;
+          const existe = presentaciones.some(p => p.id === presBD.id);
+          if (!existe && presBD.id) {
             await eliminarPresentacion(presBD.id);
           }
         }
 
-        // === crear o actualizar presentaciones ===
+        // crear o actualizar presentaciones
         for (const pres of presentaciones) {
-          // actualizar si tiene ID
           if (pres.id) {
-            await actualizarPresentacion( pres.id, {
+            await actualizarPresentacion(pres.id, {
+              tipo_presentacion: pres.tipo_presentacion,
+              cantidad_equivalente: pres.cantidad_equivalente,
+              unidad_medida_id: pres.unidad_medida_id,
+              precio_venta: pres.precio_venta,
+              precio_compra: pres.precio_compra,
+              activo: pres.activo,
+            });
+          } else {
+            await crearPresentacion(productoId, {
               tipo_presentacion: pres.tipo_presentacion,
               cantidad_equivalente: pres.cantidad_equivalente,
               unidad_medida_id: pres.unidad_medida_id,
@@ -277,16 +338,38 @@ export default function ProductoForm({
               activo: pres.activo,
             });
           }
+        }
 
-          // crear si NO tiene ID
-          else {
-            await crearPresentacion(productoId, {
-              tipo_presentacion: pres.tipo_presentacion,
-              cantidad_equivalente: pres.cantidad_equivalente,
-              unidad_medida_id: pres.unidad_medida_id,
-              precio_venta: pres.precio_venta,
-              precio_compra: pres.precio_compra,
-              activo: pres.activo,
+        // ===================== VARIANTES =====================
+        const variantesBD = await listarVariantes(Number(producto.id));
+
+        // eliminar variantes quitadas
+        for (const vBD of variantesBD) {
+          const existe = variantes.some(v => v.id === vBD.id);
+          if (!existe && vBD.id) {
+            await eliminarVariante(vBD.id);
+          }
+        }
+
+        // crear o actualizar variantes
+        for (const v of variantes) {
+          if (!v.sku || v.sku.trim() === "") continue;
+
+          if (v.id) {
+            await actualizarVariante(v.id, {
+              sku: v.sku.trim(),
+              parametros: v.parametros ?? {},
+              precio_venta: v.precio_venta,
+              precio_compra: v.precio_compra,
+              activo: v.activo,
+            });
+          } else {
+            await crearVariante(productoId, {
+              sku: v.sku.trim(),
+              parametros: v.parametros ?? {},
+              precio_venta: v.precio_venta,
+              precio_compra: v.precio_compra,
+              activo: v.activo,
             });
           }
         }
@@ -334,9 +417,19 @@ export default function ProductoForm({
 
   // Agregar variante
   const agregarVariante = () => {
-    setVariantes([
-      ...variantes,
-      { sku: "", parametros: {}, precio_venta: 0, precio_compra: 0, activo: true }
+    const parametrosBase = mergeParametrosCategoria(categoriaId,
+    categorias,
+    {});
+
+    setVariantes(prev => [
+      ...prev,
+      {
+        sku: "",
+        parametros: parametrosBase,
+        precio_venta: 0,
+        precio_compra: 0,
+        activo: true,
+      },
     ]);
   };
 
@@ -480,11 +573,26 @@ export default function ProductoForm({
                   <label className="text-sm font-semibold mb-1 text-gray-700">
                     Categoría:
                   </label>
+                  
                   <SelectSearch
                     items={categorias}
                     value={categoriaId}
-                    onChange={setCategoriaId}
+                    onChange={(id) => {
+                      setCategoriaId(id);
+
+                      setVariantes(prev =>
+                        prev.map(v => ({
+                          ...v,
+                          parametros: mergeParametrosCategoria(
+                            id,
+                            categorias,
+                            v.parametros
+                          ),
+                        }))
+                      );
+                    }}
                   />
+
                 </div>
 
                 {/* Unidad de medida */}

@@ -7,7 +7,6 @@ from datetime import datetime
 # Base de la Variante
 # -----------------------------
 class ProductoVarianteBase(BaseModel):
-    producto_id: int
     sku: str
     parametros: Optional[Dict[str, Any]] = Field(default_factory=dict)  # campo: valor
     precio_venta: float = 0

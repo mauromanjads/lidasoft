@@ -11,6 +11,7 @@ export interface UnidadMedida {
 export interface Categoria {
   id: number;
   nombre: string;
+  parametros?: { [campo: string]: string };
 }
 
 // ===================== PRODUCTOS =====================

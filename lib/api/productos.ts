@@ -24,6 +24,7 @@ export const obtenerProductosActivos = async (): Promise<Producto[]> => {
 };
 
 export const crearProducto = (data: Partial<Producto>): Promise<Producto> => {
+  
   return fetchAPI<Producto>(`${API_URL}/productos`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -74,6 +75,7 @@ export const crearVariante = (
   producto_id: number,
   data: Partial<ProductoVariante>
 ): Promise<ProductoVariante> => {
+  console.log("➡️ DATA QUE LLEGA A CREAR VARIANTES:", data)
   return fetchAPI<ProductoVariante>(`${API_URL}/productos/${producto_id}/variantes`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
