@@ -701,7 +701,7 @@ export default function ProductoForm({
                     <th className="border p-2 w-[120px]">Unidad</th>
                     <th className="border p-2 w-[150px]">Precio Venta</th>
                     <th className="border p-2 w-[150px]">Precio Compra</th>
-                    <th className="border p-2 w-[120px]">Acc</th>
+                    <th className="border p-2 w-[120px]">Acción</th>
                   </tr>
                 </thead>
 
@@ -771,15 +771,25 @@ export default function ProductoForm({
                       </td>
 
                       {/* Acciones */}
-                      <td className="flex justify-center items-center">
-                        <button
-                          type="button"
-                          onClick={() => eliminarPresentacionForm(index)}
-                          className="text-red-600 hover:underline"
-                        >
-                          ❌
-                        </button>
+                      <td className="border p-2 align-middle">
+                        <div className="flex justify-center items-center h-full">
+                          <button
+                            type="button"
+                            onClick={() => eliminarPresentacionForm(index)}
+                            className="
+                              text-red-600 
+                              hover:text-red-800 
+                              transition 
+                              flex 
+                              items-center 
+                              justify-center
+                            "
+                          >
+                            ❌
+                          </button>
+                        </div>
                       </td>
+
                     </tr>
                   ))}
                 </tbody>
