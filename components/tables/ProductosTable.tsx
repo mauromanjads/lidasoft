@@ -162,8 +162,7 @@ export default function ProductoTable({ productos, onEdit, onDelete,onSaved }: P
 
          {/* Crear Cliente */}
         <Button
-          onClick={() => setIsOpen(true)} // <-- Aquí podrías abrir modal o ir a formulario
-          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 shadow-md"
+          onClick={() => setIsOpen(true)} // <-- Aquí podrías abrir modal o ir a formulario          
         >  <div className="flex items-center gap-2">
             <img src="/icons/plus.png" alt="Pdf" className="w-6 h-6" />
             <span>Nuevo</span>
@@ -174,8 +173,9 @@ export default function ProductoTable({ productos, onEdit, onDelete,onSaved }: P
             isOpen={isOpen} 
             onClose={() => {
               setIsOpen(false);
-              setProductoEdit(null);   // 👈 Ahora sí se limpia              
+              setProductoEdit(null);   // 👈 Ahora sí se limpia                      
             }}
+            maxWidth="max-w-5xl w-full"
           >
             <h2 className="text-xl font-semibold mb-4">
               {productoEdit ? "Editar Producto" : "Crear Nuevo Producto"}

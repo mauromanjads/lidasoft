@@ -469,11 +469,60 @@ export default function ProductoForm({
     );
   };
 
-   return (
-  <form
-    onSubmit={handleSubmit}
-    className="p-2 border rounded-md space-y-3 text-sm max-w-5xl mx-auto"
+  return (
+  <form 
+    onSubmit={handleSubmit}           
   >
+    <div className="flex space-x-3 border-b mb-3 text-sm">
+
+      {/* Código */}
+      <div className="flex flex-col w-full">
+        <label className="text-sm font-semibold mb-1 text-gray-700">
+          Código:
+        </label>
+        <Input
+          className="border p-1.5 rounded text-sm"
+          value={codigo}
+          onChange={(e) => setCodigo(e.target.value)}
+          required
+        />
+      </div>
+
+      {/* Nombre */}
+      <div className="flex flex-col w-full">
+        <label className="text-sm font-semibold mb-1 text-gray-700">
+          Nombre:
+        </label>
+        <Input
+          className="border p-1.5 rounded text-sm"
+          value={nombre}
+          onChange={(e) => setNombre(e.target.value)}
+          required
+        />
+      </div>
+
+      {/* Estado */}
+      <div className="flex flex-col w-full">
+        <label className="text-sm font-semibold mb-1 text-gray-700 text-center">
+          Estado:
+        </label>
+        <div className="flex items-center gap-2 justify-center">
+          <Input
+            type="checkbox"
+            className="w-4 h-4 accent-blue-600 border border-gray-300 rounded-md shadow-sm"
+            checked={activo}
+            onChange={(e) => setActivo(e.target.checked)}
+          />
+          <span
+            className={`font-semibold text-base ${activo ? "text-green-700" : "text-red-600"}`}
+          >
+            {activo ? "Activo" : "Inactivo"}
+          </span>
+        </div>
+      </div>
+    
+    </div>
+    
     <div className="max-w-5xl mx-auto p-2">
       
       {/* === NAV TABS === */}
@@ -489,7 +538,7 @@ export default function ProductoForm({
                 : "text-gray-600 hover:text-[#1d4e89]"}
             `}
           >
-          🛒Producto
+          🛒Datos básicos
         </button>
 
         <button
@@ -529,51 +578,7 @@ export default function ProductoForm({
               {/* GRID GENERAL */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
             
-                 {/* Código */}
-                <div className="flex flex-col w-full">
-                  <label className="text-sm font-semibold mb-1 text-gray-700">
-                    Código:
-                  </label>
-                  <Input
-                    className="border p-1.5 rounded text-sm"
-                    value={codigo}
-                    onChange={(e) => setCodigo(e.target.value)}
-                    required
-                  />
-                </div>
-
-                {/* Nombre */}
-                <div className="flex flex-col w-full">
-                  <label className="text-sm font-semibold mb-1 text-gray-700">
-                    Nombre:
-                  </label>
-                  <Input
-                    className="border p-1.5 rounded text-sm"
-                    value={nombre}
-                    onChange={(e) => setNombre(e.target.value)}
-                    required
-                  />
-                </div>
-
-                {/* Estado */}
-                <div className="flex flex-col w-full">
-                  <label className="text-sm font-semibold mb-1 text-gray-700 text-center">
-                    Estado:
-                  </label>
-                  <div className="flex items-center gap-2 justify-center">
-                    <Input
-                      type="checkbox"
-                      className="w-4 h-4 accent-blue-600 border border-gray-300 rounded-md shadow-sm"
-                      checked={activo}
-                      onChange={(e) => setActivo(e.target.checked)}
-                    />
-                    <span
-                      className={`font-semibold text-base ${activo ? "text-green-700" : "text-red-600"}`}
-                    >
-                      {activo ? "Activo" : "Inactivo"}
-                    </span>
-                  </div>
-                </div>
+                
 
                 {/* Código de barras */}
                 <div className="flex flex-col w-full">
@@ -684,103 +689,110 @@ export default function ProductoForm({
 
        {/* === TAB PRESENTACIONES === */}
        {activeTab === "presentaciones" && (
-       <div className="flex flex-col max-h-[500px]"> 
-       {/* Contenedor principal con flex-col */}
+       <div className="flex flex-col max-h-[350px]"> 
+        {/* Contenedor principal con flex-col */}
+        
+        <div className="flex-1 overflow-y-auto">
+            <table className="w-full border rounded-xl overflow-hidden">
+                <thead className="bg-gradient-to-r from-[#1d4e89] to-blue-800 text-white">
+                  <tr>
+                    <th className="border p-2 w-[250px]">Presentación</th>
+                    <th className="border p-2 w-[80px]">Equivalencia</th>
+                    <th className="border p-2 w-[120px]">Unidad</th>
+                    <th className="border p-2 w-[150px]">Precio Venta</th>
+                    <th className="border p-2 w-[150px]">Precio Compra</th>
+                    <th className="border p-2 w-[120px]">Acc</th>
+                  </tr>
+                </thead>
 
-      <div className="overflow-y-auto pr-2 space-y-2">
-        {presentaciones.map((pres, index) => (
-          <div key={index} className="border rounded p-2 bg-gray-50">
-            <div className="grid grid-cols-1 md:grid-cols-6 gap-2 text-sm">
-              <div className="flex flex-col w-full">
-                <label className="text-sm font-semibold mb-1 text-gray-700">
-                  Presentación:
-                </label>
-                <Input
-                  required
-                  className="border p-1.5 rounded"
-                  value={pres.tipo_presentacion}
-                  onChange={(e) =>
-                    handlePresentacionChange(index, "tipo_presentacion", e.target.value)
-                  }
-                />
-              </div>
+                <tbody>
+                  {presentaciones.map((pres, index) => (
+                    <tr key={index} className="hover:bg-gray-50">
+                      {/* Presentación */}
+                      <td>
+                        <Input
+                          required
+                          className="w-full border p-1.5 rounded"
+                          value={pres.tipo_presentacion}
+                          onChange={(e) =>
+                            handlePresentacionChange(index, "tipo_presentacion", e.target.value)
+                          }
+                        />
+                      </td>
 
-              <div className="flex flex-col w-full">
-                <label className="text-sm font-semibold mb-1 text-gray-700">
-                  Equivalencia:
-                </label>
-                <Input
-                  required
-                  type="number"
-                  className="border p-1.5 rounded"
-                  value={pres.cantidad_equivalente}
-                  onChange={(e) =>
-                    handlePresentacionChange(index, "cantidad_equivalente", Number(e.target.value))
-                  }
-                />
-              </div>
+                      {/* Equivalencia */}
+                      <td>
+                        <Input
+                          required
+                          type="number"
+                          className="w-full border p-1.5 rounded"
+                          value={pres.cantidad_equivalente}
+                          onChange={(e) =>
+                            handlePresentacionChange(
+                              index,
+                              "cantidad_equivalente",
+                              Number(e.target.value)
+                            )
+                          }
+                        />
+                      </td>
 
-              <div className="flex flex-col w-full">
-                <label className="text-sm font-semibold mb-1 text-gray-700">
-                  Unidad de Medida:
-                </label>
-                <SelectSearch
-                  items={unidades}
-                  value={presentaciones[index].unidad_medida_id}
-                  onChange={(newValue) =>
-                    handlePresentacionChange(index, "unidad_medida_id", Number(newValue))
-                  }
-                />
-              </div>
+                      {/* Unidad */}
+                      <td>
+                        <SelectSearch
+                          items={unidades}
+                          value={pres.unidad_medida_id}
+                          onChange={(newValue) =>
+                            handlePresentacionChange(index, "unidad_medida_id", Number(newValue))
+                          }
+                        />
+                      </td>
 
-              <div className="flex flex-col w-full">
-                <label className="text-sm font-semibold mb-1 text-gray-700">
-                  Precio Venta:
-                </label>
-                <CurrencyInput
-                  className="border p-1.5 rounded"
-                  value={pres.precio_venta}
-                  onChange={(val) =>
-                    handlePresentacionChange(index, "precio_venta", val)
-                  }
-                />
-              </div>
+                      {/* Precio Venta */}
+                      <td>
+                        <CurrencyInput
+                          className="w-full border p-1.5 rounded"
+                          value={pres.precio_venta}
+                          onChange={(val) =>
+                            handlePresentacionChange(index, "precio_venta", val)
+                          }
+                        />
+                      </td>
 
-              <div className="flex flex-col w-full">
-                <label className="text-sm font-semibold mb-1 text-gray-700">
-                  Precio Compra:
-                </label>
-                <CurrencyInput
-                  className="border p-1.5 rounded"
-                  value={pres.precio_compra}
-                  onChange={(val) =>
-                    handlePresentacionChange(index, "precio_compra", val)
-                  }
-                />
-              </div>
+                      {/* Precio Compra */}
+                      <td>
+                        <CurrencyInput
+                          className="w-full border p-1.5 rounded"
+                          value={pres.precio_compra}
+                          onChange={(val) =>
+                            handlePresentacionChange(index, "precio_compra", val)
+                          }
+                        />
+                      </td>
 
-              <div className="flex justify-between items-center mb-2">
-                <button
-                  type="button"
-                  onClick={() => eliminarPresentacionForm(index)}
-                  className="text-red-600 text-sm hover:underline"
-                >
-                  ❌
-                </button>
-              </div>
-            </div>
+                      {/* Acciones */}
+                      <td className="flex justify-center items-center">
+                        <button
+                          type="button"
+                          onClick={() => eliminarPresentacionForm(index)}
+                          className="text-red-600 hover:underline"
+                        >
+                          ❌
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+            </table>
+         </div>       
+          {/* Botón fijo debajo */}
+          <div className="border-t bg-white p-3 sticky bottom-0">
+            <Buttonsec type="button" onClick={agregarPresentacion}>
+              <img src="/icons/plus.png" alt="Agregar" className="w-6 h-6" />
+              <span>Agregar Presentación</span>
+            </Buttonsec>
           </div>
-        ))}
-      </div>
-
-        {/* Botón fijo debajo */}
-        <div className="mt-2">
-          <Buttonsec type="button" onClick={agregarPresentacion}>
-            <img src="/icons/plus.png" alt="Agregar" className="w-6 h-6" />
-            <span>Agregar Presentación</span>
-          </Buttonsec>
-        </div>
-      </div>
+       </div>
 
        )}
 
