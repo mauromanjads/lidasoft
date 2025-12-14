@@ -264,9 +264,9 @@ export default function ProductoForm({
           throw new Error("Cada presentación debe tener un nombre.");
         }
 
-        if (!pres.precio_venta || pres.precio_venta <= 0) {
-          throw new Error(`La presentación "${pres.tipo_presentacion}" debe tener un precio de venta válido.`);
-        }
+        //if (!pres.precio_venta || pres.precio_venta <= 0) {
+        //  throw new Error(`La presentación "${pres.tipo_presentacion}" debe tener un precio de venta válido.`);
+       // }
       }
 
       if (!productoId) {
@@ -738,6 +738,7 @@ export default function ProductoForm({
 
                       <td className="p-2">
                         <Input
+                        title="Factor de equivalencia (Cantidad de unidades base que incluye esta presentación)"
                           required
                           type="number"
                           className="w-full"
@@ -764,6 +765,7 @@ export default function ProductoForm({
 
                       <td className="p-2">
                         <CurrencyInput
+                          title="Precio de Venta, colocar valor solo si no maneja precios en VARIANTES"
                           className="w-full"
                           value={pres.precio_venta}
                           onChange={(val) =>
@@ -774,6 +776,7 @@ export default function ProductoForm({
 
                       <td className="p-2">
                         <CurrencyInput
+                          title="Costo de Compra, colocar valor solo si no maneja precios en VARIANTES"
                           className="w-full"
                           value={pres.precio_compra}
                           onChange={(val) =>
@@ -842,7 +845,7 @@ export default function ProductoForm({
                       Precio Venta
                     </th>
                     <th className="border p-2 w-[150px] sticky top-0 z-20 bg-[#1d4e89]">
-                      Precio Compra
+                      Costo Compra
                     </th>
                     <th className="border p-2 w-[120px] sticky top-0 z-20 bg-[#1d4e89]">
                       Acción
@@ -856,7 +859,7 @@ export default function ProductoForm({
 
                       {/* SKU */}
                       <td className="p-2">
-                        <Input
+                        <Input                        
                           value={v.sku}
                           onChange={(e) =>
                             handleVarianteChange(index, "sku", e.target.value)
@@ -867,7 +870,7 @@ export default function ProductoForm({
                       {/* Parámetros dinámicos */}
                       {Object.keys(v.parametros).map((campo) => (
                         <td key={campo} className="p-2">
-                          <Input
+                          <Input                          
                             value={v.parametros[campo]}
                             onChange={(e) =>
                               handleVarianteChange(index, "parametros", {
@@ -893,6 +896,7 @@ export default function ProductoForm({
                       {/* Precio Venta */}
                       <td className="p-2">
                         <CurrencyInput
+                          title="Precio por unidad mínima de inventario"
                           value={v.precio_venta}
                           onChange={(val) =>
                             handleVarianteChange(index, "precio_venta", val)
@@ -903,6 +907,7 @@ export default function ProductoForm({
                       {/* Precio Compra */}
                       <td className="p-2">
                         <CurrencyInput
+                        title ="Costo por unidad mínima de inventario"
                           value={v.precio_compra}
                           onChange={(val) =>
                             handleVarianteChange(index, "precio_compra", val)

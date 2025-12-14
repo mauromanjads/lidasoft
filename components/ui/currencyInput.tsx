@@ -6,6 +6,7 @@ interface CurrencyInputProps {
   className?: string;
   label?: string;
   placeholder?: string;
+  title?: string;
 }
 
 const formatCurrency = (value: number) => {
@@ -27,6 +28,7 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
   className,
   label,
   placeholder,
+  title,
 }) => {
   const [displayValue, setDisplayValue] = useState("");
   const isFocused = useRef(false);
@@ -89,6 +91,7 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
         onChange={handleChange}
         onFocus={handleFocus}
         onBlur={handleBlur}
+        title={title}
       />
     </div>
   );
