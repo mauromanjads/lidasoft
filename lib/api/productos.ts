@@ -71,41 +71,61 @@ export const listarPresentaciones = (producto_id: number): Promise<ProductoPrese
 
 
 // ===================== VARIANTES =====================
+
 export const crearVariante = (
   producto_id: number,
   data: Partial<ProductoVariante>
 ): Promise<ProductoVariante> => {
-  console.log("➡️ DATA QUE LLEGA A CREAR VARIANTES:", data)
-  return fetchAPI<ProductoVariante>(`${API_URL}/productos/${producto_id}/variantes`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ ...data }),
-  });
+  return fetchAPI<ProductoVariante>(
+    `${API_URL}/productos/${producto_id}/variantes`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    }
+  );
+};
+
+export const listarVariantes = (
+  producto_id: number
+): Promise<ProductoVariante[]> => {
+  return fetchAPI<ProductoVariante[]>(
+    `${API_URL}/productos/${producto_id}/variantes`
+  );
+};
+
+export const obtenerVariante = (
+  producto_id: number,
+  variante_id: number
+): Promise<ProductoVariante> => {
+  return fetchAPI<ProductoVariante>(
+    `${API_URL}/productos/${producto_id}/variantes/${variante_id}`
+  );
 };
 
 export const actualizarVariante = (
+  producto_id: number,
   variante_id: number,
   data: Partial<ProductoVariante>
 ): Promise<ProductoVariante> => {
-  return fetchAPI<ProductoVariante>(`${API_URL}/productos/variantes/${variante_id}`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  });
+  return fetchAPI<ProductoVariante>(
+    `${API_URL}/productos/${producto_id}/variantes/${variante_id}`,
+    {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    }
+  );
 };
 
-export const listarVariantes = (producto_id: number): Promise<ProductoVariante[]> => {
-  return fetchAPI<ProductoVariante[]>(`${API_URL}/productos/${producto_id}/variantes`);
-};
-
-export const obtenerVariante = (variante_id: number): Promise<ProductoVariante> => {
-  return fetchAPI<ProductoVariante>(`${API_URL}/productos/variantes/${variante_id}`);
-};
-
-export const eliminarVariante = (variante_id: number): Promise<{ message: string }> => {
-  return fetchAPI<{ message: string }>(`${API_URL}/productos/variantes/${variante_id}`, {
-    method: "DELETE",
-  });
+export const eliminarVariante = (
+  producto_id: number,
+  variante_id: number
+): Promise<{ message: string }> => {
+  return fetchAPI<{ message: string }>(
+    `${API_URL}/productos/${producto_id}/variantes/${variante_id}`,
+    { method: "DELETE" }
+  );
 };
 
 
