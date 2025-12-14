@@ -690,29 +690,45 @@ export default function ProductoForm({
        {/* === TAB PRESENTACIONES === */}
        {activeTab === "presentaciones" && (
        <div className="flex flex-col max-h-[350px]"> 
-        {/* Contenedor principal con flex-col */}
         
-        <div className="flex-1 overflow-y-auto">
-            <table className="w-full border rounded-xl overflow-hidden">
+          {/* Contenedor principal con flex-col */}        
+
+          {/* Contenedor con scroll */}
+          <div className="flex-1 overflow-y-auto max-h-[400px] border rounded-xl">
+
+              <table className="w-full border-collapse">
+                
                 <thead className="bg-gradient-to-r from-[#1d4e89] to-blue-800 text-white">
                   <tr>
-                    <th className="border p-2 w-[250px]">Presentación</th>
-                    <th className="border p-2 w-[80px]">Equivalencia</th>
-                    <th className="border p-2 w-[120px]">Unidad</th>
-                    <th className="border p-2 w-[150px]">Precio Venta</th>
-                    <th className="border p-2 w-[150px]">Precio Compra</th>
-                    <th className="border p-2 w-[120px]">Acción</th>
+                    <th className="border p-2 w-[250px] sticky top-0 z-20 bg-[#1d4e89]">
+                      Presentación
+                    </th>
+                    <th className="border p-2 w-[80px] sticky top-0 z-20 bg-[#1d4e89]">
+                      Equivalencia
+                    </th>
+                    <th className="border p-2 w-[120px] sticky top-0 z-20 bg-[#1d4e89]">
+                      Unidad
+                    </th>
+                    <th className="border p-2 w-[150px] sticky top-0 z-20 bg-[#1d4e89]">
+                      Precio Venta
+                    </th>
+                    <th className="border p-2 w-[150px] sticky top-0 z-20 bg-[#1d4e89]">
+                      Precio Compra
+                    </th>
+                    <th className="border p-2 w-[120px] sticky top-0 z-20 bg-[#1d4e89]">
+                      Acción
+                    </th>
                   </tr>
                 </thead>
 
-                <tbody>
+                <tbody className="bg-white">
                   {presentaciones.map((pres, index) => (
                     <tr key={index} className="hover:bg-gray-50">
-                      {/* Presentación */}
-                      <td>
+
+                      <td className="p-2">
                         <Input
                           required
-                          className="w-full border p-1.5 rounded"
+                          className="w-full"
                           value={pres.tipo_presentacion}
                           onChange={(e) =>
                             handlePresentacionChange(index, "tipo_presentacion", e.target.value)
@@ -720,12 +736,11 @@ export default function ProductoForm({
                         />
                       </td>
 
-                      {/* Equivalencia */}
-                      <td>
+                      <td className="p-2">
                         <Input
                           required
                           type="number"
-                          className="w-full border p-1.5 rounded"
+                          className="w-full"
                           value={pres.cantidad_equivalente}
                           onChange={(e) =>
                             handlePresentacionChange(
@@ -737,8 +752,7 @@ export default function ProductoForm({
                         />
                       </td>
 
-                      {/* Unidad */}
-                      <td>
+                      <td className="p-2">
                         <SelectSearch
                           items={unidades}
                           value={pres.unidad_medida_id}
@@ -748,10 +762,9 @@ export default function ProductoForm({
                         />
                       </td>
 
-                      {/* Precio Venta */}
-                      <td>
+                      <td className="p-2">
                         <CurrencyInput
-                          className="w-full border p-1.5 rounded"
+                          className="w-full"
                           value={pres.precio_venta}
                           onChange={(val) =>
                             handlePresentacionChange(index, "precio_venta", val)
@@ -759,10 +772,9 @@ export default function ProductoForm({
                         />
                       </td>
 
-                      {/* Precio Compra */}
-                      <td>
+                      <td className="p-2">
                         <CurrencyInput
-                          className="w-full border p-1.5 rounded"
+                          className="w-full"
                           value={pres.precio_compra}
                           onChange={(val) =>
                             handlePresentacionChange(index, "precio_compra", val)
@@ -770,31 +782,23 @@ export default function ProductoForm({
                         />
                       </td>
 
-                      {/* Acciones */}
-                      <td className="border p-2 align-middle">
-                        <div className="flex justify-center items-center h-full">
-                          <button
-                            type="button"
-                            onClick={() => eliminarPresentacionForm(index)}
-                            className="
-                              text-red-600 
-                              hover:text-red-800 
-                              transition 
-                              flex 
-                              items-center 
-                              justify-center
-                            "
-                          >
-                            ❌
-                          </button>
-                        </div>
+                      <td className="p-2 text-center">
+                        <button
+                          type="button"
+                          onClick={() => eliminarPresentacionForm(index)}
+                          className="text-red-600 hover:text-red-800 transition"
+                        >
+                          ❌
+                        </button>
                       </td>
 
                     </tr>
                   ))}
                 </tbody>
-            </table>
-         </div>       
+
+              </table>
+          </div>
+
           {/* Botón fijo debajo */}
           <div className="border-t bg-white p-3 sticky bottom-0">
             <Buttonsec type="button" onClick={agregarPresentacion}>
@@ -808,102 +812,124 @@ export default function ProductoForm({
 
       {/* === TAB VARIANTES === */}
         {activeTab === "variantes" && (
-          <div className="flex flex-col max-h-[500px]">
-            {/* ⬆️ CONTENIDO CON SCROLL */}
-            <div className="overflow-y-auto pr-2 space-y-2">
-              {variantes.map((v, index) => (
-                <div key={index} className="border rounded p-2 bg-gray-50">
-                  <div className="grid grid-cols-1 md:grid-cols-6 gap-2 text-sm">
-                    
-                    {/* SKU */}
-                    <div className="flex flex-col w-full">
-                      <label className="text-sm font-semibold mb-1 text-gray-700">
-                        SKU:
-                      </label>
-                      <Input
-                        required
-                        value={v.sku}
-                        onChange={(e) =>
-                          handleVarianteChange(index, "sku", e.target.value)
-                        }
-                      />
-                    </div>
+          <div className="flex flex-col max-h-[350px]">
+            
+            {/* Contenedor principal con flex-col */}
+          
+            <div className="flex-1 overflow-y-auto max-h-[400px] border rounded-xl">
 
-                    {/* Parámetros JSON dinámicos */}
-                    {Object.keys(v.parametros).map((campo) => (
-                      <div key={campo} className="flex flex-col w-full">
-                        <label className="text-sm font-semibold mb-1 text-gray-700">
-                          {campo}:
-                        </label>
-                        <Input
-                          value={v.parametros[campo]}
-                          onChange={(e) =>
-                            handleVarianteChange(index, "parametros", {
-                              ...v.parametros,
-                              [campo]: e.target.value,
-                            })
-                          }
-                        />
-                      </div>
+              <table className="w-full border-collapse">
+
+                <thead className="bg-gradient-to-r from-[#1d4e89] to-blue-800 text-white">
+                  <tr>
+                    <th className="border p-2 w-[250px] sticky top-0 z-20 bg-[#1d4e89]">
+                      SKU
+                    </th>
+
+                    {Object.keys(variantes[0]?.parametros || {}).map((campo) => (
+                      <th
+                        key={campo}
+                        className="border p-2 sticky top-0 z-20 bg-[#1d4e89]"
+                      >
+                        {campo}
+                      </th>
                     ))}
 
-                    {/* Precio Venta */}
-                    <div className="flex flex-col w-full">
-                      <label className="text-sm font-semibold mb-1 text-gray-700">
-                        Precio Venta:
-                      </label>
-                      <CurrencyInput
-                        value={v.precio_venta}
-                        onChange={(val) =>
-                          handleVarianteChange(index, "precio_venta", val)
-                        }
-                      />
-                    </div>
+                    <th className="border p-2 w-[120px] sticky top-0 z-20 bg-[#1d4e89]">
+                      Activo
+                    </th>
+                    <th className="border p-2 w-[150px] sticky top-0 z-20 bg-[#1d4e89]">
+                      Precio Venta
+                    </th>
+                    <th className="border p-2 w-[150px] sticky top-0 z-20 bg-[#1d4e89]">
+                      Precio Compra
+                    </th>
+                    <th className="border p-2 w-[120px] sticky top-0 z-20 bg-[#1d4e89]">
+                      Acción
+                    </th>
+                  </tr>
+                </thead>
 
-                    {/* Precio Compra */}
-                    <div className="flex flex-col w-full">
-                      <label className="text-sm font-semibold mb-1 text-gray-700">
-                        Precio Compra:
-                      </label>
-                      <CurrencyInput
-                        value={v.precio_compra}
-                        onChange={(val) =>
-                          handleVarianteChange(index, "precio_compra", val)
-                        }
-                      />
-                    </div>
+                <tbody className="bg-white">
+                  {variantes.map((v, index) => (
+                    <tr key={index} className="hover:bg-gray-50">
 
-                    {/* Activo */}
-                    <div className="flex items-center gap-2">
-                      <label className="text-sm font-semibold text-gray-700">
-                        Activo:
-                      </label>
-                      <input
-                        type="checkbox"
-                        checked={v.activo}
-                        onChange={(e) =>
-                          handleVarianteChange(index, "activo", e.target.checked)
-                        }
-                      />
-                    </div>
+                      {/* SKU */}
+                      <td className="p-2">
+                        <Input
+                          value={v.sku}
+                          onChange={(e) =>
+                            handleVarianteChange(index, "sku", e.target.value)
+                          }
+                        />
+                      </td>
 
-                    {/* Eliminar */}
-                    <div className="flex justify-end items-end">
-                      <button
-                        type="button"
-                        onClick={() => eliminarVarianteForm(index)}
-                        className="text-red-600 text-sm hover:underline"
-                      >
-                        ❌
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              ))}
+                      {/* Parámetros dinámicos */}
+                      {Object.keys(v.parametros).map((campo) => (
+                        <td key={campo} className="p-2">
+                          <Input
+                            value={v.parametros[campo]}
+                            onChange={(e) =>
+                              handleVarianteChange(index, "parametros", {
+                                ...v.parametros,
+                                [campo]: e.target.value,
+                              })
+                            }
+                          />
+                        </td>
+                      ))}
+
+                      {/* Activo */}
+                      <td className="p-2 text-center align-middle">
+                        <input
+                          type="checkbox"
+                          checked={v.activo}
+                          onChange={(e) =>
+                            handleVarianteChange(index, "activo", e.target.checked)
+                          }
+                        />
+                      </td>
+
+                      {/* Precio Venta */}
+                      <td className="p-2">
+                        <CurrencyInput
+                          value={v.precio_venta}
+                          onChange={(val) =>
+                            handleVarianteChange(index, "precio_venta", val)
+                          }
+                        />
+                      </td>
+
+                      {/* Precio Compra */}
+                      <td className="p-2">
+                        <CurrencyInput
+                          value={v.precio_compra}
+                          onChange={(val) =>
+                            handleVarianteChange(index, "precio_compra", val)
+                          }
+                        />
+                      </td>
+
+                      {/* Acción */}
+                      <td className="p-2 text-center align-middle">
+                        <button
+                          type="button"
+                          onClick={() => eliminarVarianteForm(index)}
+                          className="text-red-600 hover:underline"
+                        >
+                          ❌
+                        </button>
+                      </td>
+
+                    </tr>
+                  ))}
+                </tbody>
+
+              </table>
             </div>
 
             {/* ⬇️ BOTÓN FIJO */}
-            <div className="mt-2 border-t pt-2 bg-white">
+            <div className="border-t bg-white p-3 sticky bottom-0">
               <Buttonsec type="button" onClick={agregarVariante}>
                 <img src="/icons/plus.png" alt="Agregar" className="w-6 h-6" />
                 <span>Agregar Variante</span>
