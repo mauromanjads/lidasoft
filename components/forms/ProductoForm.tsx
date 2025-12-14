@@ -19,7 +19,8 @@ import {
   eliminarPresentacion,
   crearVariante,
   actualizarVariante,
-  listarVariantes
+  listarVariantes,
+  eliminarVariante
 } from "@/lib/api/productos";
 import { Producto, UnidadMedida, Categoria } from "@/app/types";
 
@@ -85,6 +86,9 @@ export default function ProductoForm({
       activo: true,
     },
   ]);
+  const [variantes, setVariantes] = useState<VarianteForm[]>([
+    { id: null, sku: "", parametros: {}, precio_venta: 0, precio_compra: 0, activo: true }
+  ]);
 
    const [activeTab, setActiveTab] = useState("producto");
 
@@ -94,22 +98,19 @@ export default function ProductoForm({
    const mergeParametrosCategoria = (
       categoriaId: number | null,
       categorias: Categoria[],
-      parametrosActuales?: Record<string, string>
+      parametrosActuales: Record<string, string> = {}
     ): Record<string, string> => {
-      if (!categoriaId) return parametrosActuales ?? {};
+      if (!categoriaId) return parametrosActuales;
 
       const categoria = categorias.find(c => c.id === categoriaId);
-      if (!categoria || !categoria.parametros) return parametrosActuales ?? {};
+      if (!categoria || !categoria.parametros) return parametrosActuales;
 
-      const resultado: Record<string, string> = {};
-
-      // 🔹 recorrer estructura de la categoría
-      Object.keys(categoria.parametros).forEach((campo) => {
-        resultado[campo] = parametrosActuales?.[campo] ?? "";
-      });
-
-      return resultado;
+      return {
+        ...categoria.parametros,      // estructura base
+        ...parametrosActuales,        // valores guardados pisan la base
+      };
     };
+
 
   useEffect(() => {
   async function loadData() {
@@ -125,19 +126,7 @@ export default function ProductoForm({
     const unidadDefault = u[0]?.id ?? null;
     setUnidadMedidaId(unidadDefault);
 
-    // 🔹 Cargar producto + variantes guardadas (YA EXISTEN)
-    // suponiendo que ya tienes variantes desde backend
-    setVariantes(prev =>
-      prev.map(v => ({
-        ...v,
-        parametros: mergeParametrosCategoria(
-          categoriaId,
-          c,
-          v.parametros
-        ),
-      }))
-    );
-
+   
     // 🔹 Presentaciones
     setPresentaciones(prev =>
       prev.map(p => ({
@@ -186,6 +175,40 @@ export default function ProductoForm({
 
     }
   }, [producto,categorias],);
+
+  useEffect(() => {
+    if (!productoId) return;
+
+    listarVariantes(productoId)
+      .then((data) => {
+        setVariantes(
+          data.map(v => ({
+            id: v.id,
+            sku: v.sku,
+            parametros: v.parametros ?? {},
+            precio_venta: v.precio_venta ?? 0,
+            precio_compra: v.precio_compra ?? 0,
+            activo: v.activo ?? true,
+          }))
+        );
+      })
+      .catch(console.error);
+  }, [productoId]);
+
+  useEffect(() => {
+  if (!categoriaId || categorias.length === 0) return;
+
+  setVariantes(prev =>
+    prev.map(v => ({
+      ...v,
+      parametros: mergeParametrosCategoria(
+        categoriaId,
+        categorias,
+        v.parametros ?? {}
+      ),
+    }))
+  );
+}, [categoriaId, categorias]);
 
 
   
@@ -347,7 +370,7 @@ export default function ProductoForm({
         for (const vBD of variantesBD) {
           const existe = variantes.some(v => v.id === vBD.id);
           if (!existe && vBD.id) {
-            await eliminarVariante(vBD.id);
+            await eliminarVariante(productoId,vBD.id);
           }
         }
 
@@ -356,7 +379,7 @@ export default function ProductoForm({
           if (!v.sku || v.sku.trim() === "") continue;
 
           if (v.id) {
-            await actualizarVariante(v.id, {
+            await actualizarVariante( productoId,v.id, {
               sku: v.sku.trim(),
               parametros: v.parametros ?? {},
               precio_venta: v.precio_venta,
@@ -411,10 +434,7 @@ export default function ProductoForm({
     }
   }
 
-  const [variantes, setVariantes] = useState<VarianteForm[]>([
-    { id: null, sku: "", parametros: {}, precio_venta: 0, precio_compra: 0, activo: true }
-  ]);
-
+  
   // Agregar variante
   const agregarVariante = () => {
     const parametrosBase = mergeParametrosCategoria(categoriaId,
@@ -425,7 +445,7 @@ export default function ProductoForm({
       ...prev,
       {
         sku: "",
-        parametros: parametrosBase,
+        parametros: mergeParametrosCategoria(categoriaId, categorias, {}),
         precio_venta: 0,
         precio_compra: 0,
         activo: true,
@@ -434,8 +454,8 @@ export default function ProductoForm({
   };
 
   // Eliminar variante
-  const eliminarVariante = (index: number) => {
-    setVariantes(variantes.filter((_, i) => i !== index));
+  const eliminarVarianteForm = (index: number) => {
+    setVariantes(prev => prev.filter((_, i) => i !== index));
   };
 
   // Manejar cambio
@@ -577,20 +597,7 @@ export default function ProductoForm({
                   <SelectSearch
                     items={categorias}
                     value={categoriaId}
-                    onChange={(id) => {
-                      setCategoriaId(id);
-
-                      setVariantes(prev =>
-                        prev.map(v => ({
-                          ...v,
-                          parametros: mergeParametrosCategoria(
-                            id,
-                            categorias,
-                            v.parametros
-                          ),
-                        }))
-                      );
-                    }}
+                    onChange={setCategoriaId}
                   />
 
                 </div>
@@ -862,7 +869,7 @@ export default function ProductoForm({
                     <div className="flex justify-end items-end">
                       <button
                         type="button"
-                        onClick={() => eliminarVariante(index)}
+                        onClick={() => eliminarVarianteForm(index)}
                         className="text-red-600 text-sm hover:underline"
                       >
                         ❌
