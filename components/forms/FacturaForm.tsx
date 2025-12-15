@@ -112,6 +112,7 @@ const FacturaFormComponent: React.FC<FacturaFormProps> = ({ factura }) => {
       {
         producto_id: 0,
         presentacion_id: 0,
+        variante_id: 0,
         descripcion: "",
         cantidad: 1,
         precio_unitario: 0,
@@ -196,6 +197,7 @@ const FacturaFormComponent: React.FC<FacturaFormProps> = ({ factura }) => {
         {
           producto_id: 0,
           presentacion_id: 0,
+          variante_id:0,
           descripcion: "",
           cantidad: 1,
           precio_unitario: 0,
@@ -262,6 +264,7 @@ const FacturaFormComponent: React.FC<FacturaFormProps> = ({ factura }) => {
             detalles: formData.detalles.map(d => ({
               producto_id: d.producto_id,
               presentacion_id: d.presentacion_id,
+               variante_id: d.variante_id,
               descripcion: d.descripcion,
               cantidad: d.cantidad,
               precio_unitario: d.precio_unitario,
@@ -426,9 +429,11 @@ const FacturaFormComponent: React.FC<FacturaFormProps> = ({ factura }) => {
                 <ProductoConPresentacion
                   valueProductoId={det.producto_id}
                   valuePresentacionId={det.presentacion_id}
+                  valueVarianteId={det.variante_id}
                   onSelect={(d) => {
                     handleDetalleChange(i, "producto_id", d.producto_id);
-                    handleDetalleChange(i, "presentacion_id", d.presentacion_id);                    
+                    handleDetalleChange(i, "presentacion_id", d.presentacion_id);  
+                    handleDetalleChange(i, "variante_id", d.variante_id??0);
                     handleDetalleChange(i, "precio_unitario", d.precio_unitario);
                     handleDetalleChange(i, "descripcion", d.descripcion);
 

@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel,ConfigDict
 from typing import Optional
 
 
@@ -29,5 +29,4 @@ class ConfiguracionDianUpdate(BaseModel):
 class ConfiguracionDianResponse(ConfiguracionDianBase):
     id: int
 
-    class Config:
-        from_attributes = True
+    

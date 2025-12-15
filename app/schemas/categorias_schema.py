@@ -1,5 +1,5 @@
 # app/schemas.py
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field,ConfigDict
 from typing import Optional, Dict, Literal
 from datetime import datetime
 
@@ -12,9 +12,8 @@ class CategoriaBase(BaseModel):
     nombre: str
     descripcion: Optional[str] = None
     estado: Optional[str] = Field(default="A", min_length=1, max_length=1)
-    parametros: Optional[Dict[str, ParametroTipo]] = None
-
-
+    parametros: Optional[Dict[str, str]] = {}
+    
 # -----------------------------
 # Crear
 # -----------------------------
@@ -29,8 +28,8 @@ class CategoriaUpdate(BaseModel):
     nombre: Optional[str] = None
     descripcion: Optional[str] = None
     estado: Optional[str] = Field(default=None, min_length=1, max_length=1)
-    parametros: Optional[Dict[str, ParametroTipo]] = None
-
+    parametros: Optional[Dict[str, str]] = None
+   
 
 # -----------------------------
 # Respuesta
@@ -39,5 +38,4 @@ class CategoriaResponse(CategoriaBase):
     id: int
     creado: datetime
 
-    class Config:
-        from_attributes = True  # pydantic v2
+    model_config = ConfigDict(from_attributes=True)

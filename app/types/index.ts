@@ -27,6 +27,7 @@ export interface Producto {
   tipo_impuesto?: string;
   unidad_medida_id?: number;
   control_inventario?: string;
+  tiene_variantes?: boolean;
 }
 
 // ===================== PRESENTACIONES =====================
@@ -51,7 +52,8 @@ export interface ProductoVariante {
   id?: number; // opcional en creación
   producto_id: number;
   sku: string; // SKU único
-  parametros?: Record<string, any>; // campo: valor
+  parametros?: Record<string, string>; // campo: valor
+  descripcion:string;
   precio_venta?: number;
   precio_compra?: number;
   activo?: boolean;

@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel,ConfigDict
 from typing import Optional
 from app.schemas.categorias_schema import CategoriaResponse
 
@@ -26,5 +26,4 @@ class ProductoOut(ProductoBase):
 
     categoria: Optional[CategoriaResponse]
     
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)

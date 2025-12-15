@@ -2,7 +2,7 @@ from datetime import date, datetime
 from typing import Optional, Annotated
 from pydantic import field_validator
 
-from pydantic import BaseModel, EmailStr, Field, StringConstraints
+from pydantic import BaseModel, EmailStr, Field, StringConstraints,ConfigDict
 
 
 # ====================================================
@@ -135,5 +135,4 @@ class TerceroResponse(TerceroBase):
     usuario_modifico: Optional[str] = None
     fecha_modificacion: Optional[datetime] = None
 
-    class Config:
-        from_attributes = True  # ⚠️ IMPORTANTE para trabajar con SQLAlchemy
+    model_config = ConfigDict(from_attributes=True)

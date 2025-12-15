@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel,ConfigDict
 
 class MunicipiosModel(BaseModel):
     id: int
@@ -6,5 +6,4 @@ class MunicipiosModel(BaseModel):
     codigo_dian: str
     departamento_id:int
     
-    class Config:
-        orm_mode = True  
+    model_config = ConfigDict(from_attributes=True)

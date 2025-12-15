@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel,ConfigDict
 
 class CiiuBase(BaseModel):
     id: int
@@ -6,4 +6,4 @@ class CiiuBase(BaseModel):
     descripcion: str
 
     class Config:
-        orm_mode = True  
+        model_config = ConfigDict(from_attributes=True)

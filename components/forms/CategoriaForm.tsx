@@ -18,7 +18,7 @@ interface CategoriaPayload {
   nombre: string;
   descripcion: string;
   estado: string;
-  parametros: Record<string, TipoParametro>;
+  parametros: Record<string, string>;
 }
 
 interface CategoriaFormProps {
@@ -27,7 +27,7 @@ interface CategoriaFormProps {
     nombre: string;
     descripcion: string;
     estado: string;
-    parametros?: Record<string, TipoParametro>;
+    parametros?: Record<string, string>;
   };
   onClose?: () => void;
   onSaved?: () => void;
@@ -51,7 +51,7 @@ export default function CategoriaForm({
     categoria?.parametros
       ? Object.entries(categoria.parametros).map(([k, v]) => ({
           nombre: k,
-          tipo: v,
+          tipo: "string",
         }))
       : []
   );
@@ -75,14 +75,14 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 
   try {
     // Convertir array → JSON
-    const parametrosJson: Record<string, TipoParametro> = parametros.reduce(
+    const parametrosJson: Record<string, string> = parametros.reduce(
       (acc, p) => {
         if (p.nombre.trim()) {
-          acc[p.nombre.trim()] = p.tipo;
+          acc[p.nombre.trim()] = "";
         }
         return acc;
       },
-      {} as Record<string, TipoParametro>
+      {} as Record<string, string>
     );
 
     const payload: CategoriaPayload = {
@@ -218,26 +218,7 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
                 setParametros(copy);
               }}
             />
-          </div>
-
-          <div className="flex flex-col gap-1">
-            <label className="text-xs text-gray-500">
-              Tipo de dato
-            </label>
-            <select
-              value={p.tipo}
-              onChange={(e) => {
-                const copy = [...parametros];
-                copy[index].tipo = e.target.value as TipoParametro;
-                setParametros(copy);
-              }}
-              className="border rounded-lg p-2 text-sm"
-            >
-              <option value="string">Texto</option>
-              <option value="number">Número</option>
-              <option value="boolean">Booleano</option>
-            </select>
-          </div>
+          </div>          
         </div>
       </div>
     ))}

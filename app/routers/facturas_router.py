@@ -52,6 +52,7 @@ def crear_factura(request: Request, factura_data: FacturaSchema, db: Session = D
         detalle_model = FacturaDetalle(
             producto_id=det.producto_id,
             presentacion_id=det.presentacion_id,
+            variante_id=det.variante_id,
             descripcion=det.descripcion,
             cantidad=det.cantidad,
             precio_unitario=det.precio_unitario,
@@ -147,6 +148,7 @@ def actualizar_factura(request: Request, factura_id: int, factura_data: FacturaS
         detalle_model = FacturaDetalle(
             producto_id=det.producto_id,
             presentacion_id=det.presentacion_id,
+            variante_id=det.variante_id,
             descripcion=det.descripcion,
             cantidad=det.cantidad,
             precio_unitario=det.precio_unitario,

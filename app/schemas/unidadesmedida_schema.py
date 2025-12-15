@@ -1,5 +1,5 @@
 # app/schemas.py
-from pydantic import BaseModel
+from pydantic import BaseModel,ConfigDict
 from typing import Optional
 
 class UnidadesMedidaBase(BaseModel):
@@ -16,5 +16,4 @@ class UnidadesMedidaUpdate(BaseModel):
 class UnidadMedidaRead(UnidadesMedidaBase):
     id: int   
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
