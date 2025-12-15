@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import Input from "./input";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
@@ -12,12 +13,16 @@ import {
 
 const ReactSwal = withReactContent(Swal);
 
+/* =======================
+   Interfaces
+======================= */
+
 interface Producto {
   id: number;
   nombre: string;
   codigo: string;
   activo: boolean;
-  tiene_variantes?: boolean;  
+  tiene_variantes?: boolean;
 }
 
 interface Presentacion {
@@ -30,13 +35,13 @@ interface Presentacion {
 interface Variante {
   id: number;
   descripcion: string;
-  precio_venta: number;  
+  precio_venta: number;
 }
 
 interface Props {
   valueProductoId: number | null;
-  valuePresentacionId: number  | null;
-  valueVarianteId: number  | null;
+  valuePresentacionId: number | null;
+  valueVarianteId: number | null;
   onSelect: (detalle: {
     producto_id: number;
     presentacion_id: number;
@@ -48,42 +53,76 @@ interface Props {
   placeholder?: string;
 }
 
+/* =======================
+   Component
+======================= */
+
 const ProductWithPresentation: React.FC<Props> = ({
   valueProductoId,
   onSelect,
   placeholder,
 }) => {
   const [productos, setProductos] = useState<Producto[]>([]);
-  const [productoSeleccionado, setProductoSeleccionado] = useState<Producto | null>(null);
+  const [productoSeleccionado, setProductoSeleccionado] =
+    useState<Producto | null>(null);
   const [query, setQuery] = useState("");
 
-  useEffect(() => {
-    async function loadProductos() {
-      try {
-        const prodsRaw = await obtenerProductosActivos();
-        const prods: Producto[] = prodsRaw.map((p) => ({
-          id: p.id!,
-          nombre: p.nombre || "",
-          codigo: p.codigo || "",
-          activo: p.activo ?? true,
-          tiene_variantes: p.tiene_variantes ?? false,
-        }));
-        setProductos(prods);
+  /* ===== refs y posición dropdown ===== */
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [pos, setPos] = useState({ top: 0, left: 0, width: 0 });
 
-        if (valueProductoId) {
-          const prod = prods.find((p) => p.id === valueProductoId) || null;
-          setProductoSeleccionado(prod);
-        }
-      } catch (err) {
-        console.error("Error cargando productos:", err);
+  /* =======================
+     Load productos
+  ======================= */
+  useEffect(() => {
+    async function load() {
+      const prodsRaw = await obtenerProductosActivos();
+      const prods: Producto[] = prodsRaw.map((p) => ({
+        id: p.id!,
+        nombre: p.nombre || "",
+        codigo: p.codigo || "",
+        activo: p.activo ?? true,
+        tiene_variantes: p.tiene_variantes ?? false,
+      }));
+
+      setProductos(prods);
+
+      if (valueProductoId) {
+        setProductoSeleccionado(
+          prods.find((p) => p.id === valueProductoId) || null
+        );
       }
     }
-    loadProductos();
+    load();
   }, [valueProductoId]);
 
+  /* =======================
+     Helpers
+  ======================= */
+  const calcularPosicion = () => {
+    if (!inputRef.current) return;
+    const r = inputRef.current.getBoundingClientRect();
+    setPos({
+      top: r.bottom + window.scrollY,
+      left: r.left + window.scrollX,
+      width: r.width,
+    });
+  };
+
+  const filteredProducts = query
+    ? productos.filter(
+        (p) =>
+          p.nombre.toLowerCase().includes(query.toLowerCase()) ||
+          p.codigo.toLowerCase().includes(query.toLowerCase())
+      )
+    : productos;
+
+  /* =======================
+     Modales
+  ======================= */
   const abrirModalVariantes = (producto: Producto, variantes: Variante[]) => {
     ReactSwal.fire({
-      title: <p>Selecciona la variante</p>,
+      title: "Selecciona la variante",
       html: (
         <div>
           {variantes.map((v) => (
@@ -104,11 +143,14 @@ const ProductWithPresentation: React.FC<Props> = ({
         </div>
       ),
       showConfirmButton: false,
-      width: 800,
+      width: 700,
     });
   };
 
-  const abrirModalPresentaciones = async (producto: Producto, variante: Variante | null) => {
+  const abrirModalPresentaciones = async (
+    producto: Producto,
+    variante: Variante | null
+  ) => {
     const presRaw = await listarPresentaciones(producto.id);
     const presentaciones: Presentacion[] = presRaw.map((p) => ({
       id: p.id!,
@@ -117,19 +159,19 @@ const ProductWithPresentation: React.FC<Props> = ({
       precio_venta: p.precio_venta ?? 0,
     }));
 
-    if (presentaciones.length === 0) return;
-
     ReactSwal.fire({
-      title: <p>Selecciona la presentación</p>,
+      title: "Selecciona la presentación",
       html: (
         <div>
           {presentaciones.map((p) => {
-            const precioFinal = variante ? variante.precio_venta * p.cantidad_equivalente : p.precio_venta ?? 0;
+            const precio = variante
+              ? variante.precio_venta * p.cantidad_equivalente
+              : p.precio_venta ?? 0;
 
             return (
               <button
                 key={p.id}
-                className="w-full p-2 mb-2 border rounded cursor-pointer"
+                className="w-full p-2 mb-2 border rounded"
                 onClick={() => {
                   ReactSwal.close();
                   onSelect({
@@ -138,15 +180,15 @@ const ProductWithPresentation: React.FC<Props> = ({
                     presentacion_id: p.id,
                     descripcion: variante
                       ? `${variante.descripcion} - ${p.tipo_presentacion}`
-                      : `${p.tipo_presentacion}`,
-                    precio_unitario: precioFinal,
+                      : p.tipo_presentacion,
+                    precio_unitario: precio,
                     presentacion_nombre: p.tipo_presentacion,
                   });
                 }}
               >
                 <div className="flex justify-between">
                   <span>{p.tipo_presentacion}</span>
-                  <strong>${precioFinal.toLocaleString()}</strong>
+                  <strong>${precio.toLocaleString()}</strong>
                 </div>
               </button>
             );
@@ -154,41 +196,53 @@ const ProductWithPresentation: React.FC<Props> = ({
         </div>
       ),
       showConfirmButton: false,
-      width: 800,
+      width: 700,
     });
   };
 
-  const filteredProducts = query
-    ? productos.filter(
-        (p) =>
-          p.nombre.toLowerCase().includes(query.toLowerCase()) ||
-          p.codigo.toLowerCase().includes(query.toLowerCase())
-      )
-    : productos;
-
+  /* =======================
+     Render
+  ======================= */
   return (
-    <div className="space-y-2 relative">
+    <>
       <Input
+        ref={inputRef}
         placeholder={placeholder || "Buscar producto"}
         value={productoSeleccionado?.nombre || query}
+        onFocus={calcularPosicion}
         onChange={(e) => {
           setQuery(e.target.value);
           setProductoSeleccionado(null);
+          calcularPosicion();
         }}
-        className="w-full border rounded p-2"
       />
 
-      {query && !productoSeleccionado && (
-        <ul className="border max-h-60 overflow-y-auto bg-white shadow absolute z-50 w-full">
-          {filteredProducts.map((p, i) => (
-            <li
-              key={p.id}
-              className="p-2 hover:bg-gray-100 cursor-pointer"
-              onClick={async () => {
-                setProductoSeleccionado(p);
-                setQuery("");
+      {query &&
+        !productoSeleccionado &&
+        createPortal(
+          <ul
+            style={{
+              position: "absolute",
+              top: pos.top,
+              left: pos.left,
+              width: pos.width,
+              maxHeight: 260,
+              overflowY: "auto",
+              background: "white",
+              border: "1px solid #e5e7eb",
+              borderRadius: 8,
+              boxShadow: "0 10px 25px rgba(0,0,0,.15)",
+              zIndex: 9999,
+            }}
+          >
+            {filteredProducts.map((p) => (
+              <li
+                key={p.id}
+                className="p-2 hover:bg-gray-100 cursor-pointer"
+                onClick={async () => {
+                  setProductoSeleccionado(p);
+                  setQuery("");
 
-                try {
                   const variantesRaw = await listarVariantes(p.id);
                   const variantes: Variante[] = variantesRaw.map((v) => ({
                     id: v.id!,
@@ -199,40 +253,17 @@ const ProductWithPresentation: React.FC<Props> = ({
                   if (variantes.length > 0) {
                     abrirModalVariantes(p, variantes);
                   } else {
-                    const presRaw = await listarPresentaciones(p.id);
-                    const presentaciones: Presentacion[] = presRaw.map((pr) => ({
-                      id: pr.id!,
-                      tipo_presentacion: pr.tipo_presentacion || "",
-                      cantidad_equivalente: pr.cantidad_equivalente ?? 1,
-                      precio_venta: pr.precio_venta ?? 0,
-                    }));
-
-                    if (presentaciones.length === 1) {
-                      const pres = presentaciones[0];
-                      onSelect({
-                        producto_id: p.id,
-                        variante_id: null,
-                        presentacion_id: pres.id,
-                        descripcion: `${pres.tipo_presentacion}`, // solo presentación
-                        precio_unitario: pres.precio_venta ?? 0,
-                        presentacion_nombre: pres.tipo_presentacion,
-                      });
-                    } else if (presentaciones.length > 1) {
-                      abrirModalPresentaciones(p, null);
-                    }
+                    abrirModalPresentaciones(p, null);
                   }
-                } catch (error) {
-                  console.error("Error consultando variantes o presentaciones:", error);
-                  abrirModalPresentaciones(p, null);
-                }
-              }}
-            >
-              {p.nombre} ({p.codigo})
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
+                }}
+              >
+                {p.nombre} ({p.codigo})
+              </li>
+            ))}
+          </ul>,
+          document.body
+        )}
+    </>
   );
 };
 
