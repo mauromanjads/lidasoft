@@ -1,7 +1,7 @@
 export interface FacturaDetalleForm {
   producto_id: number;
   presentacion_id: number;
-  variante_id: number;
+   variante_id: number | null; 
   descripcion: string;
   cantidad: number;
   precio_unitario: number;

@@ -1,0 +1,105 @@
+/* ==============================
+   WRAPPER
+============================== */
+.detalle-grid-wrapper {
+  border: 1px solid #d1d5db;
+  border-radius: 12px;
+  overflow: hidden;
+  background: white;
+}
+
+/* ==============================
+   GRID BASE
+============================== */
+.detalle-grid {
+  display: grid;
+  grid-template-columns:
+    220px
+    240px
+    90px
+    120px
+    110px
+    80px
+    120px
+    120px
+    60px;
+  align-items: center;
+}
+
+/* ==============================
+   HEADER
+============================== */
+.detalle-grid.header {
+  background: linear-gradient(to right, #1d4e89, #1e40af);
+  color: white;
+  font-weight: 600;
+  font-size: 14px;
+  height: 48px;
+}
+
+.detalle-grid.header > div {
+  padding: 10px;
+  border-right: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* ==============================
+   BODY
+============================== */
+.detalle-grid-body {
+  max-height: 360px;
+  overflow-y: auto;
+}
+
+.detalle-grid.row {
+  min-height: 48px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.detalle-grid.row > div {
+  padding: 6px 8px;
+}
+
+/* ==============================
+   INPUT ALIGN
+============================== */
+.center {
+  text-align: center;
+}
+
+.right {
+  text-align: right;
+}
+
+/* ==============================
+   UX
+============================== */
+.detalle-grid.row:hover {
+  background-color: #f9fafb;
+}
+
+.truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ==============================
+   BOTÓN ELIMINAR
+============================== */
+.btn-delete {
+  font-size: 18px;
+  color: #dc2626;
+  transition: transform 0.2s ease;
+}
+
+.btn-delete:hover {
+  transform: scale(1.2);
+}
+
+/* ==============================
+   INPUTS
+============================== */
+.detalle-grid input {
+  height: 34px;
+  font-size: 14px;
+}

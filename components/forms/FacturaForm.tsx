@@ -10,7 +10,7 @@ import SelectFormasPago from "@/components/ui/selects/FormasPagoSelect";
 import SelectMedioPago from "@/components/ui/selects/MediosPagoSelect";
 import { FaIdCard, FaMapMarkerAlt, FaPhone, FaMobileAlt, FaEnvelope } from "react-icons/fa";
 import { actualizarFactura, crearFactura } from "@/lib/api/facturas";
-import ProductoConPresentacion from "@/components/ui/productoAutocomplete";
+import DetalleVentaGrid from "@/components/ui/detalleVentaGrid";
 import Swal from "sweetalert2";
 
 interface FacturaFormProps {
@@ -264,7 +264,7 @@ const FacturaFormComponent: React.FC<FacturaFormProps> = ({ factura }) => {
             detalles: formData.detalles.map(d => ({
               producto_id: d.producto_id,
               presentacion_id: d.presentacion_id,
-               variante_id: d.variante_id || null,
+              variante_id: d.variante_id || 0,
               descripcion: d.descripcion,
               cantidad: d.cantidad,
               precio_unitario: d.precio_unitario,
@@ -430,118 +430,17 @@ const FacturaFormComponent: React.FC<FacturaFormProps> = ({ factura }) => {
 
       </div>
       {/* Tabla de detalles */}
-      <table className="w-full table-fixed border border-gray-300 mb-4">
-        <thead className="bg-gray-100">
-          <tr>
-            <th className="border p-2 w-[200px]">Producto</th>
-            <th className="border p-2 w-[200px]">Descripción</th>        
-            <th className="border p-2 w-[80px]">Cantidad</th>
-            <th className="border p-2 w-[120px]">Precio Unitario</th>
-            <th className="border p-2 w-[100px]">Descuento</th>
-            <th className="border p-2 w-[90px]">IVA (%)</th>
-            <th className="border p-2 w-[120px]">Subtotal</th>
-            <th className="border p-2 w-[120px]">Total</th>
-            <th className="border p-2 w-[60px]">Acc</th>
-          </tr>
-        </thead>
+        <div className="flex-1 overflow-y-auto max-h-[400px] border rounded-xl">
 
-        <tbody>
-          {formData.detalles.map((det, i) => (
-            <tr key={i}>
-              {/* ======= PRODUCTO ======= */}
-              <td className="border p-1 w-[200px]">
-                <ProductoConPresentacion
-                  valueProductoId={det.producto_id}
-                  valuePresentacionId={det.presentacion_id}
-                  valueVarianteId={det.variante_id}
-                  onSelect={(d) => {
-                    handleDetalleChange(i, "producto_id", d.producto_id);
-                    handleDetalleChange(i, "presentacion_id", d.presentacion_id);
-                    handleDetalleChange(i, "variante_id", d.variante_id ?? null);
-                    handleDetalleChange(i, "precio_unitario", d.precio_unitario);            
-                    handleDetalleChange(i, "descripcion", d.descripcion);       
-                   
+          <DetalleVentaGrid
+            detalles={formData.detalles}
+            onChange={(i, field, value) =>
+              handleDetalleChange(i, field, value)
+            }
+            onDelete={(i) => eliminarDetalle(i)}
+          />
 
-                    const cantidad = formData.detalles[i].cantidad || 1;
-                    handleDetalleChange(i, "subtotal", cantidad * d.precio_unitario);
-                  }}
-                />
-              </td>
-
-              {/* ======= VARIANTE ======= */}
-              <td className="border p-1">{det.descripcion || "-"}</td>
-
-             
-
-              {/* ======= CANTIDAD ======= */}
-              <td className="border p-1">
-                <Input
-                  type="number"
-                  value={det.cantidad}
-                  onChange={(e) =>
-                    handleDetalleChange(i, "cantidad", Number(e.target.value))
-                  }
-                  className="text-center"
-                />
-              </td>
-
-              {/* ======= PRECIO UNITARIO ======= */}
-              <td className="border p-1" >
-                <Input
-                  type="number"
-                  value={det.precio_unitario}
-                  onChange={(e) =>
-                    handleDetalleChange(i, "precio_unitario", Number(e.target.value))
-                  }
-                  className="text-right"
-                />
-              </td>
-
-              {/* ======= DESCUENTO ======= */}
-              <td className="border p-1 ">
-                <Input
-                  type="number"
-                  value={det.descuento}
-                  onChange={(e) =>
-                    handleDetalleChange(i, "descuento", Number(e.target.value))
-                  }
-                  className="text-right"
-                />
-              </td>
-
-              {/* ======= IVA ======= */}
-              <td className="border p-1">
-                <Input
-                  type="number"
-                  value={det.iva}
-                  onChange={(e) =>
-                    handleDetalleChange(i, "iva", Number(e.target.value))
-                  }
-                  className="text-right"
-                />
-              </td>
-
-              {/* ======= SUBTOTAL ======= */}
-              <td className="border p-1 text-right">{det.subtotal.toFixed(2)}</td>
-
-              {/* ======= TOTAL ======= */}
-              <td className="border p-1 text-right">{det.total.toFixed(2)}</td>
-
-              {/* ======= ACCIÓN ======= */}
-              <td className="border p-1 text-center">
-                <button
-                  type="button"
-                  onClick={() => eliminarDetalle(i)}
-                  className="text-red-600 text-xl hover:scale-125 transition"
-                >
-                  ❌
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-
+       </div>
 
       <Button onClick={agregarDetalle} className="mb-4">
         Agregar Producto
