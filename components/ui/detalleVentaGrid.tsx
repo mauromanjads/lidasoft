@@ -39,13 +39,17 @@ export default function DetalleVentaGrid({
 
   /* 👉 UN SOLO ESTADO */
   const [cols, setCols] = useState([
-    250, 250, 90, 100, 120, 80, 120, 120, 60,
+    250, null, 90, 100, 120, 80, 120, 120, 60,
   ]);
 
-  const gridTemplate = cols.map((w) => `${w}px`).join(" ");
+  const gridTemplate = cols
+  .map((w) => (w ? `${w}px` : "minmax(200px, 1fr)"))
+  .join(" ");
 
   const startResize = (index: number, startX: number) => {
-    const startWidth = cols[index];
+    if (cols[index] === null) return;
+
+    const startWidth = cols[index]!;
 
     const onMove = (e: MouseEvent) => {
       const delta = e.clientX - startX;
@@ -56,14 +60,12 @@ export default function DetalleVentaGrid({
       });
     };
 
-    const onUp = () => {
-      document.removeEventListener("mousemove", onMove);
-      document.removeEventListener("mouseup", onUp);
-    };
-
     document.addEventListener("mousemove", onMove);
-    document.addEventListener("mouseup", onUp);
+    document.addEventListener("mouseup", () => {
+      document.removeEventListener("mousemove", onMove);
+    });
   };
+
 
   return (
     <div className="detalle-grid-wrapper">
@@ -86,12 +88,12 @@ export default function DetalleVentaGrid({
         ].map((t, i) => (
           <div key={i} className="header-cell">
             {t}
-            {i < cols.length - 1 && (
-              <span
-                className="resizer"
-                onMouseDown={(e) => startResize(i, e.clientX)}
-              />
-            )}
+            {i < cols.length - 1 && cols[i] && (
+            <span
+              className="resizer"
+              onMouseDown={(e) => startResize(i, e.clientX)}
+            />
+          )}
           </div>
         ))}
       </div>
@@ -122,7 +124,7 @@ export default function DetalleVentaGrid({
               />
             </div>
 
-            <div className="truncate">{det.descripcion || "-"}</div>
+            <div>{det.descripcion || "-"}</div>
 
             <div>
               <Input

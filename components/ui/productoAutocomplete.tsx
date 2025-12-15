@@ -239,23 +239,56 @@ const ProductWithPresentation: React.FC<Props> = ({
               <li
                 key={p.id}
                 className="p-2 hover:bg-gray-100 cursor-pointer"
-                onClick={async () => {
+                              onClick={async () => {
                   setProductoSeleccionado(p);
                   setQuery("");
 
-                  const variantesRaw = await listarVariantes(p.id);
-                  const variantes: Variante[] = variantesRaw.map((v) => ({
-                    id: v.id!,
-                    descripcion: v.descripcion,
-                    precio_venta: v.precio_venta ?? 0,
-                  }));
+                  try {
+                    // 1️⃣ VARIANTES
+                    const variantesRaw = await listarVariantes(p.id);
+                    const variantes: Variante[] = variantesRaw.map((v) => ({
+                      id: v.id!,
+                      descripcion: v.descripcion,
+                      precio_venta: v.precio_venta ?? 0,
+                    }));
 
-                  if (variantes.length > 0) {
-                    abrirModalVariantes(p, variantes);
-                  } else {
-                    abrirModalPresentaciones(p, null);
+                    if (variantes.length > 0) {
+                      abrirModalVariantes(p, variantes);
+                      return;
+                    }
+
+                    // 2️⃣ PRESENTACIONES
+                    const presRaw = await listarPresentaciones(p.id);
+                    const presentaciones: Presentacion[] = presRaw.map((pr) => ({
+                      id: pr.id!,
+                      tipo_presentacion: pr.tipo_presentacion || "",
+                      cantidad_equivalente: pr.cantidad_equivalente ?? 1,
+                      precio_venta: pr.precio_venta ?? 0,
+                    }));
+
+                    // 👉 UNA sola → auto cargar (ESTO ERA CLAVE)
+                    if (presentaciones.length === 1) {
+                      const pres = presentaciones[0];
+                      onSelect({
+                        producto_id: p.id,
+                        variante_id: null,
+                        presentacion_id: pres.id,
+                        descripcion: pres.tipo_presentacion,
+                        precio_unitario: pres.precio_venta ?? 0,
+                        presentacion_nombre: pres.tipo_presentacion,
+                      });
+                      return;
+                    }
+
+                    // 👉 Varias → modal
+                    if (presentaciones.length > 1) {
+                      abrirModalPresentaciones(p, null);
+                    }
+                  } catch (err) {
+                    console.error(err);
                   }
-                }}
+              }}
+
               >
                 {p.nombre} ({p.codigo})
               </li>
