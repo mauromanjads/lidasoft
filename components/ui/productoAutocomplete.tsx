@@ -137,8 +137,8 @@ const ProductWithPresentation: React.FC<Props> = ({
                     variante_id: variante ? variante.id : null,
                     presentacion_id: p.id,
                     descripcion: variante
-                      ? `${producto.nombre} - ${variante.descripcion} - ${p.tipo_presentacion}`
-                      : `${producto.nombre} - ${p.tipo_presentacion}`,
+                      ? `${variante.descripcion} - ${p.tipo_presentacion}`
+                      : `${p.tipo_presentacion}`,
                     precio_unitario: precioFinal,
                     presentacion_nombre: p.tipo_presentacion,
                   });
@@ -213,7 +213,7 @@ const ProductWithPresentation: React.FC<Props> = ({
                         producto_id: p.id,
                         variante_id: null,
                         presentacion_id: pres.id,
-                        descripcion: `${p.nombre} - ${pres.tipo_presentacion}`, // solo presentación
+                        descripcion: `${pres.tipo_presentacion}`, // solo presentación
                         precio_unitario: pres.precio_venta ?? 0,
                         presentacion_nombre: pres.tipo_presentacion,
                       });

@@ -10,7 +10,7 @@ class FacturaDetalle(Base):
     factura_id = Column(Integer, ForeignKey("facturas.id"), nullable=False)
     producto_id = Column(Integer, nullable=False)
     presentacion_id = Column(Integer, nullable=False)
-    variante_id = Column(Integer, nullable=False)
+    variante_id = Column(Integer, nullable=True)
     descripcion = Column(String(255), nullable=False)
     cantidad = Column(Numeric(14,2), nullable=False)
     precio_unitario = Column(Numeric(14,2), nullable=False)

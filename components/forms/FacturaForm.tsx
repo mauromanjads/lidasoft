@@ -158,7 +158,7 @@ const FacturaFormComponent: React.FC<FacturaFormProps> = ({ factura }) => {
   const handleDetalleChange = (
     index: number,
     field: keyof FacturaDetalleForm,
-    value: number | string
+    value: number | string | null
   ) => {
     setFormData((prev) => ({
       ...prev,
@@ -264,7 +264,7 @@ const FacturaFormComponent: React.FC<FacturaFormProps> = ({ factura }) => {
             detalles: formData.detalles.map(d => ({
               producto_id: d.producto_id,
               presentacion_id: d.presentacion_id,
-               variante_id: d.variante_id,
+               variante_id: d.variante_id || null,
               descripcion: d.descripcion,
               cantidad: d.cantidad,
               precio_unitario: d.precio_unitario,
@@ -280,6 +280,19 @@ const FacturaFormComponent: React.FC<FacturaFormProps> = ({ factura }) => {
           } else {
             await crearFactura(payload); // CREAR
           }
+
+          const mensaje =factura
+          ? "Factura actualizada"
+          : "Factura creada correctamente";
+           Swal.fire({
+                title: "¡Listo!",
+                text: mensaje,
+                icon: "success",
+                confirmButtonText: "Aceptar",
+                timer: 4000,
+                timerProgressBar: true,
+              });
+
         
        
       } catch (err:any) {
@@ -289,7 +302,18 @@ const FacturaFormComponent: React.FC<FacturaFormProps> = ({ factura }) => {
           err.response?.data?.message ||
           err.message ||
           "Error desconocido";
-        setError(mensajeError);
+    
+           Swal.fire({
+              title: "Oops...!",
+              icon: "error",
+              text: err?.response?.data?.detail || err?.message || 'Error desconocido',              
+              confirmButtonText: "Entendido",
+              timer: 4000,
+              timerProgressBar: true,
+            });
+            
+        
+         setError(mensajeError);
       } finally {
         setLoading(false);
       }
@@ -410,8 +434,7 @@ const FacturaFormComponent: React.FC<FacturaFormProps> = ({ factura }) => {
         <thead className="bg-gray-100">
           <tr>
             <th className="border p-2 w-[200px]">Producto</th>
-            <th className="border p-2 w-[150px]">Variante</th>
-            <th className="border p-2 w-[120px]">Presentación</th>
+            <th className="border p-2 w-[200px]">Descripción</th>        
             <th className="border p-2 w-[80px]">Cantidad</th>
             <th className="border p-2 w-[120px]">Precio Unitario</th>
             <th className="border p-2 w-[100px]">Descuento</th>
@@ -434,13 +457,10 @@ const FacturaFormComponent: React.FC<FacturaFormProps> = ({ factura }) => {
                   onSelect={(d) => {
                     handleDetalleChange(i, "producto_id", d.producto_id);
                     handleDetalleChange(i, "presentacion_id", d.presentacion_id);
-                    handleDetalleChange(i, "variante_id", d.variante_id ?? 0);
-                    handleDetalleChange(i, "precio_unitario", d.precio_unitario);
-
-            
-                    handleDetalleChange(i, "descripcion", d.descripcion);
-                    //handleDetalleChange(i, "variante_nombre", descripcionParts[1] || "");
-                    handleDetalleChange(i, "presentacion_nombre", d.presentacion_nombre);
+                    handleDetalleChange(i, "variante_id", d.variante_id ?? null);
+                    handleDetalleChange(i, "precio_unitario", d.precio_unitario);            
+                    handleDetalleChange(i, "descripcion", d.descripcion);       
+                   
 
                     const cantidad = formData.detalles[i].cantidad || 1;
                     handleDetalleChange(i, "subtotal", cantidad * d.precio_unitario);
@@ -451,8 +471,7 @@ const FacturaFormComponent: React.FC<FacturaFormProps> = ({ factura }) => {
               {/* ======= VARIANTE ======= */}
               <td className="border p-1">{det.descripcion || "-"}</td>
 
-              {/* ======= PRESENTACIÓN ======= */}
-              <td className="border p-1">{det.presentacion_nombre || "-"}</td>
+             
 
               {/* ======= CANTIDAD ======= */}
               <td className="border p-1">
@@ -462,28 +481,31 @@ const FacturaFormComponent: React.FC<FacturaFormProps> = ({ factura }) => {
                   onChange={(e) =>
                     handleDetalleChange(i, "cantidad", Number(e.target.value))
                   }
+                  className="text-center"
                 />
               </td>
 
               {/* ======= PRECIO UNITARIO ======= */}
-              <td className="border p-1">
+              <td className="border p-1" >
                 <Input
                   type="number"
                   value={det.precio_unitario}
                   onChange={(e) =>
                     handleDetalleChange(i, "precio_unitario", Number(e.target.value))
                   }
+                  className="text-right"
                 />
               </td>
 
               {/* ======= DESCUENTO ======= */}
-              <td className="border p-1">
+              <td className="border p-1 ">
                 <Input
                   type="number"
                   value={det.descuento}
                   onChange={(e) =>
                     handleDetalleChange(i, "descuento", Number(e.target.value))
                   }
+                  className="text-right"
                 />
               </td>
 
@@ -495,6 +517,7 @@ const FacturaFormComponent: React.FC<FacturaFormProps> = ({ factura }) => {
                   onChange={(e) =>
                     handleDetalleChange(i, "iva", Number(e.target.value))
                   }
+                  className="text-right"
                 />
               </td>
 
