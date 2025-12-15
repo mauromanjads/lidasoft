@@ -1,8 +1,12 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Input from "./input";
 import ProductoConPresentacion from "@/components/ui/productoAutocomplete";
+
+/* =====================
+   Interfaces
+===================== */
 
 interface Detalle {
   producto_id: number | null;
@@ -23,33 +27,83 @@ interface Props {
   onDelete: (index: number) => void;
 }
 
+/* =====================
+   Component
+===================== */
+
 export default function DetalleVentaGrid({
   detalles,
   onChange,
   onDelete,
 }: Props) {
+
+  /* 👉 UN SOLO ESTADO */
+  const [cols, setCols] = useState([
+    250, 250, 90, 100, 120, 80, 120, 120, 60,
+  ]);
+
+  const gridTemplate = cols.map((w) => `${w}px`).join(" ");
+
+  const startResize = (index: number, startX: number) => {
+    const startWidth = cols[index];
+
+    const onMove = (e: MouseEvent) => {
+      const delta = e.clientX - startX;
+      setCols((c) => {
+        const copy = [...c];
+        copy[index] = Math.max(60, startWidth + delta);
+        return copy;
+      });
+    };
+
+    const onUp = () => {
+      document.removeEventListener("mousemove", onMove);
+      document.removeEventListener("mouseup", onUp);
+    };
+
+    document.addEventListener("mousemove", onMove);
+    document.addEventListener("mouseup", onUp);
+  };
+
   return (
     <div className="detalle-grid-wrapper">
-      
+
       {/* ===== HEADER ===== */}
-      <div className="detalle-grid header">
-        <div>Producto</div>
-        <div>Descripción</div>
-        <div className="center">Cant</div>
-        <div className="right">Precio</div>
-        <div className="right">Desc</div>
-        <div className="right">IVA</div>
-        <div className="right">Subtotal</div>
-        <div className="right">Total</div>
-        <div className="center">Acc</div>
+      <div
+        className="detalle-grid header"
+        style={{ gridTemplateColumns: gridTemplate }}
+      >
+        {[
+          "Producto",
+          "Descripción",
+          "Cant",
+          "Precio",
+          "Desc",
+          "IVA",
+          "Subtotal",
+          "Total",
+          "Acc",
+        ].map((t, i) => (
+          <div key={i} className="header-cell">
+            {t}
+            {i < cols.length - 1 && (
+              <span
+                className="resizer"
+                onMouseDown={(e) => startResize(i, e.clientX)}
+              />
+            )}
+          </div>
+        ))}
       </div>
 
       {/* ===== BODY ===== */}
       <div className="detalle-grid-body">
         {detalles.map((det, i) => (
-          <div key={i} className="detalle-grid row">
-
-            {/* PRODUCTO */}
+          <div
+            key={i}
+            className="detalle-grid row"
+            style={{ gridTemplateColumns: gridTemplate }}
+          >
             <div>
               <ProductoConPresentacion
                 valueProductoId={det.producto_id}
@@ -68,12 +122,8 @@ export default function DetalleVentaGrid({
               />
             </div>
 
-            {/* DESCRIPCIÓN */}
-            <div className="truncate">
-              {det.descripcion || "-"}
-            </div>
+            <div className="truncate">{det.descripcion || "-"}</div>
 
-            {/* CANTIDAD */}
             <div>
               <Input
                 type="number"
@@ -85,7 +135,6 @@ export default function DetalleVentaGrid({
               />
             </div>
 
-            {/* PRECIO */}
             <div>
               <Input
                 type="number"
@@ -97,7 +146,6 @@ export default function DetalleVentaGrid({
               />
             </div>
 
-            {/* DESCUENTO */}
             <div>
               <Input
                 type="number"
@@ -109,7 +157,6 @@ export default function DetalleVentaGrid({
               />
             </div>
 
-            {/* IVA */}
             <div>
               <Input
                 type="number"
@@ -121,17 +168,9 @@ export default function DetalleVentaGrid({
               />
             </div>
 
-            {/* SUBTOTAL */}
-            <div className="right">
-              {det.subtotal.toFixed(2)}
-            </div>
+            <div className="right">{det.subtotal.toFixed(2)}</div>
+            <div className="right">{det.total.toFixed(2)}</div>
 
-            {/* TOTAL */}
-            <div className="right">
-              {det.total.toFixed(2)}
-            </div>
-
-            {/* ACCIÓN */}
             <div className="center">
               <button
                 type="button"
@@ -141,7 +180,6 @@ export default function DetalleVentaGrid({
                 ❌
               </button>
             </div>
-
           </div>
         ))}
       </div>

@@ -13,7 +13,7 @@
 .detalle-grid {
   display: grid;
   grid-template-columns:
-    220px
+    340px
     240px
     90px
     120px
@@ -104,3 +104,23 @@
   height: 34px;
   font-size: 14px;
 }
+
+.header-cell {
+  position: relative;
+  padding: 10px;
+  user-select: none;
+}
+
+.resizer {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 5px;
+  height: 100%;
+  cursor: col-resize;
+}
+
+.resizer:hover {
+  background: rgba(255, 255, 255, 0.4);
+}
+
