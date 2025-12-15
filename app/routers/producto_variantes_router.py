@@ -9,7 +9,6 @@ from app.schemas.productovariantes_schema import (
     ProductoVarianteResponse
 )
 from app.models.producto_variantes import ProductoVariante
-from app.utils.variantes import build_descripcion_from_parametros
 
 # ✅ PREFIX CORRECTO
 router = APIRouter(
@@ -46,11 +45,9 @@ def crear_variante(
     producto_id: int,
     data: ProductoVarianteCreate,
     db: Session = Depends(get_db)
-):
-    descripcion = build_descripcion_from_parametros(data.parametros)
+):   
     nueva = ProductoVariante(
-        producto_id=producto_id,
-        descripcion=descripcion,
+        producto_id=producto_id,        
         **data.model_dump()
     )
     db.add(nueva)
@@ -97,15 +94,7 @@ def actualizar_variante(
     )
 
     if not variante:
-        raise HTTPException(status_code=404, detail="Variante no encontrada")
-
-    datos = data.model_dump(exclude_unset=True)
-
-    # 🔥 Si cambian parámetros → regenerar descripción
-    if "parametros" in datos:
-        variante.descripcion = build_descripcion_from_parametros(
-            datos["parametros"]
-        )
+      raise HTTPException(status_code=404, detail="Variante no encontrada")
 
     for k, v in data.model_dump(exclude_unset=True).items():
         setattr(variante, k, v)

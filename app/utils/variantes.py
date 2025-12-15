@@ -5,17 +5,15 @@ from typing import Dict
 
 def build_descripcion_from_parametros(
     parametros: Dict[str, str],
+    orden: list[str] | None = None,
     separador: str = " - "
 ) -> str:
-    """
-    Convierte:
-    { "color": "Rojo", "talla": "M" }
-    en:
-    "Rojo - M"
-    """
     if not parametros:
         return ""
 
-    return separador.join(
-        str(v) for v in parametros.values() if v
-    )
+    if orden:
+        valores = [parametros.get(k) for k in orden if parametros.get(k)]
+    else:
+        valores = [v for v in parametros.values() if v]
+
+    return separador.join(map(str, valores))

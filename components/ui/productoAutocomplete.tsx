@@ -234,7 +234,7 @@ const ProductWithPresentation: React.FC<Props> = ({
 
                     const variantes: Variante[] = variantesRaw.map((v) => ({
                       id: v.id!, // 👈 AQUÍ está la clave                     
-                      descripcion: v.descripcion || v.sku || `Variante`,
+                      descripcion: v.descripcion,
                       precio_venta: v.precio_venta ?? 0,
                     }));
 

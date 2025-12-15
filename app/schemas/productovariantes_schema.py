@@ -1,7 +1,8 @@
 # app/schemas.py
-from pydantic import BaseModel, Field,ConfigDict
+from pydantic import BaseModel, Field,ConfigDict,computed_field
 from typing import Optional, Dict, Any
 from datetime import datetime
+from app.utils.variantes import build_descripcion_from_parametros
 
 # -----------------------------
 # Base de la Variante
@@ -37,6 +38,10 @@ class ProductoVarianteResponse(ProductoVarianteBase):
     producto_id:int
     created_at: datetime
     updated_at: datetime
+
+    @computed_field    
+    def descripcion(self) -> str:
+        return build_descripcion_from_parametros(self.parametros)
 
     model_config = ConfigDict(from_attributes=True)
 
