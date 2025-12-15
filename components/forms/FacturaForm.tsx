@@ -405,12 +405,13 @@ const FacturaFormComponent: React.FC<FacturaFormProps> = ({ factura }) => {
         </div>
 
       </div>
-
       {/* Tabla de detalles */}
-        <table className="w-full table-fixed border border-gray-300 mb-4">
+      <table className="w-full table-fixed border border-gray-300 mb-4">
         <thead className="bg-gray-100">
           <tr>
-            <th className="border p-2 w-[350px]">Producto</th>
+            <th className="border p-2 w-[200px]">Producto</th>
+            <th className="border p-2 w-[150px]">Variante</th>
+            <th className="border p-2 w-[120px]">Presentación</th>
             <th className="border p-2 w-[80px]">Cantidad</th>
             <th className="border p-2 w-[120px]">Precio Unitario</th>
             <th className="border p-2 w-[100px]">Descuento</th>
@@ -424,31 +425,34 @@ const FacturaFormComponent: React.FC<FacturaFormProps> = ({ factura }) => {
         <tbody>
           {formData.detalles.map((det, i) => (
             <tr key={i}>
-              {/* ======= PRODUCTO + PRESENTACIÓN ======= */}
-              <td className="border p-1 w-[350px]">
+              {/* ======= PRODUCTO ======= */}
+              <td className="border p-1 w-[200px]">
                 <ProductoConPresentacion
                   valueProductoId={det.producto_id}
                   valuePresentacionId={det.presentacion_id}
                   valueVarianteId={det.variante_id}
                   onSelect={(d) => {
                     handleDetalleChange(i, "producto_id", d.producto_id);
-                    handleDetalleChange(i, "presentacion_id", d.presentacion_id);  
-                    handleDetalleChange(i, "variante_id", d.variante_id??0);
+                    handleDetalleChange(i, "presentacion_id", d.presentacion_id);
+                    handleDetalleChange(i, "variante_id", d.variante_id ?? 0);
                     handleDetalleChange(i, "precio_unitario", d.precio_unitario);
+
+            
                     handleDetalleChange(i, "descripcion", d.descripcion);
+                    //handleDetalleChange(i, "variante_nombre", descripcionParts[1] || "");
+                    handleDetalleChange(i, "presentacion_nombre", d.presentacion_nombre);
 
                     const cantidad = formData.detalles[i].cantidad || 1;
                     handleDetalleChange(i, "subtotal", cantidad * d.precio_unitario);
-                    handleDetalleChange(i, "presentacion_nombre", d.presentacion_nombre);
                   }}
                 />
-                {/* ⭐ Badge de presentación (visual, moderno) */}
-                  {det.presentacion_nombre && (
-                    <span className="bg-blue-100 text-blue-700 text-xs px-2 py-1 rounded ml-1 mt-1 inline-block">
-                      {det.presentacion_nombre}
-                    </span>
-                  )}
               </td>
+
+              {/* ======= VARIANTE ======= */}
+              <td className="border p-1">{det.descripcion || "-"}</td>
+
+              {/* ======= PRESENTACIÓN ======= */}
+              <td className="border p-1">{det.presentacion_nombre || "-"}</td>
 
               {/* ======= CANTIDAD ======= */}
               <td className="border p-1">
@@ -514,6 +518,8 @@ const FacturaFormComponent: React.FC<FacturaFormProps> = ({ factura }) => {
           ))}
         </tbody>
       </table>
+
+
       <Button onClick={agregarDetalle} className="mb-4">
         Agregar Producto
       </Button>

@@ -12,10 +12,6 @@ import {
 
 const ReactSwal = withReactContent(Swal);
 
-/* =======================
-   Interfaces
-======================= */
-
 interface Producto {
   id: number;
   nombre: string;
@@ -52,23 +48,14 @@ interface Props {
   placeholder?: string;
 }
 
-/* =======================
-   Componente
-======================= */
-
 const ProductWithPresentation: React.FC<Props> = ({
   valueProductoId,
   onSelect,
   placeholder,
 }) => {
   const [productos, setProductos] = useState<Producto[]>([]);
-  const [productoSeleccionado, setProductoSeleccionado] =
-    useState<Producto | null>(null);
+  const [productoSeleccionado, setProductoSeleccionado] = useState<Producto | null>(null);
   const [query, setQuery] = useState("");
-
-  /* =======================
-     Cargar productos
-  ======================= */
 
   useEffect(() => {
     async function loadProductos() {
@@ -81,7 +68,6 @@ const ProductWithPresentation: React.FC<Props> = ({
           activo: p.activo ?? true,
           tiene_variantes: p.tiene_variantes ?? false,
         }));
-
         setProductos(prods);
 
         if (valueProductoId) {
@@ -92,18 +78,10 @@ const ProductWithPresentation: React.FC<Props> = ({
         console.error("Error cargando productos:", err);
       }
     }
-
     loadProductos();
   }, [valueProductoId]);
 
-  /* =======================
-     Modal de variantes
-  ======================= */
-
-  const abrirModalVariantes = (
-    producto: Producto,
-    variantes: Variante[]
-  ) => {
+  const abrirModalVariantes = (producto: Producto, variantes: Variante[]) => {
     ReactSwal.fire({
       title: <p>Selecciona la variante</p>,
       html: (
@@ -126,21 +104,12 @@ const ProductWithPresentation: React.FC<Props> = ({
         </div>
       ),
       showConfirmButton: false,
-      width: 420,
+      width: 800,
     });
   };
 
-
-  /* =======================
-     Modal de presentaciones
-  ======================= */
-
-  const abrirModalPresentaciones = async (
-    producto: Producto,
-    variante: Variante | null
-  ) => {
+  const abrirModalPresentaciones = async (producto: Producto, variante: Variante | null) => {
     const presRaw = await listarPresentaciones(producto.id);
-
     const presentaciones: Presentacion[] = presRaw.map((p) => ({
       id: p.id!,
       tipo_presentacion: p.tipo_presentacion || "",
@@ -155,9 +124,7 @@ const ProductWithPresentation: React.FC<Props> = ({
       html: (
         <div>
           {presentaciones.map((p) => {
-            const precioFinal = variante
-              ? variante.precio_venta * p.cantidad_equivalente
-              : p.precio_venta ?? 0;
+            const precioFinal = variante ? variante.precio_venta * p.cantidad_equivalente : p.precio_venta ?? 0;
 
             return (
               <button
@@ -187,13 +154,9 @@ const ProductWithPresentation: React.FC<Props> = ({
         </div>
       ),
       showConfirmButton: false,
-      width: 420,
+      width: 800,
     });
   };
-
-  /* =======================
-     Filtro productos
-  ======================= */
 
   const filteredProducts = query
     ? productos.filter(
@@ -202,10 +165,6 @@ const ProductWithPresentation: React.FC<Props> = ({
           p.codigo.toLowerCase().includes(query.toLowerCase())
       )
     : productos;
-
-  /* =======================
-     Render
-  ======================= */
 
   return (
     <div className="space-y-2 relative">
@@ -221,34 +180,52 @@ const ProductWithPresentation: React.FC<Props> = ({
 
       {query && !productoSeleccionado && (
         <ul className="border max-h-60 overflow-y-auto bg-white shadow absolute z-50 w-full">
-          {filteredProducts.map((p) => (
+          {filteredProducts.map((p, i) => (
             <li
               key={p.id}
               className="p-2 hover:bg-gray-100 cursor-pointer"
               onClick={async () => {
-                  setProductoSeleccionado(p);
-                  setQuery("");
+                setProductoSeleccionado(p);
+                setQuery("");
 
-                  try {
-                    const variantesRaw = await listarVariantes(p.id);
+                try {
+                  const variantesRaw = await listarVariantes(p.id);
+                  const variantes: Variante[] = variantesRaw.map((v) => ({
+                    id: v.id!,
+                    descripcion: v.descripcion,
+                    precio_venta: v.precio_venta ?? 0,
+                  }));
 
-                    const variantes: Variante[] = variantesRaw.map((v) => ({
-                      id: v.id!, // 👈 AQUÍ está la clave                     
-                      descripcion: v.descripcion,
-                      precio_venta: v.precio_venta ?? 0,
+                  if (variantes.length > 0) {
+                    abrirModalVariantes(p, variantes);
+                  } else {
+                    const presRaw = await listarPresentaciones(p.id);
+                    const presentaciones: Presentacion[] = presRaw.map((pr) => ({
+                      id: pr.id!,
+                      tipo_presentacion: pr.tipo_presentacion || "",
+                      cantidad_equivalente: pr.cantidad_equivalente ?? 1,
+                      precio_venta: pr.precio_venta ?? 0,
                     }));
 
-                    if (variantes.length > 0) {
-                      abrirModalVariantes(p, variantes);
-                    } else {
+                    if (presentaciones.length === 1) {
+                      const pres = presentaciones[0];
+                      onSelect({
+                        producto_id: p.id,
+                        variante_id: null,
+                        presentacion_id: pres.id,
+                        descripcion: `${p.nombre} - ${pres.tipo_presentacion}`, // solo presentación
+                        precio_unitario: pres.precio_venta ?? 0,
+                        presentacion_nombre: pres.tipo_presentacion,
+                      });
+                    } else if (presentaciones.length > 1) {
                       abrirModalPresentaciones(p, null);
                     }
-                  } catch (error) {
-                    console.error("Error consultando variantes:", error);
-                    abrirModalPresentaciones(p, null);
                   }
-                }}
-
+                } catch (error) {
+                  console.error("Error consultando variantes o presentaciones:", error);
+                  abrirModalPresentaciones(p, null);
+                }
+              }}
             >
               {p.nombre} ({p.codigo})
             </li>
