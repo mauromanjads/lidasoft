@@ -299,7 +299,10 @@ const FacturaFormComponent: React.FC<FacturaFormProps> = ({ factura }) => {
                 timer: 4000,
                 timerProgressBar: true,
               });
-
+          
+          if (!factura?.id) {
+            await resetFormulario();
+          }
         
        
       } catch (err:any) {
@@ -325,6 +328,69 @@ const FacturaFormComponent: React.FC<FacturaFormProps> = ({ factura }) => {
         setLoading(false);
       }
     };
+
+   const resetFormulario = async () => {
+
+      // 👉 Cliente por defecto (Consumidor Final si existe)
+      const consumidorFinal = clientes.find(c => c.nombre === "CONSUMIDOR FINAL");
+      const idcliente = consumidorFinal?.id ?? clientes?.[0]?.id ?? null;
+
+      setClienteId(idcliente);
+      setVendedorId(vendedores?.[0]?.id ?? null);
+
+      const hoy = new Date().toLocaleDateString("en-CA");
+
+      // 🔁 Volver a pedir resolución para mostrar el próximo consecutivo
+      const res = await obtenerResolucionesPorTipo("FV");
+
+      let prefijo = "";
+      let consecutivo = 0;
+      let resolucion_id = 0;
+
+      if (res?.length > 0) {
+        const r = res[0];
+        prefijo = r.prefijo;
+        consecutivo = (r.rango_actual ?? 0) + 1;
+        resolucion_id = r.id;
+      }
+
+      setFormData({
+        id: null,
+        tercero_id: Number(idcliente),
+        vendedor_id: vendedores?.[0]?.id ?? 0,
+        resolucion_id,
+        prefijo,
+        consecutivo,
+        forma_pago_id: 0,
+        medio_pago_id: 0,
+        notas: "",
+        fecha: hoy,
+        detalles: [
+          {
+            producto_id: 0,
+            presentacion_id: 0,
+            variante_id: null,
+            descripcion: "",
+            cantidad: 1,
+            precio_unitario: 0,
+            descuento: 0,
+            iva: 0,
+            subtotal: 0,
+            total: 0,
+          },
+        ],
+      });
+
+      // Totales en cero
+      setTotales({
+        subtotal: 0,
+        descuento_total: 0,
+        iva_total: 0,
+        total: 0,
+      });
+    };
+
+
 
   // ------------------------
   // Render
