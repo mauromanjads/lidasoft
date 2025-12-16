@@ -9,6 +9,7 @@ from app.models.facturas import Factura
 from app.models.factura_detalle import FacturaDetalle
 
 from app.schemas.facturas_schema import FacturaSchema, FacturaResponse
+from app.models.resoluciones import ResolucionDian
 
 from app.database import get_db  # tu dependencia de DB
 
@@ -21,81 +22,97 @@ router = APIRouter(
 # Crear factura con cálculos automáticos
 # -----------------------
 @router.post("/", response_model=FacturaResponse)
-def crear_factura(request: Request, factura_data: FacturaSchema, db: Session = Depends(get_db)):
-    # Calcular subtotales y totales de la factura
-    subtotal_total = Decimal(0)
-    descuento_total = Decimal(0)
-    iva_total = Decimal(0)
-    total_total = Decimal(0)
+def crear_factura(
+    request: Request,
+    factura_data: FacturaSchema,
+    db: Session = Depends(get_db)
+):
+    try:
+        with db.begin():  # 🔐 TRANSACCIÓN ATÓMICA
 
-    detalles_model = []
-    for det in factura_data.detalles:        
-       # Calcular subtotal del renglón
-        detalle_subtotal = det.cantidad * det.precio_unitario
+            # 1️⃣ Bloquear resolución
+            resolucion = (
+                db.query(ResolucionDian)
+                .filter(ResolucionDian.id == factura_data.resolucion_id)
+                .with_for_update()
+                .first()
+            )
 
-        # El descuento se aplica al subtotal
-        base_gravable = detalle_subtotal - det.descuento
+            if not resolucion:
+                raise HTTPException(status_code=404, detail="Resolución no encontrada")
 
-        # El IVA se calcula sobre la base gravable
-        detalle_iva = base_gravable * det.iva / 100
+            # 2️⃣ Calcular nuevo consecutivo
+            nuevo_consecutivo = resolucion.rango_actual + 1
 
-        # Total del renglón
-        detalle_total = base_gravable + detalle_iva
+            # 3️⃣ Calcular totales
+            subtotal_total = Decimal(0)
+            descuento_total = Decimal(0)
+            iva_total = Decimal(0)
+            total_total = Decimal(0)
 
-        # Acumular totales
-        subtotal_total += detalle_subtotal
-        descuento_total += det.descuento
-        iva_total += detalle_iva
-        total_total += detalle_total
+            detalles_model = []
 
+            for det in factura_data.detalles:
+                detalle_subtotal = det.cantidad * det.precio_unitario
+                base_gravable = detalle_subtotal - det.descuento
+                detalle_iva = base_gravable * det.iva / 100
+                detalle_total = base_gravable + detalle_iva
 
-        detalle_model = FacturaDetalle(
-            producto_id=det.producto_id,
-            presentacion_id=det.presentacion_id,
-            variante_id=det.variante_id,
-            descripcion=det.descripcion,
-            cantidad=det.cantidad,
-            precio_unitario=det.precio_unitario,
-            descuento=det.descuento,
-            iva=detalle_iva,
-            subtotal=detalle_subtotal,
-            total=detalle_total
-        )
-        detalles_model.append(detalle_model)
+                subtotal_total += detalle_subtotal
+                descuento_total += det.descuento
+                iva_total += detalle_iva
+                total_total += detalle_total
 
-    # Calcular numero_completo
-    numero_completo = f"{factura_data.prefijo}{factura_data.consecutivo}"
+                detalles_model.append(
+                    FacturaDetalle(
+                        producto_id=det.producto_id,
+                        presentacion_id=det.presentacion_id,
+                        variante_id=det.variante_id,
+                        descripcion=det.descripcion,
+                        cantidad=det.cantidad,
+                        precio_unitario=det.precio_unitario,
+                        descuento=det.descuento,
+                        iva=detalle_iva,
+                        subtotal=detalle_subtotal,
+                        total=detalle_total
+                    )
+                )
 
-    # Crear instancia Factura
-    factura = Factura(
-        tercero_id=factura_data.tercero_id,
-        vendedor_id=factura_data.vendedor_id,
-        resolucion_id=factura_data.resolucion_id,
-        prefijo=factura_data.prefijo,
-        consecutivo=factura_data.consecutivo,
-        numero_completo=numero_completo,
-        forma_pago_id=factura_data.forma_pago_id,
-        medio_pago_id=factura_data.medio_pago_id,
-        subtotal=subtotal_total,
-        descuento_total=descuento_total,
-        iva_total=iva_total,
-        total=total_total,
-        notas=factura_data.notas
-    )
+            # 4️⃣ Crear número completo
+            numero_completo = f"{resolucion.prefijo}{nuevo_consecutivo}"
 
-    # Asignar detalles
-    factura.detalles = detalles_model
+            # 5️⃣ Crear factura
+            factura = Factura(
+                tercero_id=factura_data.tercero_id,
+                vendedor_id=factura_data.vendedor_id,
+                resolucion_id=resolucion.id,
+                prefijo=resolucion.prefijo,
+                consecutivo=nuevo_consecutivo,
+                numero_completo=numero_completo,
+                forma_pago_id=factura_data.forma_pago_id,
+                medio_pago_id=factura_data.medio_pago_id,
+                subtotal=subtotal_total,
+                descuento_total=descuento_total,
+                iva_total=iva_total,
+                total=total_total,
+                notas=factura_data.notas,
+                usuario_creacion=request.cookies.get("usuario"),
+                fecha_creacion=datetime.now(timezone.utc),
+                detalles=detalles_model
+            )
 
-    usuario_logueado = request.cookies.get("usuario") 
-    factura.usuario_creacion = usuario_logueado
-    factura.fecha_creacion = datetime.now(timezone.utc)
+            db.add(factura)
 
+            # 6️⃣ Actualizar consecutivo en resolución
+            resolucion.rango_actual = nuevo_consecutivo
 
-    db.add(factura)
-    db.commit()
-    db.refresh(factura)
+        # 🔁 commit automático si todo salió bien
+        db.refresh(factura)
+        return factura
 
-    return factura
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=str(e))
 
 # -----------------------
 # Listar facturas
