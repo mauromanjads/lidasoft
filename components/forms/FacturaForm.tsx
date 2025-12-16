@@ -449,7 +449,10 @@ const FacturaFormComponent: React.FC<FacturaFormProps> = ({ factura }) => {
 
        </div>
 
-      <Button onClick={agregarDetalle} className="mb-4">
+      <Button
+        type="button"
+        onClick={agregarDetalle} className="mb-4"
+      >
         Agregar Producto
       </Button>
 
