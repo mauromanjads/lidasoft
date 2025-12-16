@@ -143,7 +143,7 @@ const ProductWithPresentation: React.FC<Props> = ({
         </div>
       ),
       showConfirmButton: false,
-      width: 700,
+      width: 900,
     });
   };
 
@@ -196,7 +196,7 @@ const ProductWithPresentation: React.FC<Props> = ({
         </div>
       ),
       showConfirmButton: false,
-      width: 700,
+      width: 900,
     });
   };
 
