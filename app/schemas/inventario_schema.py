@@ -16,5 +16,6 @@ class InventarioUpdate(BaseModel):
 class InventarioRead(InventarioBase):
     id: int
 
-    class Config:
-        orm_mode = True
+model_config = {
+        "from_attributes": True
+    }
