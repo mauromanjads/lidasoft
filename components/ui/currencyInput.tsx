@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import Input from "./input";
 
 interface CurrencyInputProps {
   value: number | string;
@@ -12,8 +13,8 @@ interface CurrencyInputProps {
 const formatCurrency = (value: number) => {
   if (isNaN(value)) return "";
   return value.toLocaleString("es-CO", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
   });
 };
 
@@ -82,7 +83,7 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
         </label>
       )}
 
-      <input
+      <Input
         type="text"
         inputMode="decimal"
         className={`border p-1.5 rounded ${className ?? ""}`}

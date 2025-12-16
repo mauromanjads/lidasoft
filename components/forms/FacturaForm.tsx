@@ -20,6 +20,13 @@ interface FacturaFormProps {
   onClose?: () => void;
 }
 
+export const formatCOP = (value: number) =>
+  new Intl.NumberFormat("es-CO", {
+    style: "currency",
+    currency: "COP",
+    minimumFractionDigits: 0,
+  }).format(value);
+
 const FacturaFormComponent: React.FC<FacturaFormProps> = ({ factura }) => {
   
   const [clientes, setClientes] = useState<Terceros[]>([]);
@@ -264,7 +271,7 @@ const FacturaFormComponent: React.FC<FacturaFormProps> = ({ factura }) => {
             detalles: formData.detalles.map(d => ({
               producto_id: d.producto_id,
               presentacion_id: d.presentacion_id,
-              variante_id: d.variante_id || 0,
+              variante_id: d.variante_id || null,
               descripcion: d.descripcion,
               cantidad: d.cantidad,
               precio_unitario: d.precio_unitario,
@@ -448,10 +455,10 @@ const FacturaFormComponent: React.FC<FacturaFormProps> = ({ factura }) => {
 
       {/* Totales */}
       <div className="text-right space-y-1 mb-4">
-        <div>Subtotal: {totales.subtotal.toFixed(2)}</div>
-        <div>Descuento: {totales.descuento_total.toFixed(2)}</div>
-        <div>IVA: {totales.iva_total.toFixed(2)}</div>
-        <div className="font-bold">Total: {totales.total.toFixed(2)}</div>
+        <div>Subtotal: {formatCOP(totales.subtotal)}</div>
+        <div>Descuento: {formatCOP(totales.descuento_total)}</div>
+        <div>IVA: {formatCOP(totales.iva_total)}</div>
+        <div className="font-bold">Total: {formatCOP(totales.total)}</div>
       </div>
 
      <Button type="submit" className="w-full">

@@ -220,12 +220,13 @@ const ProductWithPresentation: React.FC<Props> = ({
       {query &&
         !productoSeleccionado &&
         createPortal(
-          <ul
+          <ul 
+          className="text-sm font-medium mb-1"
             style={{
               position: "absolute",
               top: pos.top,
               left: pos.left,
-              width: pos.width,
+              width: pos.width*2,
               maxHeight: 260,
               overflowY: "auto",
               background: "white",

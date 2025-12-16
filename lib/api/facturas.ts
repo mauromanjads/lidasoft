@@ -6,7 +6,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL;
 export interface FacturaDetalleData {
   producto_id: number;
   presentacion_id?: number;
-  variante_id?: number;
+  variante_id?: number | null;
   descripcion: string;
 
   cantidad: number;

@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import Input from "./input";
 import ProductoConPresentacion from "@/components/ui/productoAutocomplete";
+import CurrencyInput from "./currencyInput";
 
 /* =====================
    Interfaces
@@ -30,6 +31,13 @@ interface Props {
 /* =====================
    Component
 ===================== */
+
+export const formatCOP = (value: number) =>
+  new Intl.NumberFormat("es-CO", {
+    style: "currency",
+    currency: "COP",
+    minimumFractionDigits: 0,
+  }).format(value);
 
 export default function DetalleVentaGrid({
   detalles,
@@ -81,7 +89,7 @@ export default function DetalleVentaGrid({
           "Cant",
           "Precio",
           "Desc",
-          "IVA",
+          "IVA(%)",
           "Subtotal",
           "Total",
           "Acc",
@@ -124,7 +132,7 @@ export default function DetalleVentaGrid({
               />
             </div>
 
-            <div>{det.descripcion || "-"}</div>
+            <div className="text-sm  mb-1 text-gray-700">{det.descripcion || "-"}</div>
 
             <div>
               <Input
@@ -138,22 +146,20 @@ export default function DetalleVentaGrid({
             </div>
 
             <div>
-              <Input
-                type="number"
+              <CurrencyInput                
                 value={det.precio_unitario}
                 onChange={(e) =>
-                  onChange(i, "precio_unitario", Number(e.target.value))
+                  onChange(i, "precio_unitario", Number(e))
                 }
                 className="right"
               />
             </div>
 
             <div>
-              <Input
-                type="number"
+              <CurrencyInput              
                 value={det.descuento}
-                onChange={(e) =>
-                  onChange(i, "descuento", Number(e.target.value))
+                onChange={(val) =>                  
+                  onChange(i, "descuento", val)
                 }
                 className="right"
               />
@@ -170,8 +176,8 @@ export default function DetalleVentaGrid({
               />
             </div>
 
-            <div className="right">{det.subtotal.toFixed(2)}</div>
-            <div className="right">{det.total.toFixed(2)}</div>
+            <div className="right">{formatCOP(det.subtotal)}</div>
+            <div className="right">{formatCOP(det.total)}</div>
 
             <div className="center">
               <button
