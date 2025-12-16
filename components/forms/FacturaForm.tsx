@@ -367,8 +367,8 @@ const FacturaFormComponent: React.FC<FacturaFormProps> = ({ factura }) => {
         fecha: hoy,
         detalles: [
           {
-            producto_id: 0,
-            presentacion_id: 0,
+            producto_id: null,
+            presentacion_id:null,
             variante_id: null,
             descripcion: "",
             cantidad: 1,

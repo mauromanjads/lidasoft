@@ -116,9 +116,9 @@ export default function DetalleVentaGrid({
           >
             <div>
               <ProductoConPresentacion
-                valueProductoId={det.producto_id}
-                valuePresentacionId={det.presentacion_id}
-                valueVarianteId={det.variante_id}
+                valueProductoId={det.producto_id ?? null}
+                valuePresentacionId={det.presentacion_id ?? null}
+                valueVarianteId={det.variante_id ?? null}
                 onSelect={(d) => {
                   onChange(i, "producto_id", d.producto_id);
                   onChange(i, "presentacion_id", d.presentacion_id);
