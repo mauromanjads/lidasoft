@@ -510,7 +510,7 @@ const FacturaFormComponent: React.FC<FacturaFormProps> = ({ factura }) => {
             onChange={(i, field, value) =>
               handleDetalleChange(i, field, value)
             }
-            onDelete={(i) => eliminarDetalle(i)}
+            onDelete={(i) => eliminarDetalle(i)}            
           />
 
        </div>

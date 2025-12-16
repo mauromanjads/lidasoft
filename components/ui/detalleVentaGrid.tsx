@@ -129,6 +129,7 @@ export default function DetalleVentaGrid({
                   const cantidad = det.cantidad || 1;
                   onChange(i, "subtotal", cantidad * d.precio_unitario);
                 }}
+                resetKey={det.producto_id} 
               />
             </div>
 

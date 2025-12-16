@@ -51,6 +51,7 @@ interface Props {
     presentacion_nombre: string;
   }) => void;
   placeholder?: string;
+  resetKey?: any; // <-- NUEVO
 }
 
 /* =======================
@@ -61,11 +62,25 @@ const ProductWithPresentation: React.FC<Props> = ({
   valueProductoId,
   onSelect,
   placeholder,
+  resetKey
 }) => {
   const [productos, setProductos] = useState<Producto[]>([]);
   const [productoSeleccionado, setProductoSeleccionado] =
     useState<Producto | null>(null);
   const [query, setQuery] = useState("");
+
+    useEffect(() => {
+    setProductoSeleccionado(null);
+    setQuery("");
+  }, [resetKey]);
+
+  // 🔹 Mantener valor si cambia valueProductoId
+  useEffect(() => {
+    if (valueProductoId) {
+      setProductoSeleccionado(productos.find((p) => p.id === valueProductoId) || null);
+    }
+  }, [valueProductoId, productos]);
+
 
   /* ===== refs y posición dropdown ===== */
   const inputRef = useRef<HTMLInputElement>(null);
