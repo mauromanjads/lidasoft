@@ -481,7 +481,7 @@ export default function ProductoForm({
           Código:
         </label>
         <Input
-          className="border p-1.5 rounded text-sm"
+          className="border p-1.5 rounded text-sm font-bold"
           value={codigo}
           onChange={(e) => setCodigo(e.target.value)}
           required
@@ -494,7 +494,7 @@ export default function ProductoForm({
           Nombre:
         </label>
         <Input
-          className="border p-1.5 rounded text-sm"
+          className="border p-1.5 rounded text-sm font-bold" 
           value={nombre}
           onChange={(e) => setNombre(e.target.value)}
           required
@@ -576,10 +576,10 @@ export default function ProductoForm({
            <div className="space-y-3">
           
               {/* GRID GENERAL */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-2 
+                border border-gray-300 rounded-lg 
+                bg-gray-50 p-3 shadow-sm">
             
-                
-
                 {/* Código de barras */}
                 <div className="flex flex-col w-full">
                   <label className="text-sm font-semibold mb-1 text-gray-700">
