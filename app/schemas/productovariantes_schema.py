@@ -36,6 +36,7 @@ class ProductoVarianteUpdate(BaseModel):
 class ProductoVarianteResponse(ProductoVarianteBase):
     id: int
     producto_id:int
+    stock_actual:int = 0
     created_at: datetime
     updated_at: datetime
 
