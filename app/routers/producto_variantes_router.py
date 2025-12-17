@@ -9,6 +9,8 @@ from app.schemas.productovariantes_schema import (
     ProductoVarianteResponse
 )
 from app.models.producto_variantes import ProductoVariante
+from sqlalchemy import func
+from app.models.inventario import Inventario
 
 # ✅ PREFIX CORRECTO
 router = APIRouter(
@@ -32,12 +34,27 @@ def listar_variantes_producto(
     producto_id: int,
     db: Session = Depends(get_db)
 ):
-    return (
-        db.query(ProductoVariante)
-        .filter(ProductoVariante.producto_id == producto_id)
-        .order_by(ProductoVariante.id.asc())
-        .all()
+    variantes = (
+    db.query(ProductoVariante)
+    .add_columns(
+        func.coalesce(Inventario.stock_actual, 0).label("stock_actual")
     )
+    .outerjoin(
+        Inventario,
+        Inventario.variante_id == ProductoVariante.id
+    )
+    .filter(ProductoVariante.producto_id == producto_id)
+    .order_by(ProductoVariante.id.asc())
+    .all()
+)
+
+# 🔥 Convertimos a objetos "compatibles"
+    resultado = []
+    for variante, stock_actual in variantes:
+            variante.stock_actual = stock_actual  # atributo dinámico ✔️
+            resultado.append(variante)
+            
+    return resultado
 
 # 🔥 CREAR variante
 @router.post("/", response_model=ProductoVarianteResponse)
