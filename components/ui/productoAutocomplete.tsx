@@ -36,6 +36,8 @@ interface Variante {
   id: number;
   descripcion: string;
   precio_venta: number;
+  stock_actual:number;
+  activo:boolean;
 }
 
 interface Props {
@@ -139,28 +141,52 @@ const ProductWithPresentation: React.FC<Props> = ({
     ReactSwal.fire({
       title: "Selecciona la variante",
       html: (
-        <div>
-          {variantes.map((v) => (
-            <button
-              key={v.id}
-              className="w-full p-2 mb-2 border rounded"
-              onClick={() => {
-                ReactSwal.close();
-                abrirModalPresentaciones(producto, v);
-              }}
-            >
-              <div className="flex justify-between">
-                <span>{v.descripcion}</span>
-                <strong>${v.precio_venta.toLocaleString()}</strong>
-              </div>
-            </button>
-          ))}
+        <div className="max-h-[60vh] overflow-y-auto">
+          {variantes.map((v) => {
+            const sinStock = v.stock_actual <= 0;
+            const inactiva = v.activo === false;
+            const deshabilitada = sinStock || inactiva;
+
+            return (
+              <button
+                key={v.id}
+                disabled={deshabilitada}
+                onClick={() => {
+                  if (deshabilitada) return;
+                  ReactSwal.close();
+                  abrirModalPresentaciones(producto, v);
+                }}
+                className={`
+                  w-full p-3 mb-2 rounded border text-left transition
+                  ${sinStock ? "bg-red-50 border-red-300 text-red-700 cursor-not-allowed" : ""}
+                  ${inactiva ? "bg-gray-100 border-gray-300 text-gray-400 cursor-not-allowed" : ""}
+                  ${!deshabilitada ? "bg-white hover:bg-blue-50 border-gray-300" : ""}
+                `}
+              >
+                <div className="flex justify-between items-center">
+                  <span className="font-medium">{v.descripcion}</span>
+                  <strong>${v.precio_venta.toLocaleString()}</strong>
+                </div>
+
+                <div className="flex justify-between text-sm mt-1">
+                  {sinStock && <span className="text-red-600">Sin stock</span>}
+                  {inactiva && <span className="text-gray-500">Variante inactiva</span>}
+                  {!deshabilitada && (
+                    <span className="text-green-600">
+                      Stock disponible: {v.stock_actual}
+                    </span>
+                  )}
+                </div>
+              </button>
+            );
+          })}
         </div>
       ),
       showConfirmButton: false,
       width: 900,
     });
   };
+
 
   const abrirModalPresentaciones = async (
     producto: Producto,
@@ -266,6 +292,8 @@ const ProductWithPresentation: React.FC<Props> = ({
                       id: v.id!,
                       descripcion: v.descripcion,
                       precio_venta: v.precio_venta ?? 0,
+                       stock_actual: v.stock_actual ?? 0,
+                        activo: v.activo ?? true
                     }));
 
                     if (variantes.length > 0) {
