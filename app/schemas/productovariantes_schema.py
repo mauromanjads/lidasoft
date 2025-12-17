@@ -37,6 +37,7 @@ class ProductoVarianteResponse(ProductoVarianteBase):
     id: int
     producto_id:int
     stock_actual:int = 0
+    control_inventario:str = "N"
     created_at: datetime
     updated_at: datetime
 

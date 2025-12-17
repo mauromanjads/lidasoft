@@ -2,6 +2,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.database import SessionLocal
+from app.models.productos import Producto
 
 from app.schemas.productovariantes_schema import (
     ProductoVarianteCreate,
@@ -37,8 +38,13 @@ def listar_variantes_producto(
     variantes = (
     db.query(ProductoVariante)
     .add_columns(
-        func.coalesce(Inventario.stock_actual, 0).label("stock_actual")
+        func.coalesce(Inventario.stock_actual, 0).label("stock_actual"),
+        Producto.control_inventario.label("control_inventario")
     )
+    .join(
+            Producto,
+            Producto.id == ProductoVariante.producto_id
+        )
     .outerjoin(
         Inventario,
         Inventario.variante_id == ProductoVariante.id
@@ -50,8 +56,9 @@ def listar_variantes_producto(
 
 # 🔥 Convertimos a objetos "compatibles"
     resultado = []
-    for variante, stock_actual in variantes:
+    for variante, stock_actual,control_inventario in variantes:
             variante.stock_actual = stock_actual  # atributo dinámico ✔️
+            variante.control_inventario = control_inventario  # atributo dinámico ✔️
             resultado.append(variante)
             
     return resultado

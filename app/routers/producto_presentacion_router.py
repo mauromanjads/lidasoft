@@ -2,6 +2,8 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.database import SessionLocal
 
+from app.models.productos import Producto
+
 from app.schemas.productopresentacion_schema import (
     ProductoPresentacionCreate,
     ProductoPresentacionUpdate,
@@ -28,7 +30,12 @@ def listar_presentaciones_producto(producto_id: int, db: Session = Depends(get_d
     presentaciones = (
         db.query(ProductoPresentacion)
         .add_columns(
-            func.coalesce(Inventario.stock_actual, 0).label("stock_actual")
+            func.coalesce(Inventario.stock_actual, 0).label("stock_actual"),
+            Producto.control_inventario.label("control_inventario")
+        )
+        .join(
+            Producto,
+            Producto.id == ProductoPresentacion.producto_id
         )
         .outerjoin(
             Inventario,
@@ -41,8 +48,9 @@ def listar_presentaciones_producto(producto_id: int, db: Session = Depends(get_d
 
 # 🔥 Convertimos a objetos "compatibles"
     resultado = []
-    for presentacion, stock_actual in presentaciones:
-            presentacion.stock_actual = stock_actual  # atributo dinámico ✔️
+    for presentacion, stock_actual,control_inventario in presentaciones:
+            presentacion.stock_actual = stock_actual  # atributo dinámico ✔️ 
+            presentacion.control_inventario = control_inventario  # 👈 AQUÍ           
             resultado.append(presentacion)
             
     return resultado

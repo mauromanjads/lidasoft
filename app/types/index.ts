@@ -59,6 +59,7 @@ export interface ProductoVariante {
   precio_compra?: number;
   activo?: boolean;
   stock_actual?:number;
+  control_inventario?:string;
 }
 
 // ===================== PRODUCTO + VARIANTES =====================

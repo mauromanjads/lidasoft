@@ -40,6 +40,7 @@ interface Variante {
   precio_venta: number;
   stock_actual:number;
   activo:boolean;
+  control_inventario:string;
 }
 
 interface Props {
@@ -139,55 +140,71 @@ const ProductWithPresentation: React.FC<Props> = ({
   /* =======================
      Modales
   ======================= */
-  const abrirModalVariantes = (producto: Producto, variantes: Variante[]) => {
-    ReactSwal.fire({
-      title: "Selecciona la variante",
-      html: (
-        <div className="max-h-[60vh] overflow-y-auto">
-          {variantes.map((v) => {
-            const sinStock = v.stock_actual <= 0;
-            const inactiva = v.activo === false;
-            const deshabilitada = sinStock || inactiva;
+ const abrirModalVariantes = (producto: Producto, variantes: Variante[]) => {
+  ReactSwal.fire({
+    title: "Selecciona la variante",
+    html: (
+      <div className="max-h-[60vh] overflow-y-auto">
+        {variantes.map((v) => {
+          const sinStock = v.stock_actual <= 0;
+          const inactiva = v.activo === false;
 
-            return (
-              <button
-                key={v.id}
-                disabled={deshabilitada}
-                onClick={() => {
-                  if (deshabilitada) return;
-                  ReactSwal.close();
-                  abrirModalPresentaciones(producto, v);
-                }}
-                className={`
-                  w-full p-3 mb-2 rounded border text-left transition
-                  ${sinStock ? "bg-red-50 border-red-300 text-red-700 cursor-not-allowed" : ""}
-                  ${inactiva ? "bg-gray-100 border-gray-300 text-gray-400 cursor-not-allowed" : ""}
-                  ${!deshabilitada ? "bg-white hover:bg-blue-50 border-gray-300" : ""}
-                `}
-              >
-                <div className="flex justify-between items-center">
-                  <span className="font-medium">{v.descripcion}</span>
-                  <strong>${v.precio_venta.toLocaleString()}</strong>
-                </div>
+          // 🔑 AJUSTE CLAVE (NO bloquea si control_inventario = "N")
+          const deshabilitada =
+            inactiva || (v.control_inventario === "S" && sinStock);
 
-                <div className="flex justify-between text-sm mt-1">
-                  {sinStock && <span className="text-red-600">Sin stock</span>}
-                  {inactiva && <span className="text-gray-500">Variante inactiva</span>}
-                  {!deshabilitada && (
-                    <span className="text-green-600">
-                      Stock disponible: {v.stock_actual}
-                    </span>
-                  )}
-                </div>
-              </button>
-            );
-          })}
-        </div>
-      ),
-      showConfirmButton: false,
-      width: 900,
-    });
-  };
+          return (
+            <button
+              key={v.id}
+              disabled={deshabilitada}
+              onClick={() => {
+                if (deshabilitada) return;
+                ReactSwal.close();
+                abrirModalPresentaciones(producto, v);
+              }}
+              className={`
+                w-full p-3 mb-2 rounded border text-left transition
+                ${deshabilitada
+                  ? "bg-gray-100 border-gray-300 text-gray-400 cursor-not-allowed"
+                  : "bg-white hover:bg-blue-50 border-gray-300"}
+              `}
+            >
+              <div className="flex justify-between items-center">
+                <span className="font-medium">{v.descripcion}</span>
+                <strong>${v.precio_venta.toLocaleString()}</strong>
+              </div>
+
+              <div className="flex justify-between text-sm mt-1">
+                {sinStock && v.control_inventario === "S" && (
+                  <span className="text-red-600">Sin stock</span>
+                )}
+
+                {inactiva && (
+                  <span className="text-gray-500">Variante inactiva</span>
+                )}
+
+                {sinStock && v.control_inventario === "N" && (
+                  <span className="text-blue-600">
+                    Sin control de inventario
+                  </span>
+                )}
+
+                {!deshabilitada && v.control_inventario === "S" && (
+                  <span className="text-green-600">
+                    Stock disponible: {v.stock_actual}
+                  </span>
+                )}
+              </div>
+            </button>
+          );
+        })}
+      </div>
+    ),
+    showConfirmButton: false,
+    width: 900,
+  });
+};
+
 
 
   const abrirModalPresentaciones = async (
@@ -326,7 +343,8 @@ const ProductWithPresentation: React.FC<Props> = ({
                       descripcion: v.descripcion,
                       precio_venta: v.precio_venta ?? 0,
                       stock_actual: v.stock_actual ?? 0,
-                      activo: v.activo ?? true
+                      activo: v.activo ?? true,
+                      control_inventario:v.control_inventario ?? "N",
                     }));
 
                     if (variantes.length > 0) {
