@@ -40,6 +40,7 @@ export interface ProductoPresentacion {
   activo?: boolean;
   precio_venta?: number;
   precio_compra?: number;
+  stock_actual?:number;
 }
 
 // ===================== PRODUCTO + PRESENTACIONES =====================

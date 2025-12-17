@@ -9,6 +9,9 @@ from app.schemas.productopresentacion_schema import (
 )
 from app.models.producto_presentacion import ProductoPresentacion
 
+from sqlalchemy import func
+from app.models.inventario import Inventario
+
 router = APIRouter(prefix="/productos", tags=["Productos - Presentaciones"])
 
 def get_db():
@@ -21,12 +24,29 @@ def get_db():
 # 🔥 LISTAR presentaciones DE UN PRODUCTO
 @router.get("/{producto_id}/presentaciones", response_model=list[ProductoPresentacionOut])
 def listar_presentaciones_producto(producto_id: int, db: Session = Depends(get_db)):
-    return (
+   
+    presentaciones = (
         db.query(ProductoPresentacion)
+        .add_columns(
+            func.coalesce(Inventario.stock_actual, 0).label("stock_actual")
+        )
+        .outerjoin(
+            Inventario,
+            Inventario.presentacion_id == ProductoPresentacion.id
+        )
         .filter(ProductoPresentacion.producto_id == producto_id)
         .order_by(ProductoPresentacion.id.asc())
         .all()
     )
+
+# 🔥 Convertimos a objetos "compatibles"
+    resultado = []
+    for presentacion, stock_actual in presentaciones:
+            presentacion.stock_actual = stock_actual  # atributo dinámico ✔️
+            resultado.append(presentacion)
+            
+    return resultado
+
 
 # 🔥 CREAR presentación
 @router.post("/{producto_id}/presentaciones", response_model=ProductoPresentacionOut)

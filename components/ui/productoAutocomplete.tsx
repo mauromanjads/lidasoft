@@ -30,6 +30,8 @@ interface Presentacion {
   tipo_presentacion: string;
   cantidad_equivalente: number;
   precio_venta?: number;
+  stock_actual:number;
+  activo:boolean;
 }
 
 interface Variante {
@@ -189,57 +191,88 @@ const ProductWithPresentation: React.FC<Props> = ({
 
 
   const abrirModalPresentaciones = async (
-    producto: Producto,
-    variante: Variante | null
-  ) => {
-    const presRaw = await listarPresentaciones(producto.id);
-    const presentaciones: Presentacion[] = presRaw.map((p) => ({
-      id: p.id!,
-      tipo_presentacion: p.tipo_presentacion || "",
-      cantidad_equivalente: p.cantidad_equivalente ?? 1,
-      precio_venta: p.precio_venta ?? 0,
-    }));
+  producto: Producto,
+  variante: Variante | null
+) => {
+  const presRaw = await listarPresentaciones(producto.id);
 
-    ReactSwal.fire({
-      title: "Selecciona la presentación",
-      html: (
-        <div>
-          {presentaciones.map((p) => {
-            const precio = variante
-              ? variante.precio_venta * p.cantidad_equivalente
+  const presentaciones: Presentacion[] = presRaw.map((p) => ({
+    id: p.id!,
+    tipo_presentacion: p.tipo_presentacion || "",
+    cantidad_equivalente: p.cantidad_equivalente ?? 1,
+    precio_venta: p.precio_venta ?? 0,
+    stock_actual: p.stock_actual ?? 0, // 👈 solo se usa si variante === null
+    activo: p.activo ?? true,
+  }));
+
+  ReactSwal.fire({
+    title: "Selecciona la presentación",
+    html: (
+      <div className="max-h-[60vh] overflow-y-auto">
+        {presentaciones.map((p) => {
+          const esProductoSimple = variante === null;
+          const sinStock = esProductoSimple && p.stock_actual! <= 0;
+
+          const precio =
+            variante
+              ? (variante.precio_venta ?? 0) * (p.cantidad_equivalente ?? 1)
               : p.precio_venta ?? 0;
 
-            return (
-              <button
-                key={p.id}
-                className="w-full p-2 mb-2 border rounded"
-                onClick={() => {
-                  ReactSwal.close();
-                  onSelect({
-                    producto_id: producto.id,
-                    variante_id: variante ? variante.id : null,
-                    presentacion_id: p.id,
-                    descripcion: variante
-                      ? `${variante.descripcion} - ${p.tipo_presentacion}`
-                      : p.tipo_presentacion,
-                    precio_unitario: precio,
-                    presentacion_nombre: p.tipo_presentacion,
-                  });
-                }}
-              >
-                <div className="flex justify-between">
-                  <span>{p.tipo_presentacion}</span>
-                  <strong>${precio.toLocaleString()}</strong>
+          return (
+            <button
+              key={p.id}
+              disabled={sinStock}
+              onClick={() => {
+                if (sinStock) return;
+
+                ReactSwal.close();
+                onSelect({
+                  producto_id: producto.id,
+                  variante_id: variante ? variante.id : null,
+                  presentacion_id: p.id,
+                  descripcion: variante
+                    ? `${variante.descripcion} - ${p.tipo_presentacion}`
+                    : p.tipo_presentacion,
+                  precio_unitario: precio,
+                  presentacion_nombre: p.tipo_presentacion,
+                });
+              }}
+              className={`
+                w-full p-3 mb-2 rounded border text-left transition
+                ${
+                  sinStock
+                    ? "bg-red-50 border-red-300 text-red-700 cursor-not-allowed"
+                    : "bg-white hover:bg-blue-50 border-gray-300"
+                }
+              `}
+            >
+              <div className="flex justify-between items-center">
+                <span className="font-medium">{p.tipo_presentacion}</span>
+                <strong>${precio.toLocaleString()}</strong>
+              </div>
+
+              {/* 🔥 STOCK SOLO SI NO HAY VARIANTE */}
+              {esProductoSimple && (
+                <div className="text-sm mt-1">
+                  {sinStock ? (
+                    <span className="text-red-600">Sin stock</span>
+                  ) : (
+                    <span className="text-green-600">
+                      Stock disponible: {p.stock_actual}
+                    </span>
+                  )}
                 </div>
-              </button>
-            );
-          })}
-        </div>
-      ),
-      showConfirmButton: false,
-      width: 900,
-    });
-  };
+              )}
+            </button>
+          );
+        })}
+      </div>
+    ),
+    showConfirmButton: false,
+    width: 900,
+  });
+};
+
 
   /* =======================
      Render
@@ -292,8 +325,8 @@ const ProductWithPresentation: React.FC<Props> = ({
                       id: v.id!,
                       descripcion: v.descripcion,
                       precio_venta: v.precio_venta ?? 0,
-                       stock_actual: v.stock_actual ?? 0,
-                        activo: v.activo ?? true
+                      stock_actual: v.stock_actual ?? 0,
+                      activo: v.activo ?? true
                     }));
 
                     if (variantes.length > 0) {
@@ -308,6 +341,8 @@ const ProductWithPresentation: React.FC<Props> = ({
                       tipo_presentacion: pr.tipo_presentacion || "",
                       cantidad_equivalente: pr.cantidad_equivalente ?? 1,
                       precio_venta: pr.precio_venta ?? 0,
+                      stock_actual: pr.stock_actual ?? 0,
+                      activo: pr.activo ?? true
                     }));
 
                     // 👉 UNA sola → auto cargar (ESTO ERA CLAVE)

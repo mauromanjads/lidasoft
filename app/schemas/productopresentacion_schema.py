@@ -38,5 +38,5 @@ class ProductoPresentacionUpdate(BaseModel):
 # =========================
 class ProductoPresentacionOut(ProductoPresentacionBase):
     id: int
-
+    stock_actual:int = 0
     model_config = ConfigDict(from_attributes=True)
