@@ -16,7 +16,4 @@ class MovimientoInventario(Base):
     documento_id = Column(Integer, nullable=True)
     fecha = Column(DateTime, nullable=False, server_default=func.now())
 
-    # Relaciones opcionales
-    producto = relationship("Producto", back_populates="movimientos")
-    presentacion = relationship("ProductoPresentacion", back_populates="movimientos")
-    variante = relationship("ProductoVariante", back_populates="movimientos")
+

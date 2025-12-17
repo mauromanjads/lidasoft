@@ -13,6 +13,13 @@ from app.models.resoluciones import ResolucionDian
 
 from app.database import get_db  # tu dependencia de DB
 
+from app.services.inventario_service import (
+    descontar_inventario,
+    InventarioError
+)
+
+
+
 router = APIRouter(
     prefix="/facturas",
     tags=["Facturas"]
@@ -103,6 +110,19 @@ def crear_factura(
 
             db.add(factura)
 
+            db.flush()
+            for det in factura.detalles:
+                descontar_inventario( 
+                    db=db,                 
+                    producto_id=det.producto_id,
+                    presentacion_id=det.presentacion_id,
+                    variante_id=det.variante_id,
+                    cantidad=det.cantidad,
+                    documento_tipo="FACTURA",
+                    tipo_movimiento="SALIDA",
+                    documento_id=factura.id
+                )
+
             # 6️⃣ Actualizar consecutivo en resolución
             resolucion.rango_actual = nuevo_consecutivo
 
@@ -110,8 +130,7 @@ def crear_factura(
         db.refresh(factura)
         return factura
 
-    except Exception as e:
-        db.rollback()
+    except Exception as e:        
         raise HTTPException(status_code=500, detail=str(e))
 
 # -----------------------

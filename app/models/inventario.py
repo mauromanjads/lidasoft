@@ -15,7 +15,4 @@ class Inventario(Base):
     variante_id = Column(Integer, ForeignKey("productos_variantes.id"), nullable=True)
     stock_actual = Column(Integer, nullable=False, default=0)
 
-    # Relaciones opcionales si quieres navegar
-    producto = relationship("Producto", back_populates="inventarios")
-    presentacion = relationship("ProductoPresentacion", back_populates="inventarios")
-    variante = relationship("ProductoVariante", back_populates="inventarios")
+
