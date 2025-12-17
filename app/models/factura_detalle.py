@@ -8,7 +8,7 @@ class FacturaDetalle(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     factura_id = Column(Integer, ForeignKey("facturas.id"), nullable=False)
-    producto_id = Column(Integer, nullable=False)
+    producto_id = Column(Integer, ForeignKey("productos.id"), nullable=False)
     presentacion_id = Column(Integer, nullable=False)
     variante_id = Column(Integer, nullable=True)
     descripcion = Column(String(255), nullable=False)
@@ -20,3 +20,4 @@ class FacturaDetalle(Base):
     total = Column(Numeric(14,2), nullable=False)
 
     factura = relationship("Factura", back_populates="detalles")
+    producto = relationship("Producto")

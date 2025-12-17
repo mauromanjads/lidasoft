@@ -122,6 +122,7 @@ def crear_factura(
                     tipo_movimiento="SALIDA",
                     documento_id=factura.id,
                     nombre_producto=det.descripcion,
+                    controla_inventario=det.producto.control_inventario,
                 )
 
             # 6️⃣ Actualizar consecutivo en resolución

@@ -17,8 +17,11 @@ def descontar_inventario(
     documento_tipo: str,
     tipo_movimiento: str,
     documento_id: int,
-    nombre_producto:str
+    nombre_producto:str,
+    controla_inventario:str
 ):
+    if controla_inventario.upper() != "S": return
+    
     inventario = (
         db.query(Inventario)
         .filter(
