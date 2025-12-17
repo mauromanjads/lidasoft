@@ -16,7 +16,8 @@ def descontar_inventario(
     cantidad: int,
     documento_tipo: str,
     tipo_movimiento: str,
-    documento_id: int
+    documento_id: int,
+    nombre_producto:str
 ):
     inventario = (
         db.query(Inventario)
@@ -31,12 +32,12 @@ def descontar_inventario(
 
     if not inventario:
         raise InventarioError(
-            f"No existe inventario para el producto {producto_id}"
+            f"No existe inventario para el producto {nombre_producto}"
         )
 
     if inventario.stock_actual < cantidad:
         raise InventarioError(
-            f"Stock insuficiente para el producto {producto_id}"
+            f"Stock insuficiente para el producto {nombre_producto}"
         )
 
     inventario.stock_actual -= cantidad
