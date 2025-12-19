@@ -71,7 +71,9 @@ export const actualizarPresentacion = (
 };
 
 export const listarPresentaciones = (producto_id: number): Promise<ProductoPresentacion[]> => {
-  return fetchAPI<ProductoPresentacion[]>(`${API_URL}/productos/${producto_id}/presentaciones`);
+  return fetchAPI<ProductoPresentacion[]>(`${API_URL}/productos/${producto_id}/presentaciones`,{
+      headers: authHeaders(),
+    });
 };
 
 
@@ -95,7 +97,9 @@ export const listarVariantes = (
   producto_id: number
 ): Promise<ProductoVariante[]> => {
   return fetchAPI<ProductoVariante[]>(
-    `${API_URL}/productos/${producto_id}/variantes`
+    `${API_URL}/productos/${producto_id}/variantes`,{
+      headers: authHeaders(),
+    }
   );
 };
 
@@ -104,7 +108,9 @@ export const obtenerVariante = (
   variante_id: number
 ): Promise<ProductoVariante> => {
   return fetchAPI<ProductoVariante>(
-    `${API_URL}/productos/${producto_id}/variantes/${variante_id}`
+    `${API_URL}/productos/${producto_id}/variantes/${variante_id}`,{
+      headers: authHeaders(),
+    }
   );
 };
 
@@ -129,19 +135,26 @@ export const eliminarVariante = (
 ): Promise<{ message: string }> => {
   return fetchAPI<{ message: string }>(
     `${API_URL}/productos/${producto_id}/variantes/${variante_id}`,
-    { method: "DELETE" }
+    { 
+      method: "DELETE" ,
+      headers: authHeaders(),
+    }
   );
 };
 
 
 // ===================== UNIDADES DE MEDIDA =====================
 export const obtenerUnidades = (): Promise<UnidadMedida[]> => {
-  return fetchAPI<UnidadMedida[]>(`${API_URL}/unidades`);
+  return fetchAPI<UnidadMedida[]>(`${API_URL}/unidades`,{
+      headers: authHeaders(),
+    });
 };
 
 // ===================== CATEGORIAS =====================
 export const obtenerCategorias = (): Promise<Categoria[]> => {
-  return fetchAPI<Categoria[]>(`${API_URL}/categorias`);
+  return fetchAPI<Categoria[]>(`${API_URL}/categorias`,{
+      headers: authHeaders(),
+    });
 };
 
 export const eliminarPresentacion = (  
