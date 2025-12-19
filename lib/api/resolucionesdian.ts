@@ -38,7 +38,9 @@ export interface ResolucionDianData {
 ============================================ */
 export const obtenerResolucionesDian = async (): Promise<ResolucionDian[] | null> => {
   try {
-    const res = await fetch(`${API_URL}/resolucionesdian`);
+    const res = await fetch(`${API_URL}/resolucionesdian`,{
+      headers: authHeaders(),
+    });
 
     if (!res.ok) {
       throw new Error(`Error al cargar resoluciones DIAN: ${res.status}`);
@@ -57,7 +59,9 @@ export const obtenerResolucionesDian = async (): Promise<ResolucionDian[] | null
 ============================================ */
 export const obtenerResolucionesPorTipo = async (tipodoc: string) => {
   try {
-    const res = await fetch(`${API_URL}/resolucionesdian/?tipodoc=${tipodoc}`);
+    const res = await fetch(`${API_URL}/resolucionesdian/?tipodoc=${tipodoc}`,{
+      headers: authHeaders(),
+    });
 
     if (!res.ok) {
       throw new Error(`Error al listar resoluciones por tipo: ${res.status}`);
@@ -76,7 +80,9 @@ export const obtenerResolucionesPorTipo = async (tipodoc: string) => {
 ============================================ */
 export const buscarResolucionDian = async (query: string) => {
   try {
-    const res = await fetch(`${API_URL}/resolucionesdian/buscar?query=${query}`);
+    const res = await fetch(`${API_URL}/resolucionesdian/buscar?query=${query}`,{
+      headers: authHeaders(),
+    });
 
     if (!res.ok) {
       throw new Error(`Error en búsqueda: ${res.status}`);
@@ -95,7 +101,9 @@ export const buscarResolucionDian = async (query: string) => {
 ============================================ */
 export const obtenerResolucionDian = async (id: number): Promise<ResolucionDian | null> => {
   try {
-    const res = await fetch(`${API_URL}/resolucionesdian/${id}`);
+    const res = await fetch(`${API_URL}/resolucionesdian/${id}`,{
+      headers: authHeaders(),
+    });
 
     if (!res.ok) {
       throw new Error(`Resolución DIAN no encontrada: ${res.status}`);
@@ -116,7 +124,7 @@ export async function guardarResolucionDian(data: ResolucionDianData) {
   try {
     const response = await fetch(`${API_URL}/resolucionesdian`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+       headers: authHeaders(),
       credentials: "include",
       body: JSON.stringify(data),
     });
@@ -141,7 +149,7 @@ export async function actualizarResolucionDian(id: number, data: Partial<Resoluc
   try {
     const response = await fetch(`${API_URL}/resolucionesdian/${id}`, {
       method: "PUT",
-      headers: { "Content-Type": "application/json" },
+       headers: authHeaders(),
       credentials: "include",
       body: JSON.stringify(data),
     });
@@ -167,6 +175,7 @@ export async function eliminarResolucionDian(id: number) {
     const response = await fetch(`${API_URL}/resolucionesdian/${id}`, {
       method: "DELETE",
       credentials: "include",
+       headers: authHeaders(),
     });
 
     if (!response.ok) {
