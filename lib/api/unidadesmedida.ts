@@ -1,4 +1,5 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
+import { authHeaders } from "@/lib/utils";
 
 export interface Unidad {
   id: number;
@@ -16,7 +17,9 @@ export interface UnidadData {
 ============================================ */
 export const obtenerUnidades = async (): Promise<Unidad[] | null> => {
   try {
-    const res = await fetch(`${API_URL}/unidades`);
+    const res = await fetch(`${API_URL}/unidades` ,{
+      headers: authHeaders(),
+    });
 
     if (!res.ok) {
       throw new Error(`Error al cargar unidades: ${res.status}`);
@@ -37,7 +40,9 @@ export const obtenerUnidades = async (): Promise<Unidad[] | null> => {
 ============================================ */
 export const obtenerUnidad = async (id: number): Promise<Unidad | null> => {
   try {
-    const res = await fetch(`${API_URL}/unidades/${id}`);
+    const res = await fetch(`${API_URL}/unidades/${id}` ,{
+      headers: authHeaders(),
+    });
 
     if (!res.ok) {
       throw new Error(`Unidad no encontrada: ${res.status}`);
@@ -59,9 +64,7 @@ export async function guardarUnidad(data: UnidadData) {
   try {
     const response = await fetch(`${API_URL}/unidades`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: authHeaders(),
       credentials: "include",
       body: JSON.stringify(data),
     });
@@ -87,7 +90,7 @@ export async function actualizarUnidad(id: number, data: Partial<UnidadData>) {
   try {
     const response = await fetch(`${API_URL}/unidades/${id}`, {
       method: "PUT",
-      headers: { "Content-Type": "application/json" },
+      headers: authHeaders(),
       credentials: "include",
       body: JSON.stringify(data),
     });
@@ -114,6 +117,7 @@ export async function eliminarUnidad(id: number) {
     const response = await fetch(`${API_URL}/unidades/${id}`, {
       method: "DELETE",
       credentials: "include",
+      headers: authHeaders(),
     });
 
     if (!response.ok) {

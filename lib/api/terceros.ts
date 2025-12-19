@@ -1,4 +1,6 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
+import { authHeaders } from "@/lib/utils";
+
 export interface Terceros {
   id: number;       
   documento: string;
@@ -18,7 +20,9 @@ export interface TercerosData {
 
 export const obtenerTerceros = async (tipotercero:string): Promise<Terceros[] | null> => {
   try {
-    const res = await fetch(`${API_URL}/terceros/${tipotercero}`);
+    const res = await fetch(`${API_URL}/terceros/${tipotercero}` ,{
+      headers: authHeaders(),
+    });
 
     if (!res.ok) {
       throw new Error(`Error al cargar datos: ${res.status}`);
@@ -38,9 +42,7 @@ export async function guardarTercero(data: TercerosData) {
   try {
     const response = await fetch(`${API_URL}/terceros`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: authHeaders(),
       credentials: "include", 
       body: JSON.stringify(data),
     });
@@ -60,7 +62,7 @@ export async function guardarTercero(data: TercerosData) {
 export async function actualizarTercero(id: string, data: any) {
   const res = await fetch(`${API_URL}/terceros/${id}`, {
     method: "PUT",
-    headers: { "Content-Type": "application/json" },
+    headers: authHeaders(),
     credentials: "include", 
     body: JSON.stringify(data),
   });

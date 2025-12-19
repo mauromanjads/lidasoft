@@ -1,4 +1,5 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
+import { authHeaders } from "@/lib/utils";
 
 /* ============================================
    INTERFACES

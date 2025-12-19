@@ -1,4 +1,5 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
+import { authHeaders } from "@/lib/utils";
 
 /* ============================================
    INTERFACES
@@ -47,7 +48,9 @@ export interface Factura extends FacturaData {
 ============================================ */
 export const obtenerFacturas = async (): Promise<Factura[] | null> => {
   try {
-    const res = await fetch(`${API_URL}/facturas`);
+    const res = await fetch(`${API_URL}/facturas` ,{
+      headers: authHeaders(),
+    });
 
     if (!res.ok) {
       throw new Error(`Error al cargar facturas: ${res.status}`);
@@ -66,7 +69,9 @@ export const obtenerFacturas = async (): Promise<Factura[] | null> => {
 ============================================ */
 export const obtenerFactura = async (id: number): Promise<Factura | null> => {
   try {
-    const res = await fetch(`${API_URL}/facturas/${id}`);
+    const res = await fetch(`${API_URL}/facturas/${id}` ,{
+      headers: authHeaders(),
+    });
 
     if (!res.ok) {
       throw new Error(`Factura no encontrada: ${res.status}`);
@@ -90,9 +95,7 @@ export async function crearFactura(data: FacturaData) {
     
     const response = await fetch(`${API_URL}/facturas`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: authHeaders(),
       credentials: "include",
       body: JSON.stringify(data),
     });
@@ -117,7 +120,7 @@ export async function actualizarFactura(id: number, data: FacturaData) {
   try {
     const response = await fetch(`${API_URL}/facturas/${id}`, {
       method: "PUT",
-      headers: { "Content-Type": "application/json" },
+      headers: authHeaders(),
       credentials: "include",
       body: JSON.stringify(data),
     });
@@ -143,6 +146,7 @@ export async function eliminarFactura(id: number) {
     const response = await fetch(`${API_URL}/facturas/${id}`, {
       method: "DELETE",
       credentials: "include",
+      headers: authHeaders(),
     });
 
     if (!response.ok) {

@@ -1,4 +1,5 @@
 import { Producto, ProductoPresentacion, UnidadMedida, Categoria, ProductoVariante } from "@/app/types";
+import { authHeaders } from "@/lib/utils";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -14,12 +15,16 @@ async function fetchAPI<T>(url: string, options?: RequestInit): Promise<T> {
 
 // ===================== PRODUCTOS =====================
 export const obtenerProductos = (): Promise<Producto[]> => {
-  return fetchAPI<Producto[]>(`${API_URL}/productos`);
+  return fetchAPI<Producto[]>(`${API_URL}/productos`  ,{
+      headers: authHeaders(),
+    });
 };
 
 // ===================== PRODUCTOS ACTIVOS =====================
 export const obtenerProductosActivos = async (): Promise<Producto[]> => {
-  const productos = await fetchAPI<Producto[]>(`${API_URL}/productos`);
+  const productos = await fetchAPI<Producto[]>(`${API_URL}/productos`  ,{
+      headers: authHeaders(),
+    });
   return productos.filter(producto => producto.activo);
 };
 
@@ -27,7 +32,7 @@ export const crearProducto = (data: Partial<Producto>): Promise<Producto> => {
   
   return fetchAPI<Producto>(`${API_URL}/productos`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: authHeaders(),  
     body: JSON.stringify(data),
   });
 };
@@ -35,7 +40,7 @@ export const crearProducto = (data: Partial<Producto>): Promise<Producto> => {
 export const actualizarProducto = (producto_id: number, data: Partial<Producto>): Promise<Producto> => {
   return fetchAPI<Producto>(`${API_URL}/productos/${producto_id}`, {
     method: "PUT",
-    headers: { "Content-Type": "application/json" },
+    headers: authHeaders(),  
     body: JSON.stringify(data),
   });
 };
@@ -47,7 +52,7 @@ export const crearPresentacion = (
 ): Promise<ProductoPresentacion> => {
   return fetchAPI<ProductoPresentacion>(`${API_URL}/productos/${producto_id}/presentaciones`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: authHeaders(),  
     body: JSON.stringify({     
       ...data,
     }),
@@ -60,7 +65,7 @@ export const actualizarPresentacion = (
 ): Promise<ProductoPresentacion> => {
   return fetchAPI<ProductoPresentacion>(`${API_URL}/productos/presentaciones/${presentacion_id}`, {
     method: "PUT",
-    headers: { "Content-Type": "application/json" },
+    headers: authHeaders(),  
     body: JSON.stringify(data),
   });
 };
@@ -80,7 +85,7 @@ export const crearVariante = (
     `${API_URL}/productos/${producto_id}/variantes`,
     {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: authHeaders(),  
       body: JSON.stringify(data),
     }
   );
@@ -112,7 +117,7 @@ export const actualizarVariante = (
     `${API_URL}/productos/${producto_id}/variantes/${variante_id}`,
     {
       method: "PUT",
-      headers: { "Content-Type": "application/json" },
+      headers: authHeaders(),  
       body: JSON.stringify(data),
     }
   );
@@ -146,6 +151,7 @@ export const eliminarPresentacion = (
     `${API_URL}/productos/presentaciones/${presentacion_id}`,
     {
       method: "DELETE",
+      headers: authHeaders(),  
     }
   );
 };
