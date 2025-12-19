@@ -2,7 +2,7 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from sqlalchemy import or_
-from app.database_empresa import get_db
+from app.dependencias.empresa import get_empresa_db
 from app.models.terceros import Terceros
 from app.schemas.terceros_schema import TerceroCreate, TerceroResponse
 from datetime import datetime,timezone
@@ -15,7 +15,7 @@ router = APIRouter(prefix="/terceros", tags=["terceros"])
 def crear_tercero(
     request: Request,  
     tercero: TerceroCreate,
-    db: Session = Depends(get_db),     
+    db: Session = Depends(get_empresa_db),     
 ):
     usuario_logueado = request.cookies.get("usuario") 
     existe = db.query(Terceros).filter(Terceros.documento == tercero.documento).first()
@@ -34,7 +34,7 @@ def crear_tercero(
 
 # 👉 Listar todos
 @router.get("/{tipotercero}", response_model=list[TerceroResponse])
-def listar_terceros(tipotercero: str,db: Session = Depends(get_db)):
+def listar_terceros(tipotercero: str,db: Session = Depends(get_empresa_db)):
     return db.query(Terceros).filter(
             Terceros.tipotercero.ilike(f"%{tipotercero}%")
         ).order_by(Terceros.nombre.asc()).all()
@@ -43,7 +43,7 @@ def listar_terceros(tipotercero: str,db: Session = Depends(get_db)):
 #👉  Buscar por documento o Nombre (nuevo filtro)
 @router.get("/buscar", response_model=list[TerceroResponse])
 def buscar_tercero(query: str = Query(..., description="documento o nombre a buscar"),
-                   db: Session = Depends(get_db)):
+                   db: Session = Depends(get_empresa_db)):
     terceros = db.query(Terceros).filter(
         or_(
             Terceros.documento.ilike(f"%{query}%"),
@@ -59,7 +59,7 @@ def buscar_tercero(query: str = Query(..., description="documento o nombre a bus
 
 # 👉 Buscar por ID
 @router.get("/{tercero_id}", response_model=TerceroResponse)
-def obtener_tercero(tercero_id: int, db: Session = Depends(get_db)):
+def obtener_tercero(tercero_id: int, db: Session = Depends(get_empresa_db)):
     tercero = db.query(Terceros).filter(Terceros.id == tercero_id).first()
     if not tercero:
         raise HTTPException(status_code=404, detail="tercero no encontrado")
@@ -72,7 +72,7 @@ def actualizar_tercero(
     request:Request,
     tercero_id: int,
     tercero_data: TerceroCreate,
-    db: Session = Depends(get_db)    
+    db: Session = Depends(get_empresa_db)    
 ):
     try:
         usuario_logueado = request.cookies.get("usuario")         
@@ -96,7 +96,7 @@ def actualizar_tercero(
 
 # 👉 Eliminar
 @router.delete("/{tercero_id}")
-def eliminar_tercero(tercero_id: int, db: Session = Depends(get_db)):
+def eliminar_tercero(tercero_id: int, db: Session = Depends(get_empresa_db)):
     tercero = db.query(Terceros).filter(Terceros.id == tercero_id).first()
     if not tercero:
         raise HTTPException(status_code=404, detail="tercero no encontrado")

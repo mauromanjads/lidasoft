@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy import or_
-from app.database_empresa import get_db
+from app.dependencias.empresa import get_empresa_db
 from app.models.usuario import Usuario
 from app.schemas.usuario_schema import UsuarioCreate,UsuarioResponse
 import bcrypt 
@@ -11,7 +11,7 @@ import bcrypt
 router = APIRouter(prefix="/usuarios", tags=["Usuarios"])
 
 @router.post("/crear",response_model=UsuarioResponse)
-def crear_usuario(data: UsuarioCreate, db: Session = Depends(get_db)):
+def crear_usuario(data: UsuarioCreate, db: Session = Depends(get_empresa_db)):
     # Verificar duplicado
     existe = db.query(Usuario).filter(Usuario.usuario == data.usuario).first()
     if existe:

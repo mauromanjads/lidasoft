@@ -1,4 +1,5 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
+import { authHeaders } from "@/lib/utils";
 
 /* ============================================
    INTERFACES
@@ -30,7 +31,9 @@ export interface ConfiguracionDianData {
 ============================================ */
 export const obtenerConfiguracionesDian = async (): Promise<ConfiguracionDian[] | null> => {
   try {
-    const res = await fetch(`${API_URL}/configuraciondian`);
+    const res = await fetch(`${API_URL}/configuraciondian`,{
+      headers: authHeaders(),
+    });
 
     if (!res.ok) {
       throw new Error(`Error al cargar configuraciones DIAN: ${res.status}`);
@@ -49,7 +52,9 @@ export const obtenerConfiguracionesDian = async (): Promise<ConfiguracionDian[] 
 ============================================ */
 export const obtenerConfiguracionDian = async (id: number): Promise<ConfiguracionDian | null> => {
   try {
-    const res = await fetch(`${API_URL}/configuraciondian/${id}`);
+    const res = await fetch(`${API_URL}/configuraciondian/${id}`,{
+      headers: authHeaders(),
+    });
 
     if (!res.ok) {
       throw new Error(`Configuración DIAN no encontrada: ${res.status}`);
@@ -70,7 +75,7 @@ export async function guardarConfiguracionDian(data: ConfiguracionDianData) {
   try {
     const response = await fetch(`${API_URL}/configuraciondian`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: authHeaders(),
       credentials: "include",
       body: JSON.stringify(data),
     });
@@ -95,7 +100,7 @@ export async function actualizarConfiguracionDian(id: number, data: Partial<Conf
   try {
     const response = await fetch(`${API_URL}/configuraciondian/${id}`, {
       method: "PUT",
-      headers: { "Content-Type": "application/json" },
+      headers: authHeaders(),
       credentials: "include",
       body: JSON.stringify(data),
     });
@@ -121,6 +126,7 @@ export async function eliminarConfiguracionDian(id: number) {
     const response = await fetch(`${API_URL}/configuraciondian/${id}`, {
       method: "DELETE",
       credentials: "include",
+      headers: authHeaders(),
     });
 
     if (!response.ok) {

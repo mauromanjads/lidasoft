@@ -1,7 +1,7 @@
 # app/routers/productos_variantes.py
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from app.database_empresa import get_db
+from app.dependencias.empresa import get_empresa_db
 from app.models.productos import Producto
 
 from app.schemas.productovariantes_schema import (
@@ -24,7 +24,7 @@ router = APIRouter(
 @router.get("/", response_model=list[ProductoVarianteResponse])
 def listar_variantes_producto(
     producto_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_empresa_db)
 ):
     variantes = (
     db.query(ProductoVariante)
@@ -59,7 +59,7 @@ def listar_variantes_producto(
 def crear_variante(
     producto_id: int,
     data: ProductoVarianteCreate,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_empresa_db)
 ):   
     nueva = ProductoVariante(
         producto_id=producto_id,        
@@ -75,7 +75,7 @@ def crear_variante(
 def obtener_variante(
     producto_id: int,
     id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_empresa_db)
 ):
     variante = (
         db.query(ProductoVariante)
@@ -97,7 +97,7 @@ def actualizar_variante(
     producto_id: int,
     id: int,
     data: ProductoVarianteUpdate,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_empresa_db)
 ):
     variante = (
         db.query(ProductoVariante)
@@ -123,7 +123,7 @@ def actualizar_variante(
 def eliminar_variante(
     producto_id: int,
     id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_empresa_db)
 ):
     variante = (
         db.query(ProductoVariante)

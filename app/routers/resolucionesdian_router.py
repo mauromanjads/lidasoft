@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import or_
 from datetime import datetime, timezone
 
-from app.database_empresa import get_db
+from app.dependencias.empresa import get_empresa_db
 from app.models.resoluciones import ResolucionDian
 from app.schemas.resoluciones_schema import (
     ResolucionDianCreate,
@@ -21,7 +21,7 @@ router = APIRouter(prefix="/resolucionesdian", tags=["resoluciones_dian"])
 def crear_resolucion(
     request: Request,
     data: ResolucionDianCreate,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_empresa_db)
 ):
     usuario_logueado = request.cookies.get("usuario")
 
@@ -49,7 +49,7 @@ def crear_resolucion(
 @router.get("/", response_model=list[ResolucionDianResponse])
 def listar_resoluciones(
     tipodoc: str | None = None,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_empresa_db)
 ):
     query = db.query(ResolucionDian)
 
@@ -66,7 +66,7 @@ def listar_resoluciones(
 @router.get("/buscar", response_model=list[ResolucionDianResponse])
 def buscar_resolucion(
     query: str = Query(..., description="Prefijo o número de resolución"),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_empresa_db)
 ):
 
     regs = db.query(ResolucionDian).filter(
@@ -84,7 +84,7 @@ def buscar_resolucion(
 
 # 👉 Obtener por ID
 @router.get("/{resolucion_id}", response_model=ResolucionDianResponse)
-def obtener_resolucion(resolucion_id: int, db: Session = Depends(get_db)):
+def obtener_resolucion(resolucion_id: int, db: Session = Depends(get_empresa_db)):
     res = db.query(ResolucionDian).filter(
         ResolucionDian.id == resolucion_id
     ).first()
@@ -101,7 +101,7 @@ def actualizar_resolucion(
     request: Request,
     resolucion_id: int,
     data: ResolucionDianUpdate,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_empresa_db)
 ):
     try:
         usuario_logueado = request.cookies.get("usuario")
@@ -138,7 +138,7 @@ def actualizar_resolucion(
 
 # 👉 Eliminar
 @router.delete("/{resolucion_id}")
-def eliminar_resolucion(resolucion_id: int, db: Session = Depends(get_db)):
+def eliminar_resolucion(resolucion_id: int, db: Session = Depends(get_empresa_db)):
     res = db.query(ResolucionDian).filter(
         ResolucionDian.id == resolucion_id
     ).first()

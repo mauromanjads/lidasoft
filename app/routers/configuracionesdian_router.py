@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import or_
 from datetime import datetime, timezone
 
-from app.database_empresa import get_db
+from app.dependencias.empresa import get_empresa_db
 from app.models.configuracionesdian import ConfiguracionDian
 from app.schemas.configuracionesdian_schema import (
     ConfiguracionDianCreate,
@@ -20,7 +20,7 @@ router = APIRouter(prefix="/configuraciondian", tags=["configuracion_dian"])
 def crear_configuracion_dian(
     request: Request,
     config: ConfiguracionDianCreate,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_empresa_db)
 ):
     usuario_logueado = request.cookies.get("usuario")
 
@@ -45,7 +45,7 @@ def crear_configuracion_dian(
 
 # 👉 Listar todas las configuraciones
 @router.get("/", response_model=list[ConfiguracionDianResponse])
-def listar_configuraciones(db: Session = Depends(get_db)):
+def listar_configuraciones(db: Session = Depends(get_empresa_db)):
     return db.query(ConfiguracionDian).order_by(ConfiguracionDian.id.asc()).all()
 
 
@@ -53,7 +53,7 @@ def listar_configuraciones(db: Session = Depends(get_db)):
 @router.get("/buscar", response_model=list[ConfiguracionDianResponse])
 def buscar_configuracion(
     query: str = Query(..., description="buscar por NIT emisor o Software ID"),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_empresa_db)
 ):
 
     regs = db.query(ConfiguracionDian).filter(
@@ -71,7 +71,7 @@ def buscar_configuracion(
 
 # 👉 Obtener configuración por ID
 @router.get("/{config_id}", response_model=ConfiguracionDianResponse)
-def obtener_config(config_id: int, db: Session = Depends(get_db)):
+def obtener_config(config_id: int, db: Session = Depends(get_empresa_db)):
     config = db.query(ConfiguracionDian).filter(
         ConfiguracionDian.id == config_id
     ).first()
@@ -88,7 +88,7 @@ def actualizar_configuracion(
     request: Request,
     config_id: int,
     config_data: ConfiguracionDianCreate,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_empresa_db)
 ):
     try:
         usuario_logueado = request.cookies.get("usuario")
@@ -128,7 +128,7 @@ def actualizar_configuracion(
 
 # 👉 Eliminar configuración DIAN
 @router.delete("/{config_id}")
-def eliminar_configuracion(config_id: int, db: Session = Depends(get_db)):
+def eliminar_configuracion(config_id: int, db: Session = Depends(get_empresa_db)):
     config = db.query(ConfiguracionDian).filter(
         ConfiguracionDian.id == config_id
     ).first()

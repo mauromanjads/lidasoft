@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from app.database_empresa import get_db
+from app.dependencias.empresa import get_empresa_db
 
 from app.models.productos import Producto
 
@@ -19,7 +19,7 @@ router = APIRouter(prefix="/productos", tags=["Productos - Presentaciones"])
 
 # 🔥 LISTAR presentaciones DE UN PRODUCTO
 @router.get("/{producto_id}/presentaciones", response_model=list[ProductoPresentacionOut])
-def listar_presentaciones_producto(producto_id: int, db: Session = Depends(get_db)):
+def listar_presentaciones_producto(producto_id: int, db: Session = Depends(get_empresa_db)):
    
     presentaciones = (
         db.query(ProductoPresentacion)
@@ -52,7 +52,7 @@ def listar_presentaciones_producto(producto_id: int, db: Session = Depends(get_d
 
 # 🔥 CREAR presentación
 @router.post("/{producto_id}/presentaciones", response_model=ProductoPresentacionOut)
-def crear_presentacion(producto_id: int, data: ProductoPresentacionCreate, db: Session = Depends(get_db)):
+def crear_presentacion(producto_id: int, data: ProductoPresentacionCreate, db: Session = Depends(get_empresa_db)):
 
     nueva = ProductoPresentacion(
         producto_id=producto_id,
@@ -65,7 +65,7 @@ def crear_presentacion(producto_id: int, data: ProductoPresentacionCreate, db: S
 
 # 🔥 OBTENER una presentación por ID
 @router.get("/presentaciones/{id}", response_model=ProductoPresentacionOut)
-def obtener_presentacion(id: int, db: Session = Depends(get_db)):
+def obtener_presentacion(id: int, db: Session = Depends(get_empresa_db)):
     present = db.query(ProductoPresentacion).filter(ProductoPresentacion.id == id).first()
     if not present:
         raise HTTPException(404, "Presentación no encontrada")
@@ -73,7 +73,7 @@ def obtener_presentacion(id: int, db: Session = Depends(get_db)):
 
 # 🔥 ACTUALIZAR presentación
 @router.put("/presentaciones/{id}", response_model=ProductoPresentacionOut)
-def actualizar_presentacion(id: int, data: ProductoPresentacionUpdate, db: Session = Depends(get_db)):
+def actualizar_presentacion(id: int, data: ProductoPresentacionUpdate, db: Session = Depends(get_empresa_db)):
     present = db.query(ProductoPresentacion).filter(ProductoPresentacion.id == id).first()
     if not present:
         raise HTTPException(404, "Presentación no encontrada")
@@ -87,7 +87,7 @@ def actualizar_presentacion(id: int, data: ProductoPresentacionUpdate, db: Sessi
 
 # 🔥 ELIMINAR presentación
 @router.delete("/presentaciones/{id}")
-def eliminar_presentacion(id: int, db: Session = Depends(get_db)):
+def eliminar_presentacion(id: int, db: Session = Depends(get_empresa_db)):
     present = db.query(ProductoPresentacion).filter(ProductoPresentacion.id == id).first()
     if not present:
         raise HTTPException(404, "Presentación no encontrada")

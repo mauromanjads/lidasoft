@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from app.database_empresa import get_db
+from app.dependencias.empresa import get_empresa_db
 
 from app.schemas.productos_schema import ProductoCreate, ProductoUpdate, ProductoOut
 from app.models.productos import Producto
@@ -11,7 +11,7 @@ router = APIRouter(prefix="/productos", tags=["Productos"])
 
 @router.get("/", response_model=list[ProductoOut])
 
-def listar_productos(db: Session = Depends(get_db)):
+def listar_productos(db: Session = Depends(get_empresa_db)):
     return (
         db.query(Producto)
         .options(joinedload(Producto.categoria))
@@ -21,7 +21,7 @@ def listar_productos(db: Session = Depends(get_db)):
 
 
 @router.post("/", response_model=ProductoOut)
-def crear_producto(data: ProductoCreate, db: Session = Depends(get_db)):
+def crear_producto(data: ProductoCreate, db: Session = Depends(get_empresa_db)):
     nuevo = Producto(**data.model_dump())
     db.add(nuevo)
     db.commit()
@@ -30,7 +30,7 @@ def crear_producto(data: ProductoCreate, db: Session = Depends(get_db)):
 
 
 @router.get("/{id}", response_model=ProductoOut)
-def obtener_producto(id: int, db: Session = Depends(get_db)):
+def obtener_producto(id: int, db: Session = Depends(get_empresa_db)):
     producto = db.query(Producto).filter(Producto.id == id).first()
     if not producto:
         raise HTTPException(404, "Producto no encontrado")
@@ -38,7 +38,7 @@ def obtener_producto(id: int, db: Session = Depends(get_db)):
 
 
 @router.put("/{id}", response_model=ProductoOut)
-def actualizar_producto(id: int, data: ProductoUpdate, db: Session = Depends(get_db)):
+def actualizar_producto(id: int, data: ProductoUpdate, db: Session = Depends(get_empresa_db)):
     producto = db.query(Producto).filter(Producto.id == id).first()
     if not producto:
         raise HTTPException(404, "Producto no encontrado")
@@ -52,7 +52,7 @@ def actualizar_producto(id: int, data: ProductoUpdate, db: Session = Depends(get
 
 
 @router.delete("/{id}")
-def eliminar_producto(id: int, db: Session = Depends(get_db)):
+def eliminar_producto(id: int, db: Session = Depends(get_empresa_db)):
     producto = db.query(Producto).filter(Producto.id == id).first()
     if not producto:
         raise HTTPException(404, "Producto no encontrado")

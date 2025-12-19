@@ -11,7 +11,7 @@ from app.models.factura_detalle import FacturaDetalle
 from app.schemas.facturas_schema import FacturaSchema, FacturaResponse
 from app.models.resoluciones import ResolucionDian
 
-from app.database_empresa import get_db  # tu dependencia de DB
+from app.dependencias.empresa import get_empresa_db
 
 from app.services.inventario_service import (
     descontar_inventario,
@@ -30,7 +30,7 @@ router = APIRouter(
 def crear_factura(
     request: Request,
     factura_data: FacturaSchema,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_empresa_db)
 ):
     try:
         with db.begin():  # 🔐 TRANSACCIÓN ATÓMICA
@@ -137,7 +137,7 @@ def crear_factura(
 # Listar facturas
 # -----------------------
 @router.get("/", response_model=List[FacturaResponse])
-def listar_facturas(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+def listar_facturas(skip: int = 0, limit: int = 100, db: Session = Depends(get_empresa_db)):
     facturas = db.query(Factura).offset(skip).limit(limit).all()
     return facturas
 
@@ -145,7 +145,7 @@ def listar_facturas(skip: int = 0, limit: int = 100, db: Session = Depends(get_d
 # Obtener factura por ID
 # -----------------------
 @router.get("/{factura_id}", response_model=FacturaResponse)
-def obtener_factura(factura_id: int, db: Session = Depends(get_db)):
+def obtener_factura(factura_id: int, db: Session = Depends(get_empresa_db)):
     factura = db.query(Factura).filter(Factura.id == factura_id).first()
     if not factura:
         raise HTTPException(status_code=404, detail="Factura no encontrada")
@@ -155,7 +155,7 @@ def obtener_factura(factura_id: int, db: Session = Depends(get_db)):
 # Actualizar factura
 # -----------------------
 @router.put("/{factura_id}", response_model=FacturaResponse)
-def actualizar_factura(request: Request, factura_id: int, factura_data: FacturaSchema, db: Session = Depends(get_db)):
+def actualizar_factura(request: Request, factura_id: int, factura_data: FacturaSchema, db: Session = Depends(get_empresa_db)):
     factura = db.query(Factura).filter(Factura.id == factura_id).first()
     if not factura:
         raise HTTPException(status_code=404, detail="Factura no encontrada")
@@ -223,7 +223,7 @@ def actualizar_factura(request: Request, factura_id: int, factura_data: FacturaS
 # Eliminar factura
 # -----------------------
 @router.delete("/{factura_id}", response_model=dict)
-def eliminar_factura(factura_id: int, db: Session = Depends(get_db)):
+def eliminar_factura(factura_id: int, db: Session = Depends(get_empresa_db)):
     factura = db.query(Factura).filter(Factura.id == factura_id).first()
     if not factura:
         raise HTTPException(status_code=404, detail="Factura no encontrada")

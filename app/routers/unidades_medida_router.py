@@ -2,14 +2,14 @@
 from fastapi import APIRouter, Depends, HTTPException,Query
 from sqlalchemy.orm import Session
 from typing import List
-from app.database_empresa import get_db
+from app.dependencias.empresa import get_empresa_db
 from app.models.unidadesmedida import UnidadMedida
 from app.schemas.unidadesmedida_schema import UnidadMedidaCreate, UnidadMedidaRead
 
 router = APIRouter(prefix="/unidades", tags=["Unidades de Medida"])
 
 @router.post("/", response_model=UnidadMedidaRead)
-def crear_unidad(unidad: UnidadMedidaCreate, db: Session = Depends(get_db)):
+def crear_unidad(unidad: UnidadMedidaCreate, db: Session = Depends(get_empresa_db)):
     db_unidad = UnidadMedida(**unidad.dict())
     db.add(db_unidad)
     db.commit()
@@ -17,7 +17,7 @@ def crear_unidad(unidad: UnidadMedidaCreate, db: Session = Depends(get_db)):
     return db_unidad
 
 @router.get("/", response_model=List[UnidadMedidaRead])
-def listar_unidades(db: Session = Depends(get_db)):
+def listar_unidades(db: Session = Depends(get_empresa_db)):
     return db.query(UnidadMedida).order_by(UnidadMedida.nombre.asc()).all()
 
 # ------------------------------------------------------------
@@ -26,7 +26,7 @@ def listar_unidades(db: Session = Depends(get_db)):
 @router.get("/buscar", response_model=list[UnidadMedidaRead])
 def buscar_unidadesmedida(
     query: str = Query(..., description="Nombre parcial de la unidad de medida"),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_empresa_db)
 ):
     unidades = db.query(UnidadMedida).filter(
         UnidadMedida.nombre.ilike(f"%{query}%")
@@ -42,7 +42,7 @@ def buscar_unidadesmedida(
 # 👉 Buscar por ID
 # ------------------------------------------------------------
 @router.get("/{unidad_id}", response_model=UnidadMedidaRead)
-def obtener_unidad(unidad_id: int, db: Session = Depends(get_db)):
+def obtener_unidad(unidad_id: int, db: Session = Depends(get_empresa_db)):
     unidad = db.query(UnidadMedida).filter(UnidadMedida.id == unidad_id).first()
 
     if not unidad:
@@ -58,7 +58,7 @@ def obtener_unidad(unidad_id: int, db: Session = Depends(get_db)):
 def actualizar_unidad(
     unidad_id: int,
     unidad_data: UnidadMedidaCreate,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_empresa_db)
 ):
     unidad = db.query(UnidadMedida).filter(UnidadMedida.id == unidad_id).first()
 
@@ -88,7 +88,7 @@ def actualizar_unidad(
 # 👉 Eliminar
 # ------------------------------------------------------------
 @router.delete("/{unidad_id}")
-def eliminar_unidad(unidad_id: int, db: Session = Depends(get_db)):
+def eliminar_unidad(unidad_id: int, db: Session = Depends(get_empresa_db)):
     unidad = db.query(UnidadMedida).filter(UnidadMedida.id == unidad_id).first()
 
     if not unidad:
