@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import or_
 from datetime import datetime, timezone
 
-from app.database import get_db
+from app.database_empresa import get_db
 from app.models.configuracionesdian import ConfiguracionDian
 from app.schemas.configuracionesdian_schema import (
     ConfiguracionDianCreate,

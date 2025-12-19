@@ -1,38 +1,68 @@
 from fastapi import APIRouter, HTTPException, Depends
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 from sqlalchemy.orm import Session
-from app.database import get_db
+from app.database_master import get_db_master
+from app.database_empresa import get_db
 from app.models.usuario import Usuario
-import bcrypt   # 👈 PARA VERIFICAR HASH DE PASSWORD
-
+from app.models.empresa import Empresa  # Modelo en DB master
+from app.utils.security import create_access_token,verify_password
 router = APIRouter(prefix="/login", tags=["Login"])
 
 # ---------------------------
 # MODELO REQUEST
 # ---------------------------
 class LoginRequest(BaseModel):
-    usuario: str
+    usuario: EmailStr
     password: str
 
 # ---------------------------
-# LOGIN REAL
+# LOGIN MULTIEMPRESA POR SUBDOMINIO
 # ---------------------------
 @router.post("/")
-def login(data: LoginRequest, db: Session = Depends(get_db)):
+def login(data: LoginRequest, db_master: Session = Depends(get_db_master)):
 
-    # 1) Buscar usuario
-    user = db.query(Usuario).filter(Usuario.usuario == data.usuario).first()
-    if not user:
-        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+    # 1️⃣ Extraer subdominio del email
+    try:
+        subdominio = data.usuario.split("@")[1].split(".")[0]  # usuario@subdominio.dominio.com
+    except IndexError:
+        raise HTTPException(status_code=400, detail="Email inválido")
 
-    # 2) Verificar contraseña (HASH)
-    password_ok = bcrypt.checkpw(data.password.encode('utf-8'), user.password.encode('utf-8'))
-    if not password_ok:
-        raise HTTPException(status_code=401, detail="Contraseña incorrecta")
+    # 2️⃣ Buscar empresa en DB master por subdominio
+    empresa = db_master.query(Empresa).filter(Empresa.subdominio == subdominio, Empresa.activa == True).first()
+    if not empresa:
+        raise HTTPException(status_code=404, detail="Empresa no encontrada")
 
-    # 3) LOGIN CORRECTO
-    return {
-        "msg": "Login correcto 🚀",
-        "usuario": user.usuario,
-        "nombre": user.nombre
-    }
+    # 3️⃣ Abrir sesión dinámica en la DB de la empresa
+    db_empresa = next(get_db(empresa))
+
+    try:
+        # 4️⃣ Buscar usuario en la empresa
+        user = db_empresa.query(Usuario).filter(Usuario.usuario == data.usuario).first()
+        if not user:
+            raise HTTPException(status_code=404, detail="Usuario no encontrado")
+
+        # 5️⃣ Verificar contraseña       
+        password_ok = verify_password(data.password,user.password)
+            
+        if not password_ok:
+            raise HTTPException(status_code=401, detail="Contraseña incorrecta")
+
+        payload = {
+            "sub": str(user.id),
+            "empresa_id": empresa.id,
+            "empresa": empresa.subdominio
+        }
+        access_token = create_access_token(payload)
+        
+        # 6️⃣ Login correcto
+        return {
+            "access_token": access_token,
+            "token_type": "bearer",
+            "msg": "Login correcto 🚀",
+            "usuario": user.usuario,
+            "nombre": user.nombre,
+            "empresa": empresa.nombre
+        }    
+
+    finally:
+        db_empresa.close()

@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from app.database import SessionLocal
+from app.database_empresa import get_db
 
 from app.schemas.productos_schema import ProductoCreate, ProductoUpdate, ProductoOut
 from app.models.productos import Producto
@@ -8,12 +8,6 @@ from sqlalchemy.orm import joinedload
 
 router = APIRouter(prefix="/productos", tags=["Productos"])
 
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 @router.get("/", response_model=list[ProductoOut])
 

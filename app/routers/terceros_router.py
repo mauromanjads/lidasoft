@@ -2,7 +2,7 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from sqlalchemy import or_
-from app.database import get_db
+from app.database_empresa import get_db
 from app.models.terceros import Terceros
 from app.schemas.terceros_schema import TerceroCreate, TerceroResponse
 from datetime import datetime,timezone

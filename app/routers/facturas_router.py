@@ -11,14 +11,12 @@ from app.models.factura_detalle import FacturaDetalle
 from app.schemas.facturas_schema import FacturaSchema, FacturaResponse
 from app.models.resoluciones import ResolucionDian
 
-from app.database import get_db  # tu dependencia de DB
+from app.database_empresa import get_db  # tu dependencia de DB
 
 from app.services.inventario_service import (
     descontar_inventario,
     InventarioError
 )
-
-
 
 router = APIRouter(
     prefix="/facturas",

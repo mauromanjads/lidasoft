@@ -1,5 +1,5 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
-
+import { authHeaders } from "@/lib/utils";
 /* ============================
    INTERFACES
 ============================= */
@@ -24,7 +24,9 @@ export interface CategoriaData {
 ============================= */
 export const obtenerCategorias = async (): Promise<Categoria[] | null> => {
   try {
-    const res = await fetch(`${API_URL}/categorias`);
+    const res = await fetch(`${API_URL}/categorias`,{
+      headers: authHeaders(),
+    });
 
     if (!res.ok) {
       throw new Error(`Error al cargar categorías: ${res.status}`);
@@ -43,7 +45,9 @@ export const obtenerCategorias = async (): Promise<Categoria[] | null> => {
 ============================= */
 export const obtenerCategoria = async (id: number): Promise<Categoria | null> => {
   try {
-    const res = await fetch(`${API_URL}/categorias/${id}`);
+    const res = await fetch(`${API_URL}/categorias/${id}`, {
+      headers: authHeaders(),
+    });
 
     if (!res.ok) {
       throw new Error(`Categoría no encontrada: ${res.status}`);
@@ -64,7 +68,7 @@ export async function guardarCategoria(data: CategoriaData) {
   try {
     const response = await fetch(`${API_URL}/categorias`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: authHeaders(),
       credentials: "include",
       body: JSON.stringify(data),
     });
@@ -91,7 +95,7 @@ export async function actualizarCategoria(id: number, data: Partial<CategoriaDat
   try {
     const response = await fetch(`${API_URL}/categorias/${id}`, {
       method: "PUT",
-      headers: { "Content-Type": "application/json" },
+      headers: authHeaders(),
       credentials: "include",
       body: JSON.stringify(data),
     });
@@ -117,6 +121,7 @@ export async function eliminarCategoria(id: number) {
     const response = await fetch(`${API_URL}/categorias/${id}`, {
       method: "DELETE",
       credentials: "include",
+      headers: authHeaders(),
     });
 
     if (!response.ok) {

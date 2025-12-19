@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from app.database import SessionLocal
+from app.database_empresa import get_db
 
 from app.models.productos import Producto
 
@@ -16,12 +16,6 @@ from app.models.inventario import Inventario
 
 router = APIRouter(prefix="/productos", tags=["Productos - Presentaciones"])
 
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 # 🔥 LISTAR presentaciones DE UN PRODUCTO
 @router.get("/{producto_id}/presentaciones", response_model=list[ProductoPresentacionOut])

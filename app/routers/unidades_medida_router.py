@@ -2,7 +2,7 @@
 from fastapi import APIRouter, Depends, HTTPException,Query
 from sqlalchemy.orm import Session
 from typing import List
-from app.database import get_db
+from app.database_empresa import get_db
 from app.models.unidadesmedida import UnidadMedida
 from app.schemas.unidadesmedida_schema import UnidadMedidaCreate, UnidadMedidaRead
 

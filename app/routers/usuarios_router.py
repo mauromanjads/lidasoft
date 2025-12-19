@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy import or_
-from app.database import SessionLocal
+from app.database_empresa import get_db
 from app.models.usuario import Usuario
 from app.schemas.usuario_schema import UsuarioCreate,UsuarioResponse
 import bcrypt 
@@ -9,15 +9,6 @@ import bcrypt
 
 
 router = APIRouter(prefix="/usuarios", tags=["Usuarios"])
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
-
 
 @router.post("/crear",response_model=UsuarioResponse)
 def crear_usuario(data: UsuarioCreate, db: Session = Depends(get_db)):

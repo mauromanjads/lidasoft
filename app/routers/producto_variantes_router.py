@@ -1,7 +1,7 @@
 # app/routers/productos_variantes.py
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from app.database import SessionLocal
+from app.database_empresa import get_db
 from app.models.productos import Producto
 
 from app.schemas.productovariantes_schema import (
@@ -19,15 +19,6 @@ router = APIRouter(
     tags=["Productos - Variantes"]
 )
 
-# -----------------------------
-# Dependencia de DB
-# -----------------------------
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 # 🔥 LISTAR variantes de un producto
 @router.get("/", response_model=list[ProductoVarianteResponse])

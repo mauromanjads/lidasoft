@@ -31,6 +31,17 @@ export default function LoginPage() {
         const data = await res.json();
         sessionStorage.setItem("usuario", JSON.stringify(data));
         document.cookie = `usuario=${data.usuario}; path=/;`;
+
+        // 🔑 GUARDAR TOKEN JWT
+        localStorage.setItem("access_token", data.access_token);
+
+        // (opcional) info del usuario
+        localStorage.setItem("usuario", JSON.stringify({
+          usuario: data.usuario,
+          nombre: data.nombre,
+          empresa: data.empresa,
+        }));
+
         router.push("/dashboard");
       } else {
         alert("Credenciales incorrectas ❌");
