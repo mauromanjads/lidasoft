@@ -49,6 +49,47 @@ export default function Sidebar() {
               >
                 🏠 Inicio
               </a>
+              
+               {/* SUBMENÚ DE LA ORGANIZACIÓN */}
+              <div>
+                <div
+                  className="flex justify-between items-center bg-[#0d2f5a]/70 hover:bg-[#103766]/90 
+                  p-2 rounded-lg cursor-pointer transition-all shadow-md"
+                  onClick={() => toggleSubMenu("organizacion")}
+                >
+                  🏛️ Organización
+                  <span className="text-sm">
+                    {subMenuOpen === "organizacion" ? "▲" : "▼"}
+                  </span>
+                </div>
+
+                <AnimatePresence>
+                  {subMenuOpen === "organizacion" && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      className="pl-4 mt-2 space-y-2"
+                    >
+                      <a
+                        href="/dashboard/empresas"
+                        className="block bg-[#0d2f5a]/70 hover:bg-[#103766]/90 
+                        p-2 rounded-lg transition-all shadow-md"
+                      >
+                        🏢 Empresa
+                      </a>
+                      <a
+                        href="/dashboard/sucursales"
+                        className="block bg-[#0d2f5a]/70 hover:bg-[#103766]/90 
+                        p-2 rounded-lg transition-all shadow-md"
+                      >
+                        🏬 Sucursales
+                      </a>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
 
                {/* SUBMENÚ VENTAS */}
               <div>
@@ -89,8 +130,6 @@ export default function Sidebar() {
                   )}
                 </AnimatePresence>
               </div>
-
-
 
               {/* SUBMENÚ TERCEROS */}
               <div>
