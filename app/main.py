@@ -1,4 +1,6 @@
 # app/main.py
+import os
+from fastapi.staticfiles import StaticFiles
 from fastapi import FastAPI
 from app.routers import terceros_router
 from app.routers import usuarios_router
@@ -26,6 +28,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.routers import login_router
 
 app = FastAPI()
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+app.mount("/static", StaticFiles(directory=os.path.join(BASE_DIR, "../static")), name="static")
 
 app.add_middleware(
     CORSMiddleware,

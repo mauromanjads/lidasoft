@@ -219,12 +219,31 @@ useEffect(() => {
           <label className="text-sm font-semibold mb-1 text-gray-700">
             Logo (URL)
           </label>
-          <Input
-            name="logo_url"
-            value={formData.logo_url || ""}
-            onChange={handleChange}
-            placeholder="URL del logo"
+         
+          <input
+            type="file"
+            accept="image/*"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (!file) return;
+
+              const form = new FormData();
+              form.append("file", file);
+
+              fetch(`${process.env.NEXT_PUBLIC_API_URL}/empresa/${empresa?.id}/logo`, {
+                method: "POST",
+                body: form,
+              })
+                .then(res => res.json())
+                .then(data => {
+                  setFormData((prev: any) => ({
+                    ...prev,
+                    logo_url: data.logo_url,
+                  }));
+                });
+            }}
           />
+
         </div>
 
       </div>

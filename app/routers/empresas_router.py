@@ -1,4 +1,6 @@
-from fastapi import APIRouter, Depends, HTTPException, Query, Request
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, UploadFile, File
+import os
+import shutil
 from sqlalchemy.orm import Session
 from sqlalchemy import or_
 from datetime import datetime, timezone
@@ -130,3 +132,28 @@ def eliminar_empresa(
     db.delete(empresa)
     db.commit()
     return {"msg": "Empresa eliminada correctamente"}
+
+
+# POST /empresa/{empresa_id}/logo
+@router.post("/{empresa_id}/logo")
+def subir_logo(
+    empresa_id: int,
+    file: UploadFile = File(...),
+    db: Session = Depends(get_db_master)
+):
+    empresa = db.query(Empresa).filter(Empresa.id == empresa_id).first()
+    if not empresa:
+        raise HTTPException(404, "Empresa no existe")
+
+    # Guardar archivo localmente
+    ext = file.filename.split(".")[-1]
+    filename = f"empresa_{empresa_id}.{ext}"
+    os.makedirs("static/logos", exist_ok=True)
+    with open(f"static/logos/{filename}", "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
+
+    # Guardar solo la URL en la BD
+    empresa.logo_url = f"/static/logos/{filename}"
+    db.commit()
+
+    return {"logo_url": empresa.logo_url}
