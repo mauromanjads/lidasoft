@@ -15,7 +15,12 @@ class EmpresaCreate(EmpresaBase):
 
 
 class EmpresaUpdate(BaseModel):
-   pass
+   nombre: Optional[str] = None
+   razon_social: Optional[str] = None
+   nit: Optional[str] = None
+   logo_url: Optional[str] = None
+   subdominio: Optional[str] = None
+   dominio_personalizado: Optional[str] = None
 
 
 class EmpresaResponse(EmpresaBase):

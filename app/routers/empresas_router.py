@@ -97,46 +97,24 @@ def obtener_empresa(
 # --------------------------------------------------
 @router.put("/{empresa_id}", response_model=EmpresaResponse)
 def actualizar_empresa(
-    request: Request,
-    empresa_id: int,
-    empresa_data: EmpresaUpdate,
-    db: Session = Depends(get_db_master)
+        empresa_id: int, 
+        data: EmpresaUpdate, 
+        db: Session = Depends(get_db_master)
 ):
-    usuario = request.cookies.get("usuario")
+    try:
+        empresa = db.query(Empresa).filter(Empresa.id == empresa_id).first()
+        if not empresa:
+            raise HTTPException(404, "Empresa no existe")
 
-    empresa = db.query(Empresa).filter(Empresa.id == empresa_id).first()
-    if not empresa:
-        raise HTTPException(404, "Empresa no existe")
+        for k, v in data.model_dump().items():
+            setattr(empresa, k, v)
 
-    data = empresa_data.model_dump(exclude_unset=True)
-
-    # Subdominio duplicado
-    if "subdominio" in data:
-        if db.query(Empresa).filter(
-            Empresa.subdominio == data["subdominio"],
-            Empresa.id != empresa_id
-        ).first():
-            raise HTTPException(409, "El subdominio ya existe")
-
-    # Dominio personalizado duplicado
-    if data.get("dominio_personalizado"):
-        if db.query(Empresa).filter(
-            Empresa.dominio_personalizado == data["dominio_personalizado"],
-            Empresa.id != empresa_id
-        ).first():
-            raise HTTPException(409, "El dominio personalizado ya está en uso")
-
-    for key, value in data.items():
-        setattr(empresa, key, value)
-
-    empresa.usuario_modifico = usuario
-    empresa.fecha_modificacion = datetime.now(timezone.utc)
-
-    db.commit()
-    db.refresh(empresa)
-    return empresa
-
-
+        db.commit()
+        db.refresh(empresa)
+        return empresa
+    except Exception as e:
+        print("❌ ERROR EN ENDPOINT EMPRESA:", e)
+        raise HTTPException(status_code=500, detail=str(e))
 # --------------------------------------------------
 # Eliminar empresa
 # --------------------------------------------------

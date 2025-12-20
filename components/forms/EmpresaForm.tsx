@@ -146,6 +146,9 @@ useEffect(() => {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       {/* 🏢 DATOS EMPRESA */}
+       <h1 className="flex items-center gap-2 text-lg font-semibold">
+         🏢 Configuración de empresa 
+      </h1>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full">
 
         <div className="flex flex-col w-full">
@@ -196,7 +199,7 @@ useEffect(() => {
             value={formData.subdominio || ""}
             onChange={handleChange}
             placeholder="ej: miempresa"
-            required
+            disabled            
           />
         </div>
 
