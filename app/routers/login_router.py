@@ -60,8 +60,10 @@ def login(data: LoginRequest, db_master: Session = Depends(get_db_master)):
             "token_type": "bearer",
             "msg": "Login correcto 🚀",
             "usuario": user.usuario,
+            "idusuario": user.id,
             "nombre": user.nombre,
-            "empresa": empresa.nombre
+            "empresa": empresa.nombre,
+            "idempresa": empresa.id
         }    
 
     finally:

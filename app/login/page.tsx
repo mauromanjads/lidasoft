@@ -38,8 +38,10 @@ export default function LoginPage() {
         // (opcional) info del usuario
         localStorage.setItem("usuario", JSON.stringify({
           usuario: data.usuario,
+          id_usuario:data.idusuario,
           nombre: data.nombre,
           empresa: data.empresa,
+          id_empresa:data.idempresa
         }));
 
         router.push("/dashboard");
