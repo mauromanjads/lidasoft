@@ -245,6 +245,15 @@ useEffect(() => {
           />
 
         </div>
+        {formData.logo_url && (
+          <div className="flex justify-center mb-4">
+            <img
+              src={`${process.env.NEXT_PUBLIC_API_URL}${formData.logo_url}?t=${Date.now()}`}
+              alt="Logo empresa"
+              className="h-48  object-contain border rounded p-2 bg-white"
+            />
+          </div>
+        )}
 
       </div>
 
@@ -253,9 +262,7 @@ useEffect(() => {
 
       {/* BOTONES */}
       <div className="flex justify-end gap-2">
-        <Button type="button" onClick={onClose} disabled={loading}>
-          ❌ Cancelar
-        </Button>
+       
         <Button type="submit" disabled={loading}>
           {loading
             ? empresa
