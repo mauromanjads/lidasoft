@@ -138,7 +138,7 @@ export default function Sidebar() {
                   p-2 rounded-lg cursor-pointer transition-all shadow-md"
                   onClick={() => toggleSubMenu("terceros")}
                 >
-                  👥 Terceros
+                  🧑‍🤝‍🧑 Terceros
                   <span className="text-sm">
                     {subMenuOpen === "terceros" ? "▲" : "▼"}
                   </span>
@@ -157,7 +157,7 @@ export default function Sidebar() {
                         className="block bg-[#0d2f5a]/70 hover:bg-[#103766]/90 
                         p-2 rounded-lg transition-all shadow-md"
                       >
-                        🧑‍🤝‍🧑 Clientes
+                        🧑‍💼 Clientes
                       </a>
                       <a
                         href="/dashboard/terceros/proveedores"
@@ -266,6 +266,48 @@ export default function Sidebar() {
                         🔤 Resoluciones
                       </a>
                      
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
+               {/* SUBMENÚ ACCESOS */}
+              <div>
+                <div
+                  className="flex justify-between items-center bg-[#0d2f5a]/70 hover:bg-[#103766]/90 
+                  p-2 rounded-lg cursor-pointer transition-all shadow-md"
+                  onClick={() => toggleSubMenu("accesos")}
+                >
+                  🔑 Accesos
+                  <span className="text-sm">
+                    {subMenuOpen === "accesos" ? "▲" : "▼"}
+                  </span>
+                </div>
+
+                <AnimatePresence>
+                  {subMenuOpen === "accesos" && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      className="pl-4 mt-2 space-y-2"
+                    >
+                      <a
+                        href="/dashboard/usuarios"
+                        className="block bg-[#0d2f5a]/70 hover:bg-[#103766]/90 
+                        p-2 rounded-lg transition-all shadow-md"
+                      >
+                        🧑‍🤝‍🧑 Usuarios
+                      </a>
+
+                      <a
+                        href="/dashboard/roles"
+                        className="block bg-[#0d2f5a]/70 hover:bg-[#103766]/90 
+                        p-2 rounded-lg transition-all shadow-md"
+                      >
+                        🏷️ Roles
+                      </a>
+                      
                     </motion.div>
                   )}
                 </AnimatePresence>
