@@ -1,7 +1,8 @@
-from sqlalchemy import Column, Integer, String, Boolean, Text, DateTime, func, Sequence
-from app.database import Base  # Base de la DB de la empresa
+# app/models/sucursales.py
+from sqlalchemy import Column, Integer, String, Boolean, Text, DateTime, Sequence, func
+from sqlalchemy.orm import relationship
+from app.database import Base
 
-# Definimos la secuencia
 sucursales_id_seq = Sequence('sucursales_id_seq')
 
 class Sucursal(Base):
@@ -15,3 +16,9 @@ class Sucursal(Base):
     estado = Column(Boolean, default=True)
     created_at = Column(DateTime, server_default=func.now())
     updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
+
+    usuarios = relationship(
+        "Usuario",
+        secondary="usuarios_sucursales",
+        back_populates="sucursales"
+    )

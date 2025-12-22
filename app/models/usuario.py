@@ -1,7 +1,18 @@
 # app/models/clientes.py
-from sqlalchemy import Column, Integer, String, Boolean, DateTime,ForeignKey
-from datetime import datetime,timezone
+from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey, Table
+from sqlalchemy.orm import relationship
+from datetime import datetime, timezone
 from app.database import Base
+
+# Tabla intermedia usuarios_sucursales
+usuarios_sucursales = Table(
+    "usuarios_sucursales",
+    Base.metadata,
+    Column("id", Integer, primary_key=True, autoincrement=True),
+    Column("usuario_id", Integer, ForeignKey("usuarios.id", ondelete="CASCADE")),
+    Column("sucursal_id", Integer, ForeignKey("sucursales.id", ondelete="CASCADE")),
+    Column("activo", Boolean, default=True)
+)
 
 class Usuario(Base):
     __tablename__ = "usuarios"
@@ -13,3 +24,11 @@ class Usuario(Base):
     id_rol = Column(Integer, ForeignKey("roles.id"), nullable=True)
     activo = Column(Boolean, default=True)
     creado_en = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+
+    # Relaciones
+    rol = relationship("Rol", back_populates="usuarios")
+    sucursales = relationship(
+        "Sucursal",
+        secondary=usuarios_sucursales,
+        back_populates="usuarios"
+    )
