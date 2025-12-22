@@ -167,12 +167,6 @@ export default function RolesTable({ roles, onDelete, onSaved }: Props) {
           className="border px-3 py-2 rounded-lg shadow-sm w-1/3"
         />
 
-        <Button onClick={() => setIsOpen(true)}>
-          <div className="flex items-center gap-2">
-            <img src="/icons/plus.png" className="w-6 h-6" />
-            <span>Nuevo</span>
-          </div>
-        </Button>
 
         <div className="flex gap-3">
           <Button onClick={exportToExcel} className="bg-green-600 text-white">

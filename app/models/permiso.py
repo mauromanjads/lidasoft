@@ -12,9 +12,7 @@ class Permiso(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     codigo = Column(String(100), nullable=False, unique=True)
-    descripcion = Column(Text)
-    activo = Column(Boolean, default=True)
-    creado_en = Column(DateTime, default=datetime.utcnow)
+    descripcion = Column(Text)   
 
     # Relaciones
     roles = relationship(

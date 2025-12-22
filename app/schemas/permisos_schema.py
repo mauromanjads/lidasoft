@@ -12,8 +12,7 @@ class PermisoBase(BaseModel):
         examples=["usuarios.crear", "facturas.anular"]
     )
     descripcion: Optional[str] = None
-    activo: bool = True
-
+   
 
 # 🔹 Crear
 class PermisoCreate(PermisoBase):
@@ -23,17 +22,14 @@ class PermisoCreate(PermisoBase):
 # 🔹 Actualizar
 # ⚠️ IMPORTANTE: no permitimos actualizar el código
 class PermisoUpdate(BaseModel):
-    descripcion: Optional[str] = None
-    activo: Optional[bool] = None
+    descripcion: Optional[str] = None   
 
 
 # 🔹 Respuesta básica (listas, selects, asignación a roles)
 class PermisoResponse(BaseModel):
     id: int
     codigo: str
-    descripcion: Optional[str]
-    activo: bool
-    creado_en: datetime
+    descripcion: Optional[str]  
 
     class Config:
         from_attributes = True

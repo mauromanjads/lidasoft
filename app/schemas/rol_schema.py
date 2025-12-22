@@ -25,6 +25,10 @@ class PermisoRolResponse(BaseModel):
     class Config:
         from_attributes = True
 
+class RolPermisoResponse(BaseModel):
+    permiso: PermisoRolResponse
+
+
 class RolResponse(BaseModel):
     id: int
     codigo: str
@@ -32,7 +36,7 @@ class RolResponse(BaseModel):
     descripcion: Optional[str]
     activo: bool
     creado_en: datetime
-    permisos: List[PermisoRolResponse]
+    permisos: List[RolPermisoResponse]
 
     class Config:
         from_attributes = True
