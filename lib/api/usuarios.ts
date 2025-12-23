@@ -83,7 +83,10 @@ export const crearUsuario = (data: UsuarioCreate): Promise<Usuario> => {
   return fetchAPI<Usuario>(`${API_URL}/usuarios/crear`, {
     method: "POST",
     headers: authHeaders(),
-    body: JSON.stringify(data),
+    body: JSON.stringify({
+      ...data,
+      sucursales_ids: data.sucursales_ids ?? [], // 👈 CLAVE
+    }),
   });
 };
 
@@ -95,7 +98,10 @@ export const actualizarUsuario = (
   return fetchAPI<Usuario>(`${API_URL}/usuarios/${usuario_id}`, {
     method: "PUT",
     headers: authHeaders(),
-    body: JSON.stringify(data),
+    body: JSON.stringify({
+      ...data,
+      sucursales_ids: data.sucursales_ids ?? [], // 👈 CLAVE
+    }),
   });
 };
 

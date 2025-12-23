@@ -98,8 +98,7 @@ def crear_usuario(data: UsuarioCreate, db: Session = Depends(get_empresa_db)):
         for sucursal_id in data.sucursales_ids:
             stmt = usuarios_sucursales.insert().values(
                 usuario_id=nuevo.id,
-                sucursal_id=sucursal_id,
-                activo=True
+                sucursal_id=sucursal_id
             )
             db.execute(stmt)
         db.commit()
@@ -131,8 +130,7 @@ def actualizar_usuario(usuario_id: int, data: UsuarioUpdate, db: Session = Depen
         for sucursal_id in data.sucursales_ids:
             stmt = usuarios_sucursales.insert().values(
                 usuario_id=usuario.id,
-                sucursal_id=sucursal_id,
-                activo=True
+                sucursal_id=sucursal_id
             )
             db.execute(stmt)
         db.commit()

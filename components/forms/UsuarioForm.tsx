@@ -5,7 +5,7 @@ import Button from "@/components/ui/button";
 import Input from "@/components/ui/input";
 import Swal from "sweetalert2";
 import { Rol, obtenerRoles } from "@/lib/api/roles";
-import { Sucursal } from "@/lib/api/sucursales";
+import { Sucursal, obtenerSucursales } from "@/lib/api/sucursales";
 import {
   crearUsuario,
   actualizarUsuario,
@@ -41,7 +41,7 @@ export default function UsuarioForm({ usuario, onClose, onSaved }: UsuarioFormPr
   });
 
   const [roles, setRoles] = useState<Rol[]>([]);
-  const [sucursales] = useState<Sucursal[]>([]);
+  const [sucursales, setSucursales] = useState<Sucursal[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -49,8 +49,12 @@ export default function UsuarioForm({ usuario, onClose, onSaved }: UsuarioFormPr
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const rolesData = await obtenerRoles();
-        setRoles(rolesData);   
+        const [rolesData, sucursalesData] = await Promise.all([
+          obtenerRoles(),
+          obtenerSucursales(),
+        ]);
+        setRoles(rolesData);
+        setSucursales(sucursalesData?? []);
       } catch (err) {
         console.error(err);
       }
@@ -96,6 +100,23 @@ export default function UsuarioForm({ usuario, onClose, onSaved }: UsuarioFormPr
       [target.name]: val,
     }));
   };
+
+  const toggleSucursal = (id: number) => {
+    setFormData((prev) => {
+      const actuales = prev.sucursales_ids ?? [];
+
+      return {
+        ...prev,
+        sucursales_ids: actuales.includes(id)
+          ? actuales.filter((s) => s !== id)
+          : [...actuales, id],
+      };
+    });
+  };
+
+  const todasSeleccionadas =
+  sucursales.length > 0 &&
+  (formData.sucursales_ids?.length ?? 0) === sucursales.length;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -184,24 +205,6 @@ export default function UsuarioForm({ usuario, onClose, onSaved }: UsuarioFormPr
 
         </div>
 
-        {/* Sucursales */}
-        <div className="flex flex-col">
-          <label className="text-sm font-semibold mb-1">Sucursales</label>
-          <select
-            name="sucursales_ids"
-            multiple
-           // value={formData.sucursales_ids || []}
-            onChange={handleChange}
-            className="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            {sucursales.map((s) => (
-              <option key={s.id} value={s.id}>
-                {s.nombre}
-              </option>
-            ))}
-          </select>
-        </div>
-
         {/* Activo */}
         <div className="flex flex-col">
           <label className="text-sm font-semibold mb-1">Activo</label>
@@ -215,6 +218,51 @@ export default function UsuarioForm({ usuario, onClose, onSaved }: UsuarioFormPr
             <option value={0}>Inactivo</option>
           </select>
         </div>
+
+       
+       {/* Sucursales */}
+        <div className="flex flex-col md:col-span-2">         
+          <button
+            type="button"
+            className="mb-2 inline-flex items-center gap-2
+                  rounded-full border border-blue-200
+                  bg-blue-50 px-3 py-1
+                  text-xs font-medium text-blue-700
+                  hover:bg-blue-100 hover:border-blue-300
+                  transition-colors
+                "
+            onClick={() =>
+              setFormData((prev) => ({
+                ...prev,
+                sucursales_ids: todasSeleccionadas
+                  ? []
+                  : sucursales.map((s) => s.id),
+              }))
+            }
+          >
+            {todasSeleccionadas ? "✖ Deseleccionar todas las sucursales" : "✔ Seleccionar todas las sucursales"}
+          </button>
+
+          <div className="border rounded-md p-3 max-h-48 overflow-y-auto">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              {sucursales.map((s) => (
+                <label
+                  key={s.id}
+                  className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-1 rounded"
+                >
+                  <input
+                    type="checkbox"
+                    checked={(formData.sucursales_ids ?? []).includes(s.id)}
+                    onChange={() => toggleSucursal(s.id)}
+                    className="accent-blue-600"
+                  />
+                  <span className="text-sm">{s.nombre}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+        </div>
+       
       </div>
 
       {error && <p className="text-red-500">{error}</p>}
