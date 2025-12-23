@@ -45,3 +45,8 @@ class UsuarioResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+# --- Response especial al crear usuario ---
+class UsuarioCreateResponse(UsuarioResponse):    
+    password_temporal: str
+

@@ -7,7 +7,8 @@ from app.schemas.usuario_schema import (
     UsuarioCreate,
     UsuarioUpdate,
     UsuarioResponse,
-    UsuarioPasswordUpdate
+    UsuarioPasswordUpdate,
+    UsuarioCreateResponse
 )
 from app.schemas.sucursales_schema import SucursalResponse
 from app.schemas.rol_schema import RolResponse
@@ -80,7 +81,7 @@ def obtener_usuario(usuario_id: int, db: Session = Depends(get_empresa_db)):
 # ===============================
 # Crear usuario
 # ===============================
-@router.post("/crear", response_model=UsuarioResponse)
+@router.post("/crear", response_model=UsuarioCreateResponse)
 def crear_usuario(data: UsuarioCreate, db: Session = Depends(get_empresa_db)):
     existe = db.query(Usuario).filter(Usuario.usuario == data.usuario).first()
     if existe:
@@ -111,7 +112,12 @@ def crear_usuario(data: UsuarioCreate, db: Session = Depends(get_empresa_db)):
         db.commit()
         db.refresh(nuevo)
 
-    return usuario_a_response(nuevo)
+    base_response = usuario_a_response(nuevo)
+
+    return UsuarioCreateResponse(
+        **base_response.model_dump(),
+        password_temporal=password_tecnico
+    )
 
 # ===============================
 # Actualizar usuario
