@@ -33,14 +33,6 @@ class UsuarioUpdate(BaseModel):
 class UsuarioPasswordUpdate(BaseModel):
     password: str
 
-# Response de la relación usuario-sucursal
-class UsuarioSucursalResponse(BaseModel):
-    id: int
-    sucursal: SucursalResponse
-    activo: bool
-
-    class Config:
-        from_attributes = True
 
 # Response de usuario
 class UsuarioResponse(BaseModel):
@@ -50,7 +42,7 @@ class UsuarioResponse(BaseModel):
     activo: bool
     creado_en: datetime
     rol: Optional[RolResponse] = None
-    sucursales: List[UsuarioSucursalResponse] = []
+    sucursales: List[SucursalResponse] = []
 
     class Config:
         from_attributes = True

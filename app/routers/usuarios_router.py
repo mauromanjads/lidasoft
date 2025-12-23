@@ -7,8 +7,7 @@ from app.schemas.usuario_schema import (
     UsuarioCreate,
     UsuarioUpdate,
     UsuarioResponse,
-    UsuarioPasswordUpdate,
-    UsuarioSucursalResponse
+    UsuarioPasswordUpdate
 )
 from app.schemas.sucursales_schema import SucursalResponse
 from app.schemas.rol_schema import RolResponse
@@ -19,21 +18,18 @@ router = APIRouter(prefix="/usuarios", tags=["Usuarios"])
 # ----------------------
 # Helper para construir UsuarioResponse
 # ----------------------
+
 def usuario_a_response(usuario: Usuario) -> UsuarioResponse:
     sucursales_resp = [
-        UsuarioSucursalResponse(
-            id=us.id,
-            sucursal=SucursalResponse(
-                id=us.sucursal.id,
-                nombre=us.sucursal.nombre,
-                direccion=us.sucursal.direccion,
-                telefono=us.sucursal.telefono,
-                email=us.sucursal.email,
-                estado=us.sucursal.estado
-            ),
-            activo=us.activo
+        SucursalResponse(
+            id=s.id,
+            nombre=s.nombre,
+            direccion=s.direccion,
+            telefono=s.telefono,
+            email=s.email,
+            estado=s.estado
         )
-        for us in usuario.sucursales  # asumimos relación Usuario -> UsuarioSucursal
+        for s in usuario.sucursales
     ]
 
     return UsuarioResponse(
@@ -52,12 +48,16 @@ def usuario_a_response(usuario: Usuario) -> UsuarioResponse:
         sucursales=sucursales_resp
     )
 
+
 # ===============================
 # Listar todos los usuarios
 # ===============================
 @router.get("/", response_model=list[UsuarioResponse])
 def listar_usuarios(db: Session = Depends(get_empresa_db)):
-    usuarios = db.query(Usuario).options(joinedload(Usuario.sucursales).joinedload("sucursal"), joinedload(Usuario.rol)).all()
+    usuarios = db.query(Usuario).options(
+        joinedload(Usuario.sucursales),
+        joinedload(Usuario.rol)
+    ).all()
     return [usuario_a_response(u) for u in usuarios]
 
 # ===============================
@@ -65,7 +65,11 @@ def listar_usuarios(db: Session = Depends(get_empresa_db)):
 # ===============================
 @router.get("/{usuario_id}", response_model=UsuarioResponse)
 def obtener_usuario(usuario_id: int, db: Session = Depends(get_empresa_db)):
-    usuario = db.query(Usuario).options(joinedload(Usuario.sucursales).joinedload("sucursal"), joinedload(Usuario.rol)).filter(Usuario.id == usuario_id).first()
+    usuario = db.query(Usuario).options(
+        joinedload(Usuario.sucursales),
+        joinedload(Usuario.rol)
+    ).filter(Usuario.id == usuario_id).first()
+
     if not usuario:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
     return usuario_a_response(usuario)

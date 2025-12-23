@@ -10,8 +10,7 @@ usuarios_sucursales = Table(
     Base.metadata,
     Column("id", Integer, primary_key=True, autoincrement=True),
     Column("usuario_id", Integer, ForeignKey("usuarios.id", ondelete="CASCADE")),
-    Column("sucursal_id", Integer, ForeignKey("sucursales.id", ondelete="CASCADE")),
-    Column("activo", Boolean, default=True)
+    Column("sucursal_id", Integer, ForeignKey("sucursales.id", ondelete="CASCADE")),    
 )
 
 class Usuario(Base):
