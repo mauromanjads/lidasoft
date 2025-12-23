@@ -79,8 +79,11 @@ export const obtenerUsuario = (usuario_id: number): Promise<Usuario> => {
 };
 
 // Crear usuario (sin password)
-export const crearUsuario = (data: UsuarioCreate): Promise<Usuario> => {
-  return fetchAPI<Usuario>(`${API_URL}/usuarios/crear`, {
+export const crearUsuario = (
+  data: UsuarioCreate
+): Promise<UsuarioCreateResponse> => {
+
+  return fetchAPI<UsuarioCreateResponse>(`${API_URL}/usuarios/crear`, {
     method: "POST",
     headers: authHeaders(),
     body: JSON.stringify({
@@ -129,3 +132,7 @@ export const eliminarUsuario = (
     headers: authHeaders(),
   });
 };
+
+export interface UsuarioCreateResponse extends Usuario {
+  password_temporal: string;
+}

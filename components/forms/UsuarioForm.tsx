@@ -126,18 +126,33 @@ export default function UsuarioForm({ usuario, onClose, onSaved }: UsuarioFormPr
     try {
       if (usuario) {
         await actualizarUsuario(usuario.id, formData as UsuarioUpdate);
+
+          Swal.fire({
+            title: "¡Listo!",
+            text: "Usuario actualizado",
+            icon: "success",
+            confirmButtonText: "Aceptar",
+            timer: 3000,
+            timerProgressBar: true,
+          });
+
       } else {
-        await crearUsuario(formData as UsuarioCreate);
+       const resp = await crearUsuario(formData as UsuarioCreate);
+        
+        Swal.fire({
+            title: "Usuario creado",
+            html: `
+              <p><b>Usuario:</b> ${resp.usuario}</p>
+              <p><b>Password temporal:</b></p>
+              <pre>${resp.password_temporal}</pre>
+              <p style="color:red;font-size:12px">
+                ⚠️ Copiar ahora. No se mostrará nuevamente.
+              </p>
+              `,
+              icon: "warning",
+           });
       }
 
-      Swal.fire({
-        title: "¡Listo!",
-        text: usuario ? "Usuario actualizado" : "Usuario creado",
-        icon: "success",
-        confirmButtonText: "Aceptar",
-        timer: 3000,
-        timerProgressBar: true,
-      });
 
       if (onClose) onClose();
       if (onSaved) onSaved();
