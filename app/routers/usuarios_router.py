@@ -181,7 +181,7 @@ def eliminar_usuario(usuario_id: int, db: Session = Depends(get_empresa_db)):
 
 
 def generar_password_tecnico():
-    return secrets.token_urlsafe(32)  # fuerte y simple
+    return secrets.token_urlsafe(8)[:10]  # fuerte y simple
 
 def hash_password(password: str) -> str:
     return bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
