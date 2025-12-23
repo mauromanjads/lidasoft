@@ -18,8 +18,7 @@ class UsuarioBase(BaseModel):
     activo: bool = True
 
 # Crear usuario (requiere password)
-class UsuarioCreate(UsuarioBase):
-    password: str
+class UsuarioCreate(UsuarioBase):    
     sucursales_ids: List[int] = []
 
 # Actualizar usuario (sin password)

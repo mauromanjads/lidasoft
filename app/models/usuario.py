@@ -23,7 +23,7 @@ class Usuario(Base):
     id_rol = Column(Integer, ForeignKey("roles.id"), nullable=True)
     activo = Column(Boolean, default=True)
     creado_en = Column(DateTime, default=lambda: datetime.now(timezone.utc))
-
+    cambia_clave = Column(Boolean, default=True)  # 👈 CLAVE
     # Relaciones
     rol = relationship("Rol", back_populates="usuarios")
     sucursales = relationship(

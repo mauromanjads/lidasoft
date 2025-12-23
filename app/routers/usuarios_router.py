@@ -12,6 +12,9 @@ from app.schemas.usuario_schema import (
 from app.schemas.sucursales_schema import SucursalResponse
 from app.schemas.rol_schema import RolResponse
 import bcrypt
+import secrets
+import string
+
 
 router = APIRouter(prefix="/usuarios", tags=["Usuarios"])
 
@@ -83,10 +86,14 @@ def crear_usuario(data: UsuarioCreate, db: Session = Depends(get_empresa_db)):
     if existe:
         raise HTTPException(status_code=400, detail="Usuario ya existe")
 
+    password_tecnico = generar_password_tecnico()
+
     nuevo = Usuario(
         usuario=data.usuario,
         nombre=data.nombre,
         id_rol=data.id_rol,
+        password=hash_password(password_tecnico),
+        cambia_clave=True,
         activo=data.activo if data.activo is not None else True
     )
     db.add(nuevo)
@@ -165,3 +172,10 @@ def eliminar_usuario(usuario_id: int, db: Session = Depends(get_empresa_db)):
     db.delete(usuario)
     db.commit()
     return {"msg": "Usuario eliminado"}
+
+
+def generar_password_tecnico():
+    return secrets.token_urlsafe(32)  # fuerte y simple
+
+def hash_password(password: str) -> str:
+    return bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
