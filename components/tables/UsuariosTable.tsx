@@ -23,6 +23,7 @@ interface Usuario {
   usuario: string;
   nombre?: string;
   activo: boolean;
+  id_rol?: number;
   rol?: {
     id: number;
     nombre: string;

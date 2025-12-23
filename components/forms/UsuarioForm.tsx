@@ -5,7 +5,7 @@ import Button from "@/components/ui/button";
 import Input from "@/components/ui/input";
 import Swal from "sweetalert2";
 import { Rol, obtenerRoles } from "@/lib/api/roles";
-import { Sucursal, obtenerSucursales } from "@/lib/api/sucursales";
+import { Sucursal } from "@/lib/api/sucursales";
 import {
   crearUsuario,
   actualizarUsuario,
@@ -19,7 +19,11 @@ interface UsuarioFormProps {
     usuario: string;
     nombre?: string;
     activo: boolean;
-    rol_id?: number;
+    id_rol?: number;
+    rol?: {
+    id: number;
+    nombre: string;
+  };
     sucursales_ids?: number[];
   };
   onSubmit?: (data: UsuarioCreate | UsuarioUpdate) => Promise<void>;
@@ -32,12 +36,12 @@ export default function UsuarioForm({ usuario, onClose, onSaved }: UsuarioFormPr
     usuario: usuario?.usuario || "",
     nombre: usuario?.nombre || "",
     activo: usuario?.activo ?? true,
-    id_rol: usuario?.rol_id || undefined,
+    id_rol: usuario?.id_rol ?? usuario?.rol?.id ?? undefined,
     sucursales_ids: usuario?.sucursales_ids || [],
   });
 
   const [roles, setRoles] = useState<Rol[]>([]);
-  const [sucursales, setSucursales] = useState<Sucursal[]>([]);
+  const [sucursales] = useState<Sucursal[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -46,15 +50,26 @@ export default function UsuarioForm({ usuario, onClose, onSaved }: UsuarioFormPr
     const fetchData = async () => {
       try {
         const rolesData = await obtenerRoles();
-        setRoles(rolesData);
-       // const sucursalesData = await obtenerSucursales();
-       // setSucursales(sucursalesData);
+        setRoles(rolesData);   
       } catch (err) {
         console.error(err);
       }
     };
     fetchData();
   }, []);
+
+  useEffect(() => {
+    if (usuario) {
+      setFormData({
+        usuario: usuario.usuario,
+        nombre: usuario.nombre || "",
+        activo: usuario.activo,
+       id_rol: usuario?.id_rol ?? usuario?.rol?.id ?? undefined,
+        sucursales_ids: usuario.sucursales_ids || [],
+      });
+    }
+  }, [usuario]);
+
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -65,10 +80,16 @@ export default function UsuarioForm({ usuario, onClose, onSaved }: UsuarioFormPr
     if (target instanceof HTMLInputElement && target.type === "checkbox") {
       val = target.checked;
     } else if (target instanceof HTMLSelectElement && target.multiple) {
-      val = Array.from(target.selectedOptions).map((opt) => Number(opt.value));
-    } else {
-      val = target.value;
+      val = Array.from(target.selectedOptions).map((opt) => Number(opt.value));    
+    } 
+    else if (target.name === "activo") {
+      val = target.value === "1";
+    }  else if (target.name === "id_rol") {
+      val = target.value ? Number(target.value) : undefined;
     }
+    else {
+      val = target.value;
+    }   
 
     setFormData((prev) => ({
       ...prev,
@@ -146,12 +167,12 @@ export default function UsuarioForm({ usuario, onClose, onSaved }: UsuarioFormPr
         {/* Rol */}
         <div className="flex flex-col">
           <label className="text-sm font-semibold mb-1">Rol</label>
-          <select
-            name="rol_id"
-            value={formData.id_rol || ""}
+         <select
+            name="id_rol"
+            value={formData.id_rol ?? ""}
             onChange={handleChange}
             required
-            className="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="border border-gray-300 rounded-md px-3 py-2"
           >
             <option value="">Seleccione un rol</option>
             {roles.map((r) => (
@@ -160,6 +181,7 @@ export default function UsuarioForm({ usuario, onClose, onSaved }: UsuarioFormPr
               </option>
             ))}
           </select>
+
         </div>
 
         {/* Sucursales */}

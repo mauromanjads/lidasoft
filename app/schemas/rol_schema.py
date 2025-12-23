@@ -35,8 +35,7 @@ class RolResponse(BaseModel):
     nombre: str
     descripcion: Optional[str]
     activo: bool
-    creado_en: datetime
-    permisos: List[RolPermisoResponse]
-
+    creado_en: Optional[datetime] = None
+    permisos: Optional[List[RolPermisoResponse]] = []
     class Config:
         from_attributes = True

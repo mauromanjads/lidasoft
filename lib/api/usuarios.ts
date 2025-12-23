@@ -23,6 +23,10 @@ export interface UsuarioCreate {
   nombre?: string;
   id_rol?: number;
   activo?: boolean;
+  rol?: {
+    id: number;
+    nombre: string;
+  };
   sucursales_ids?: number[];
 }
 
@@ -30,6 +34,10 @@ export interface UsuarioUpdate {
   nombre?: string;
   id_rol?: number;
   activo?: boolean;
+  rol?: {
+    id: number;
+    nombre: string;
+  };
   sucursales_ids?: number[];
 }
 
