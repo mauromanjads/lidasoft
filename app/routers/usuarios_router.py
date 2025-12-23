@@ -58,10 +58,15 @@ def usuario_a_response(usuario: Usuario) -> UsuarioResponse:
 # ===============================
 @router.get("/", response_model=list[UsuarioResponse])
 def listar_usuarios(db: Session = Depends(get_empresa_db)):
-    usuarios = db.query(Usuario).options(
-        joinedload(Usuario.sucursales),
-        joinedload(Usuario.rol)
-    ).all()
+    usuarios = (
+        db.query(Usuario)
+        .options(
+            joinedload(Usuario.sucursales),
+            joinedload(Usuario.rol)
+        )
+        .order_by(Usuario.nombre.asc())
+        .all()
+    )
     return [usuario_a_response(u) for u in usuarios]
 
 # ===============================

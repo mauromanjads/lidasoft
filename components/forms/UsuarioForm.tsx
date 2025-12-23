@@ -24,6 +24,7 @@ interface UsuarioFormProps {
     id: number;
     nombre: string;
   };
+    sucursales?: { id: number }[]; 
     sucursales_ids?: number[];
   };
   onSubmit?: (data: UsuarioCreate | UsuarioUpdate) => Promise<void>;
@@ -69,7 +70,9 @@ export default function UsuarioForm({ usuario, onClose, onSaved }: UsuarioFormPr
         nombre: usuario.nombre || "",
         activo: usuario.activo,
        id_rol: usuario?.id_rol ?? usuario?.rol?.id ?? undefined,
-        sucursales_ids: usuario.sucursales_ids || [],
+        sucursales_ids: 
+         usuario.sucursales_ids ??
+        usuario.sucursales?.map((s) => s.id) ?? [],
       });
     }
   }, [usuario]);
