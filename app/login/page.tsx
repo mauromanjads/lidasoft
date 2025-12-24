@@ -49,7 +49,7 @@ export default function LoginPage() {
           router.push("/cambiar-password");
         } else {
           router.push("/dashboard");
-}
+        }
       } else {
         alert("Credenciales incorrectas ❌");
       }
