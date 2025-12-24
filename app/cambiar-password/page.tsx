@@ -24,12 +24,12 @@ export default function CambiarPasswordPage() {
 
   useEffect(() => {
     if (!user?.id_usuario) {
-      router.replace("/login");
+      handleLogout();
       return;
     }
 
     if (user.cambia_clave === false) {
-      router.replace("/dashboard");
+      handleLogout();
     }
   }, []);
 
@@ -55,7 +55,7 @@ export default function CambiarPasswordPage() {
       );
 
       alert("Contraseña actualizada correctamente");
-      router.replace("/dashboard");
+      handleLogout();
     } catch {
       alert("Error al actualizar la contraseña");
     }
