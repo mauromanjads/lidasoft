@@ -41,10 +41,15 @@ export default function LoginPage() {
           id_usuario:data.idusuario,
           nombre: data.nombre,
           empresa: data.empresa,
-          id_empresa:data.idempresa
+          id_empresa:data.idempresa ,
+          cambia_clave:data.cambia_clave        
         }));
 
-        router.push("/dashboard");
+        if (data.cambia_clave) {
+          router.push("/cambiar-password");
+        } else {
+          router.push("/dashboard");
+}
       } else {
         alert("Credenciales incorrectas ❌");
       }

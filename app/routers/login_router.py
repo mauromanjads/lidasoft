@@ -41,6 +41,9 @@ def login(data: LoginRequest, db_master: Session = Depends(get_db_master)):
         if not user:
             raise HTTPException(status_code=404, detail="Usuario no encontrado")
 
+        if not user.activo:
+            raise HTTPException(status_code=403, detail="Usuario inactivo")
+        
         # 5️⃣ Verificar contraseña       
         password_ok = verify_password(data.password,user.password)
             
@@ -63,7 +66,8 @@ def login(data: LoginRequest, db_master: Session = Depends(get_db_master)):
             "idusuario": user.id,
             "nombre": user.nombre,
             "empresa": empresa.nombre,
-            "idempresa": empresa.id
+            "idempresa": empresa.id,
+            "cambia_clave": user.cambia_clave
         }    
 
     finally:

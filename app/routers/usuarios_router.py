@@ -167,6 +167,9 @@ def actualizar_password(usuario_id: int, data: UsuarioPasswordUpdate, db: Sessio
 
     hashed_password = bcrypt.hashpw(data.password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
     usuario.password = hashed_password
+
+    usuario.cambia_clave = False  # 👈 CLAVE
+
     db.commit()
     return {"msg": "Contraseña actualizada"}
 

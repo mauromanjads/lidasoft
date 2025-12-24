@@ -9,6 +9,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const [usuario, setUsuario] = useState<any>(null);
   const router = useRouter();
 
+  const user = JSON.parse(localStorage.getItem("usuario") || "{}");
+
+  if (user.cambia_clave) {
+    router.replace("/cambiar-password");
+  }
+
   useEffect(() => {
     const existingTab = localStorage.getItem("app_active");
     if (existingTab) {
