@@ -71,6 +71,8 @@ def login(data: LoginRequest, db_master: Session = Depends(get_db_master)):
             "empresa": empresa.nombre,
             "idempresa": empresa.id,
             "cambia_clave": user.cambia_clave,
+            "id_rol": user.id_rol,
+            "nombre_rol": user.rol.nombre,
             "usuario_sucursales": [
                 {"id": s.id, "nombre": s.nombre} for s in user.sucursales
             ]

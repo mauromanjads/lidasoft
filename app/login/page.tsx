@@ -10,6 +10,9 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  
+  const [mostrarSelectSucursal, setMostrarSelectSucursal] = useState(false);
+  const [sucursales, setSucursales] = useState<any[]>([]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,23 +38,37 @@ export default function LoginPage() {
         // 🔑 GUARDAR TOKEN JWT
         localStorage.setItem("access_token", data.access_token);
 
-        // (opcional) info del usuario
+        // INFORMACION DEL USUARIO
         localStorage.setItem("usuario", JSON.stringify({
           usuario: data.usuario,
           id_usuario:data.idusuario,
           nombre: data.nombre,
           empresa: data.empresa,
           id_empresa:data.idempresa ,
-          cambia_clave:data.cambia_clave        
+          cambia_clave:data.cambia_clave,
+          id_rol:data.id_rol,  
+          nombre_rol:data.nombre_rol
         }));
 
         if (data.cambia_clave) {
           router.push("/cambiar-password");
         } else {
-          router.push("/dashboard");
+
+           {/*LOGICA DE SUCURSALES */}
+          // Si tiene 1 sucursal, la seleccionamos automáticamente
+          if (data.usuario_sucursales.length === 1) {
+            const sucursal = data.usuario_sucursales[0];
+            localStorage.setItem("sucursal", JSON.stringify(sucursal));
+            router.push("/dashboard");  
+          
+          } else if (data.usuario_sucursales.length > 1) {
+            setSucursales(data.usuario_sucursales);
+            setMostrarSelectSucursal(true);
+          }          
         }
       } else {
-        alert("Credenciales incorrectas ❌");
+        const data = await res.json();
+        alert("Credenciales incorrectas❌ : "  + data.detail);
       }
     } catch (error) {
       alert("Error de conexión con el servidor");
@@ -112,6 +129,36 @@ export default function LoginPage() {
               </div>
             </div>
 
+             {/* Selector de sucursales */}
+            {mostrarSelectSucursal && (
+              <div className="relative w-full">
+                <label className="text-sm text-white/90">Selecciona sucursal</label>
+                  
+                  <div className="bg-[#1D4E89] text-white rounded-lg p-2 cursor-pointer">
+                    <select
+                      className="w-full bg-[#1D4E89] p-2 rounded-lg text-white border border-white/20 focus:border-white outline-none"
+                      onChange={(e) => {
+                        const sucursalSeleccionada = sucursales.find(
+                          (s) => s.id.toString() === e.target.value
+                        );
+                        if (sucursalSeleccionada) {
+                          localStorage.setItem("sucursal", JSON.stringify(sucursalSeleccionada));
+                          router.push("/dashboard");
+                        }
+                      }}
+                    >
+                      <option value="">-- Elige una sucursal --</option>
+                      {sucursales.map((s) => (
+                        <option key={s.id} value={s.id}>
+                          {s.nombre}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+              </div>
+            )}
+
             {/* Botón */}
             <button
               type="submit"
@@ -145,4 +192,7 @@ export default function LoginPage() {
       </div>
     </div>
   );
+
+  
+
 }
