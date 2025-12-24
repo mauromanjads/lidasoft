@@ -95,7 +95,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               >
                 {/* Sucursal */}
                 <div className="px-4 py-2 text-lg text-white border-b border-white/20">
-                  <div className="font-medium">🏠Sucursal: {sucursal?.nombre || "—"}</div>
+                  <div className="font-medium">🏠 {sucursal?.nombre || "—"}</div>
                   
                 </div>
 
