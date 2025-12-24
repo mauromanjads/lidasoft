@@ -10,13 +10,16 @@ import {
   flexRender,
   ColumnDef,
 } from "@tanstack/react-table";
-import { Pencil, Trash2 } from "lucide-react";
+import { Pencil, Trash2,KeyRound } from "lucide-react";
 import Button from "@/components/ui/button";
 import Modal from "@/components/ui/modal";
 import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import UsuarioForm from "@/components/forms/UsuarioForm";
+
+import Swal from "sweetalert2";
+import { resetPasswordUsuario } from "@/lib/api/usuarios";
 
 interface Usuario {
   id: number;
@@ -40,6 +43,32 @@ interface Props {
   onDelete?: (id: number) => void;
   onSaved?: () => void;
 }
+
+const handleResetPassword = async (usuario: Usuario) => {
+  const result = await Swal.fire({
+    title: "¿Restaurar contraseña?",
+    text: `Se generará una nueva clave para ${usuario.usuario}`,
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonText: "Sí, restaurar",
+    cancelButtonText: "Cancelar",
+  });
+
+  if (!result.isConfirmed) return;
+
+  const data = await resetPasswordUsuario(usuario.id);
+
+  await Swal.fire({
+    title: "Contraseña restablecida",
+    html: `
+      <p><b>Usuario:</b> ${usuario.usuario}</p>
+      <p><b>Clave temporal:</b></p>
+      <code style="font-size:16px">${data.password_temporal}</code>
+    `,
+    icon: "success",
+  });
+};
+
 
 export default function UsuariosTable({ usuarios, onEdit, onDelete, onSaved }: Props) {
   const [filter, setFilter] = useState("");
@@ -92,6 +121,17 @@ export default function UsuariosTable({ usuarios, onEdit, onDelete, onSaved }: P
               >
                 <Pencil size={16} />
               </Button>
+
+
+              {/* Reset password */}
+              <Button
+                className="bg-yellow-500 hover:bg-yellow-600 text-white px-2 py-1 rounded-lg"
+                onClick={() => handleResetPassword(item)}
+                title="Restaurar contraseña"
+              >
+                <KeyRound size={16} />
+              </Button>
+
               <Button
                 className="bg-red-600 hover:bg-red-700 text-white px-2 py-1 rounded-lg"
                 onClick={() => onDelete?.(item.id)}

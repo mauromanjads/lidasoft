@@ -171,6 +171,26 @@ def actualizar_password(usuario_id: int, data: UsuarioPasswordUpdate, db: Sessio
     return {"msg": "Contraseña actualizada"}
 
 # ===============================
+# Resetear contraseña (ADMIN)
+# ===============================
+@router.post("/{usuario_id}/reset-password")
+def reset_password(usuario_id: int, db: Session = Depends(get_empresa_db)):
+    usuario = db.query(Usuario).filter(Usuario.id == usuario_id).first()
+    if not usuario:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+
+    nueva_password = generar_password_tecnico()
+    usuario.password = hash_password(nueva_password)
+    usuario.cambia_clave = True  # forzar cambio al login
+    db.commit()
+
+    return {
+        "msg": "Contraseña restablecida correctamente",
+        "password_temporal": nueva_password
+    }
+
+
+# ===============================
 # Eliminar usuario
 # ===============================
 @router.delete("/{usuario_id}")
@@ -190,3 +210,5 @@ def generar_password_tecnico():
 
 def hash_password(password: str) -> str:
     return bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
+
+

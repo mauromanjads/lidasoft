@@ -123,6 +123,20 @@ export const actualizarPassword = (
   );
 };
 
+// Resetear contraseña (ADMIN)
+export const resetPasswordUsuario = (
+  usuario_id: number
+): Promise<UsuarioResetPasswordResponse> => {
+  return fetchAPI<UsuarioResetPasswordResponse>(
+    `${API_URL}/usuarios/${usuario_id}/reset-password`,
+    {
+      method: "POST",
+      headers: authHeaders(),
+    }
+  );
+};
+
+
 // Eliminar usuario
 export const eliminarUsuario = (
   usuario_id: number
@@ -136,3 +150,9 @@ export const eliminarUsuario = (
 export interface UsuarioCreateResponse extends Usuario {
   password_temporal: string;
 }
+
+export interface UsuarioResetPasswordResponse {
+  msg: string;
+  password_temporal: string;
+}
+
