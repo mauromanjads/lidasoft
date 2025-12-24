@@ -2,7 +2,7 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-
+import { useEffect } from "react";
 
 export default function LoginPage() {
   const [usuario, setUsuario] = useState("");
@@ -56,15 +56,22 @@ export default function LoginPage() {
 
            {/*LOGICA DE SUCURSALES */}
           // Si tiene 1 sucursal, la seleccionamos automáticamente
-          if (data.usuario_sucursales.length === 1) {
-            const sucursal = data.usuario_sucursales[0];
-            localStorage.setItem("sucursal", JSON.stringify(sucursal));
-            router.push("/dashboard");  
-          
-          } else if (data.usuario_sucursales.length > 1) {
-            setSucursales(data.usuario_sucursales);
-            setMostrarSelectSucursal(true);
-          }          
+         if (data.usuario_sucursales.length === 1) {
+          const sucursal = data.usuario_sucursales[0];
+          localStorage.setItem("sucursal", JSON.stringify(sucursal));
+          router.push("/dashboard");  
+        } else if (data.usuario_sucursales.length > 1) {
+          setSucursales(data.usuario_sucursales);
+
+          const sucursalGuardada = localStorage.getItem("sucursal");
+          if (!sucursalGuardada) {
+            setMostrarSelectSucursal(true); // Mostrar para elegir
+          } else {
+            // Si ya existe, redirigir automáticamente
+            router.push("/dashboard");
+          }
+        }
+     
         }
       } else {
         const data = await res.json();
@@ -77,6 +84,16 @@ export default function LoginPage() {
       setLoading(false);
     }
   };
+
+
+useEffect(() => {
+  const sucursalGuardada = localStorage.getItem("sucursal");
+  if (sucursalGuardada) {
+    // Si ya existe, mostramos el selector solo si hay más de una sucursal
+    setMostrarSelectSucursal(false); // opcional, no mostrar si ya hay seleccionada
+  }
+}, []);
+
 
   return (
     <div className="h-screen w-full flex items-center justify-center bg-gradient-to-br from-[#0B2B55] via-[#12366D] to-[#1D4E89]">

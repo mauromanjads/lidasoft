@@ -15,6 +15,8 @@ export default function CambiarPasswordPage() {
 
   const handleLogout = () => {
     sessionStorage.removeItem("usuario");
+    localStorage.removeItem("usuario");
+    localStorage.removeItem("sucursal");
     document.cookie = "usuario=; Max-Age=0; path=/;";
     localStorage.removeItem("app_active");
     router.push("/login");
