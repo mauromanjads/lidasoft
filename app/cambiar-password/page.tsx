@@ -13,6 +13,13 @@ export default function CambiarPasswordPage() {
   const router = useRouter();
   const user = JSON.parse(localStorage.getItem("usuario") || "{}");
 
+  const handleLogout = () => {
+    sessionStorage.removeItem("usuario");
+    document.cookie = "usuario=; Max-Age=0; path=/;";
+    localStorage.removeItem("app_active");
+    router.push("/login");
+  };
+
   useEffect(() => {
     if (!user?.id_usuario) {
       router.replace("/login");
@@ -89,9 +96,19 @@ export default function CambiarPasswordPage() {
           />
         </div>
 
-        <Button className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
-          Guardar
-        </Button>
+        <div className="flex gap-2">
+            <Button className="flex-1 bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
+             💾 Guardar
+            </Button>
+
+            <Button
+              type="button"
+              onClick={handleLogout}
+              className="flex-1 bg-red-600 text-white py-2 rounded hover:bg-red-700"
+            >
+              ❌ Cancelar
+            </Button>
+         </div>
       </form>
     </div>
   );
