@@ -31,16 +31,16 @@ export default function Sidebar() {
             text-white p-5 shadow-2xl border-r border-gray-700/30"
           >
             {/* 🔻 HEADER */}
-            <h3
-              className="text-2xl font-bold mb-8 cursor-pointer 
+            <h4
+              className="text-2xl font-bold mb-2 cursor-pointer 
               hover:text-indigo-400 transition-all tracking-wide
-              text-center w-full uppercase"
+              text-center w-full "
               onClick={() => setOpen(false)}
             >
-              📌 Lidasoft
-            </h3>
+              🖥️ Lidasoft
+            </h4>
 
-            <nav className="space-y-4">
+            <nav className="space-y-2">
               {/* ITEM INICIO */}
               <a
                 href="/dashboard"
