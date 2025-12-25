@@ -77,6 +77,7 @@ export default function ResolucionesdianTable({ resoluciondian, onEdit, onDelete
             },
 
             { accessorKey: "tipo_documento", header: "Tipo" },
+            { accessorKey: "modalidad", header: "Modalidad" },
             {
               accessorKey: "activo",
               header: "Activo",

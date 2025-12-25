@@ -16,7 +16,9 @@ export interface ResolucionDian {
   fecha_fin: Date;
   llave_tecnica: string
   tipo_documento: string;
-  activo: number
+  activo: number;
+  id_sucursal: number;
+  modalidad: string;
 }
 
 export interface ResolucionDianData {
@@ -30,7 +32,9 @@ export interface ResolucionDianData {
   fecha_fin: Date;
   llave_tecnica: string
   tipo_documento: string;
-  activo: number
+  activo: number;
+  id_sucursal: number;
+  modalidad: string;
 }
 
 /* ============================================

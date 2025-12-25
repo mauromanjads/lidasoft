@@ -22,3 +22,6 @@ class ResolucionDian(Base):
 
     tipo_documento = Column(String(5), nullable=False, default="FV")
     activo = Column(Integer, nullable=False, default=1)
+
+    id_sucursal = Column(Integer, nullable=False)
+    modalidad = Column(String(2), nullable=False, default="FE")

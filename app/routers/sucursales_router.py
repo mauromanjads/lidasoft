@@ -54,7 +54,7 @@ def listar_sucursales(
     query = db.query(Sucursal)
 
     if solo_activas:
-        query = query.filter(Sucursal.activo == 1)
+        query = query.filter(Sucursal.estado == True)
 
     return query.order_by(Sucursal.nombre.asc()).all()
 

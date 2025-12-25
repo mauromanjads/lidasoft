@@ -35,9 +35,8 @@ def crear_resolucion(
         raise HTTPException(status_code=409,
                             detail="La resolución ya existe para este NIT y prefijo")
 
-    db_res = ResolucionDian(
-        **data.model_dump(),        
-    )
+    payload = data.model_dump(exclude={"rango_actual", "tipo_documento"})
+    db_res = ResolucionDian(**payload)
 
     db.add(db_res)
     db.commit()
@@ -124,12 +123,20 @@ def actualizar_resolucion(
             raise HTTPException(status_code=409,
                                 detail="Ya existe una resolución con ese NIT, prefijo y número")
 
-        # Actualizar campos
-        for key, value in data.model_dump().items():
+        # Actualizar campos (seguro)
+        data_dict = data.model_dump(exclude_unset=True)
+
+        # Campos que NO se deben modificar manualmente
+        for campo in ("rango_actual", "tipo_documento"):
+            data_dict.pop(campo, None)
+
+        for key, value in data_dict.items():
             setattr(res, key, value)
+
         db.commit()
         db.refresh(res)
         return res
+
 
     except Exception as e:
         print("❌ ERROR EN ENDPOINT:", e)

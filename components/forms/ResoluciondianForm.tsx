@@ -5,9 +5,15 @@ import { useEffect,useRef} from "react";
 import Button from "@/components/ui/button";
 import Input from "@/components/ui/input";
 import Swal from "sweetalert2";
+import { obtenerSucursalesActivas } from "@/lib/api/sucursales";
 
 import { guardarResolucionDian,actualizarResolucionDian,ResolucionDianData} from "@/lib/api/resolucionesdian";
 import { usePathname } from "next/navigation";
+
+interface Sucursal {
+  id: number;
+  nombre: string;
+}
 
 interface ResoluciondianFormProps {
   resoluciondian?: {
@@ -22,7 +28,9 @@ interface ResoluciondianFormProps {
   fecha_fin: Date;
   llave_tecnica: string
   tipo_documento: string;
-  activo: number
+  activo: number;
+  id_sucursal: number;
+  modalidad: string;
   };
   onSubmit: (data: {    
     numero_resolucion: string;
@@ -35,7 +43,9 @@ interface ResoluciondianFormProps {
     fecha_fin: Date;
     llave_tecnica: string
     tipo_documento: string;
-    activo: number
+    activo: number;
+    id_sucursal: number;
+    modalidad: string;
    
   }) => Promise<void>;
   onClose?: () => void;
@@ -56,7 +66,9 @@ export default function ResoluciondianForm({resoluciondian, onClose,onSaved }: R
     fecha_fin: "",
     llave_tecnica: "",
     tipo_documento: "",
-    activo: 1
+    activo: 1,
+    id_sucursal: 1,
+    modalidad:"FE",
   });
 
   const [loading, setLoading] = useState(false);
@@ -146,18 +158,30 @@ export default function ResoluciondianForm({resoluciondian, onClose,onSaved }: R
       setLoading(false);
     }
   };
-
+  const [sucursales, setSucursales] = useState<Sucursal[]>([]);
   const [openIndex, setOpenIndex] = useState<number | null>(0);
   const handleToggle = (index: number) => {
   setOpenIndex(openIndex === index ? null : index); 
   }
 
+  useEffect(() => {
+  const cargarSucursales = async () => {
+    try {
+      const data = await obtenerSucursalesActivas();
+      setSucursales(data?? []);
+    } catch (error) {
+      console.error("Error cargando sucursales", error);
+    }
+  };
+
+  cargarSucursales();
+}, []);
+
   return (
    
    <form onSubmit={handleSubmit} className="space-y-4 ">
-  {/* 🧑 DATOS PERSONALES */}
   
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full">
+    <div className="grid grid-cols-1 md:grid-cols-4 gap-6 w-full">
   
          {/* Número de Resolución */}
         <div className="flex flex-col w-full">
@@ -221,6 +245,7 @@ export default function ResoluciondianForm({resoluciondian, onClose,onSaved }: R
           />
         </div>
 
+        {/* Rango Actual */}
          <div className="flex flex-col w-full">
           <label className="text-sm font-semibold mb-1 text-gray-700">
             Rango Actual
@@ -329,10 +354,55 @@ export default function ResoluciondianForm({resoluciondian, onClose,onSaved }: R
           >
             <option value="">Seleccione...</option>
             <option value="FV">Factura Venta</option>
+            <option value="POS">POS</option>
             <option value="NC">Nota Crédito</option>
             <option value="ND">Nota Débito</option>
           </select>
         </div>
+
+        {/* Modalidad */}
+        <div className="flex flex-col w-full">
+          <label className="text-sm font-semibold mb-1 text-gray-700">
+            Modalidad
+          </label>
+
+          <select
+            name="modalidad"
+            value={formData.modalidad || ""}
+            onChange={handleChange}
+            className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            required
+          >
+            <option value="">Seleccione...</option>
+            <option value="FE">Factura Electrónica (FE)</option>
+            <option value="DE">Documento Equivalente (POS)</option>
+          </select>
+        </div>
+
+        {/* Sucursal */}
+        <div className="flex flex-col w-full">
+          <label className="text-sm font-semibold mb-1 text-gray-700">
+            Sucursal
+          </label>
+
+         <select
+            name="id_sucursal"
+            value={formData.id_sucursal ?? ""}
+            onChange={handleChange}
+            className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            required
+          >
+            <option value="">Seleccione...</option>
+
+            {sucursales.map((sucursal) => (
+              <option key={sucursal.id} value={sucursal.id}>
+                {sucursal.nombre}
+              </option>
+            ))}
+          </select>
+
+        </div>
+
 
         {/* Activo */}
         <div className="flex flex-col w-full">
