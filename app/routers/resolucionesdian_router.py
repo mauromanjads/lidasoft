@@ -35,7 +35,11 @@ def crear_resolucion(
         raise HTTPException(status_code=409,
                             detail="La resolución ya existe para este NIT y prefijo")
 
-    payload = data.model_dump(exclude={"rango_actual", "tipo_documento"})
+    payload = data.model_dump(exclude_unset=True)
+
+    if payload.get("rango_actual") is None:
+        payload["rango_actual"] = payload["rango_inicial"]
+    
     db_res = ResolucionDian(**payload)
 
     db.add(db_res)

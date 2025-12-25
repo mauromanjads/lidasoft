@@ -11,8 +11,7 @@ class ResolucionDianBase(BaseModel):
     prefijo: Optional[str] = None
 
     rango_inicial: int
-    rango_final: int
-    rango_actual: int
+    rango_final: int 
 
     fecha_resolucion: date
     fecha_inicio: date
@@ -47,7 +46,7 @@ class ResolucionDianBase(BaseModel):
 # Create
 # =========================
 class ResolucionDianCreate(ResolucionDianBase):
-    pass
+    rango_actual: Optional[int] = None
 
 
 # =========================
@@ -78,5 +77,6 @@ class ResolucionDianUpdate(BaseModel):
 # =========================
 class ResolucionDianResponse(ResolucionDianBase):
     id: int
+    rango_actual: Optional[int] = None
 
     model_config = ConfigDict(from_attributes=True)
