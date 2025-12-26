@@ -70,11 +70,22 @@ export const actualizarPresentacion = (
   });
 };
 
-export const listarPresentaciones = (producto_id: number): Promise<ProductoPresentacion[]> => {
-  return fetchAPI<ProductoPresentacion[]>(`${API_URL}/productos/${producto_id}/presentaciones`,{
-      headers: authHeaders(),
-    });
+export const listarPresentaciones = (
+  producto_id: number,
+  options?: { con_stock?: boolean; id_sucursal?: number }
+): Promise<ProductoPresentacion[]> => {
+  const params = new URLSearchParams();
+
+  if (options?.con_stock) params.append("con_stock", "true");
+  if (options?.id_sucursal) params.append("id_sucursal", options.id_sucursal.toString());
+
+  const url = `${API_URL}/productos/${producto_id}/presentaciones?${params.toString()}`;
+
+  return fetchAPI<ProductoPresentacion[]>(url, {
+    headers: authHeaders(),
+  });
 };
+
 
 
 // ===================== VARIANTES =====================
@@ -94,14 +105,21 @@ export const crearVariante = (
 };
 
 export const listarVariantes = (
-  producto_id: number
+  producto_id: number,
+  options?: { con_stock?: boolean; id_sucursal?: number }
 ): Promise<ProductoVariante[]> => {
-  return fetchAPI<ProductoVariante[]>(
-    `${API_URL}/productos/${producto_id}/variantes`,{
-      headers: authHeaders(),
-    }
-  );
+  const params = new URLSearchParams();
+
+  if (options?.con_stock) params.append("con_stock", "true");
+  if (options?.id_sucursal) params.append("id_sucursal", options.id_sucursal.toString());
+
+  const url = `${API_URL}/productos/${producto_id}/variantes?${params.toString()}`;
+
+  return fetchAPI<ProductoVariante[]>(url, {
+    headers: authHeaders(),
+  });
 };
+
 
 export const obtenerVariante = (
   producto_id: number,

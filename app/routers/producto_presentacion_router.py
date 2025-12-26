@@ -18,35 +18,47 @@ router = APIRouter(prefix="/productos", tags=["Productos - Presentaciones"])
 
 
 # 🔥 LISTAR presentaciones DE UN PRODUCTO
+from sqlalchemy import select, func
+
 @router.get("/{producto_id}/presentaciones", response_model=list[ProductoPresentacionOut])
-def listar_presentaciones_producto(producto_id: int, db: Session = Depends(get_empresa_db)):
-   
-    presentaciones = (
-        db.query(ProductoPresentacion)
-        .add_columns(
+def listar_presentaciones_producto(
+    producto_id: int,
+    db: Session = Depends(get_empresa_db),
+    id_sucursal: int | None = None,
+    con_stock: bool = False  # no filtra
+):
+    query = (
+        db.query(
+            ProductoPresentacion,
             func.coalesce(Inventario.stock_actual, 0).label("stock_actual"),
             Producto.control_inventario.label("control_inventario")
         )
-        .join(
-            Producto,
-            Producto.id == ProductoPresentacion.producto_id
+        .join(Producto, Producto.id == ProductoPresentacion.producto_id)
+        .filter(ProductoPresentacion.producto_id == producto_id)
+        .order_by(ProductoPresentacion.id.asc())
+    )
+
+    # JOIN dinámico inventario
+    if id_sucursal is not None:
+        query = query.outerjoin(
+            Inventario,
+            (Inventario.presentacion_id == ProductoPresentacion.id)
+            & (Inventario.sucursal_id == id_sucursal)
         )
-        .outerjoin(
+    else:
+        query = query.outerjoin(
             Inventario,
             Inventario.presentacion_id == ProductoPresentacion.id
         )
-        .filter(ProductoPresentacion.producto_id == producto_id)
-        .order_by(ProductoPresentacion.id.asc())
-        .all()
-    )
 
-# 🔥 Convertimos a objetos "compatibles"
+    rows = query.all()
+
     resultado = []
-    for presentacion, stock_actual,control_inventario in presentaciones:
-            presentacion.stock_actual = stock_actual  # atributo dinámico ✔️ 
-            presentacion.control_inventario = control_inventario  # 👈 AQUÍ           
-            resultado.append(presentacion)
-            
+    for presentacion, stock_actual, control_inventario in rows:
+        presentacion.stock_actual = stock_actual
+        presentacion.control_inventario = control_inventario
+        resultado.append(presentacion)
+
     return resultado
 
 

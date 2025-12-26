@@ -24,34 +24,42 @@ router = APIRouter(
 @router.get("/", response_model=list[ProductoVarianteResponse])
 def listar_variantes_producto(
     producto_id: int,
-    db: Session = Depends(get_empresa_db)
+    db: Session = Depends(get_empresa_db),
+    id_sucursal: int | None = None,
+    con_stock: bool = False  # se mantiene, pero NO filtra
 ):
-    variantes = (
-    db.query(ProductoVariante)
-    .add_columns(
-        func.coalesce(Inventario.stock_actual, 0).label("stock_actual"),
-        Producto.control_inventario.label("control_inventario")
-    )
-    .join(
-            Producto,
-            Producto.id == ProductoVariante.producto_id
+    query = (
+        db.query(
+            ProductoVariante,
+            func.coalesce(Inventario.stock_actual, 0).label("stock_actual"),
+            Producto.control_inventario.label("control_inventario")
         )
-    .outerjoin(
-        Inventario,
-        Inventario.variante_id == ProductoVariante.id
+        .join(Producto, Producto.id == ProductoVariante.producto_id)
+        .filter(ProductoVariante.producto_id == producto_id)
+        .order_by(ProductoVariante.id.asc())
     )
-    .filter(ProductoVariante.producto_id == producto_id)
-    .order_by(ProductoVariante.id.asc())
-    .all()
-)
 
-# 🔥 Convertimos a objetos "compatibles"
+    # JOIN dinámico de inventario
+    if id_sucursal is not None:
+        query = query.outerjoin(
+            Inventario,
+            (Inventario.variante_id == ProductoVariante.id)
+            & (Inventario.id_sucursal == id_sucursal)
+        )
+    else:
+        query = query.outerjoin(
+            Inventario,
+            Inventario.variante_id == ProductoVariante.id
+        )
+
+    variantes = query.all()
+
     resultado = []
-    for variante, stock_actual,control_inventario in variantes:
-            variante.stock_actual = stock_actual  # atributo dinámico ✔️
-            variante.control_inventario = control_inventario  # atributo dinámico ✔️
-            resultado.append(variante)
-            
+    for variante, stock_actual, control_inventario in variantes:
+        variante.stock_actual = stock_actual
+        variante.control_inventario = control_inventario
+        resultado.append(variante)
+
     return resultado
 
 # 🔥 CREAR variante

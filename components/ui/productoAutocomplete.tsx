@@ -337,7 +337,8 @@ const ProductWithPresentation: React.FC<Props> = ({
 
                   try {
                     // 1️⃣ VARIANTES
-                    const variantesRaw = await listarVariantes(p.id);
+                   const sucursal = JSON.parse(localStorage.getItem("sucursal") || "{}");
+                    const variantesRaw = await listarVariantes(p.id, { con_stock: true, id_sucursal: Number(sucursal.id || 0) });
                     const variantes: Variante[] = variantesRaw.map((v) => ({
                       id: v.id!,
                       descripcion: v.descripcion,

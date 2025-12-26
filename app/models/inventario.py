@@ -6,7 +6,7 @@ from app.database import Base
 class Inventario(Base):
     __tablename__ = "inventario"
     __table_args__ = (
-        UniqueConstraint("producto_id", "presentacion_id", "variante_id", name="uc_inventario"),
+        UniqueConstraint("producto_id", "presentacion_id", "variante_id","id_sucursal", name="uc_inventario"),
     )
 
     id = Column(Integer, primary_key=True, autoincrement=True)
