@@ -43,7 +43,7 @@ def listar_presentaciones_producto(
         query = query.outerjoin(
             Inventario,
             (Inventario.presentacion_id == ProductoPresentacion.id)
-            & (Inventario.sucursal_id == id_sucursal)
+            & (Inventario.id_sucursal == id_sucursal)
         )
     else:
         query = query.outerjoin(

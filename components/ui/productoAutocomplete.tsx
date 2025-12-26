@@ -211,8 +211,8 @@ const ProductWithPresentation: React.FC<Props> = ({
   producto: Producto,
   variante: Variante | null
 ) => {
-  const presRaw = await listarPresentaciones(producto.id);
-
+  const sucursal = JSON.parse(localStorage.getItem("sucursal") || "{}");
+ const presRaw = await listarPresentaciones(producto.id, { con_stock: true, id_sucursal: Number(sucursal.id || 0) });   
   const presentaciones: Presentacion[] = presRaw.map((p) => ({
     id: p.id!,
     tipo_presentacion: p.tipo_presentacion || "",
@@ -337,7 +337,8 @@ const ProductWithPresentation: React.FC<Props> = ({
 
                   try {
                     // 1️⃣ VARIANTES
-                   const sucursal = JSON.parse(localStorage.getItem("sucursal") || "{}");
+                    const sucursal = JSON.parse(localStorage.getItem("sucursal") || "{}");
+                    
                     const variantesRaw = await listarVariantes(p.id, { con_stock: true, id_sucursal: Number(sucursal.id || 0) });
                     const variantes: Variante[] = variantesRaw.map((v) => ({
                       id: v.id!,
@@ -353,8 +354,8 @@ const ProductWithPresentation: React.FC<Props> = ({
                       return;
                     }
 
-                    // 2️⃣ PRESENTACIONES
-                    const presRaw = await listarPresentaciones(p.id);
+                    // 2️⃣ PRESENTACIONES                     
+                    const presRaw = await listarPresentaciones(p.id, { con_stock: true, id_sucursal: Number(sucursal.id || 0) });                    
                     const presentaciones: Presentacion[] = presRaw.map((pr) => ({
                       id: pr.id!,
                       tipo_presentacion: pr.tipo_presentacion || "",
