@@ -15,5 +15,7 @@ class MovimientoInventario(Base):
     documento_tipo = Column(String(50), nullable=True)
     documento_id = Column(Integer, nullable=True)
     fecha = Column(DateTime, nullable=False, server_default=func.now())
+    id_sucursal = Column(Integer, nullable=False)
+    id_usuario = Column(Integer, nullable=False)
 
 

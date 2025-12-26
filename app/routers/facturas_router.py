@@ -103,6 +103,8 @@ def crear_factura(
                 notas=factura_data.notas,
                 usuario_creacion=request.cookies.get("usuario"),
                 fecha_creacion=datetime.now(timezone.utc),
+                id_sucursal=factura_data.id_sucursal,
+                id_usuario=factura_data.id_usuario,
                 detalles=detalles_model
             )
 
@@ -121,6 +123,8 @@ def crear_factura(
                     documento_id=factura.id,
                     nombre_producto=det.descripcion,
                     controla_inventario=det.producto.control_inventario,
+                    id_sucursal=factura.id_sucursal,
+                    id_usuario=factura.id_usuario,
                 )
 
             # 6️⃣ Actualizar consecutivo en resolución

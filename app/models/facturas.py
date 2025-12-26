@@ -25,5 +25,7 @@ class Factura(Base):
     fecha_creacion = Column(DateTime, server_default=func.now())
     usuario_modifico = Column(String(100), nullable=True)
     fecha_modificacion = Column(DateTime, nullable=True)
+    id_sucursal = Column(Integer, nullable=False)
+    id_usuario = Column(Integer, nullable=False)
     
     detalles = relationship("FacturaDetalle", back_populates="factura", cascade="all, delete-orphan")

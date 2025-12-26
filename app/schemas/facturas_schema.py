@@ -17,6 +17,9 @@ class FacturaSchema(BaseModel):
     iva_total: Decimal
     total: Decimal
     notas: Optional[str] = None
+    id_sucursal: int
+    id_usuario: int
+
     detalles: List[FacturaDetalleSchema]
 
 class FacturaResponse(FacturaSchema):
@@ -26,4 +29,4 @@ class FacturaResponse(FacturaSchema):
     usuario_creacion: Optional[str] = None
     fecha_creacion: Optional[datetime] = None
     usuario_modifico: Optional[str] = None
-    fecha_modificacion: Optional[datetime] = None
+    fecha_modificacion: Optional[datetime] = None 

@@ -6,6 +6,8 @@ class InventarioBase(BaseModel):
     presentacion_id: int
     variante_id: Optional[int] = None
     stock_actual: int = 0
+    id_sucursal: int
+
 
 class InventarioCreate(InventarioBase):
     pass

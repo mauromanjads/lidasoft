@@ -18,7 +18,9 @@ def descontar_inventario(
     tipo_movimiento: str,
     documento_id: int,
     nombre_producto:str,
-    controla_inventario:str
+    controla_inventario:str,
+    id_sucursal: int,
+    id_usuario: int,
 ):
     if controla_inventario.upper() != "S": return
     
@@ -27,7 +29,8 @@ def descontar_inventario(
         .filter(
             Inventario.producto_id == producto_id,
             Inventario.presentacion_id == presentacion_id,
-            Inventario.variante_id == variante_id
+            Inventario.variante_id == variante_id,
+            Inventario.id_sucursal == id_sucursal
         )
         .with_for_update()
         .first()
@@ -52,7 +55,9 @@ def descontar_inventario(
         cantidad=cantidad,
         tipo_movimiento=tipo_movimiento,
         documento_tipo=documento_tipo,
-        documento_id=documento_id
+        documento_id=documento_id,
+        id_sucursal=id_sucursal,
+        id_usuario=id_usuario,
     )
 
     db.add(movimiento)

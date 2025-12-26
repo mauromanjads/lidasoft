@@ -93,11 +93,22 @@ export async function crearFactura(data: FacturaData) {
     
     console.log("➡️ DATA QUE LLEGA A crearFactura:", data)
     
+    // Capturar usuario y sucursal del localStorage
+    const user = JSON.parse(localStorage.getItem("usuario") || "{}");
+    const sucursal = JSON.parse(localStorage.getItem("sucursal") || "{}");
+
+    // Agregar id_usuario e id_sucursal al body
+    const bodyData = {
+      ...data,
+      id_usuario: user.id_usuario,
+      id_sucursal: sucursal.id,
+    };
+    
     const response = await fetch(`${API_URL}/facturas`, {
       method: "POST",
       headers: authHeaders(),
       credentials: "include",
-      body: JSON.stringify(data),
+      body: JSON.stringify(bodyData),
     });
 
     if (!response.ok) {

@@ -10,6 +10,8 @@ class MovimientoInventarioBase(BaseModel):
     tipo_movimiento: str
     documento_tipo: Optional[str] = None
     documento_id: Optional[int] = None
+    id_sucursal: int
+    id_usuario: int
 
 class MovimientoInventarioCreate(MovimientoInventarioBase):
     pass
