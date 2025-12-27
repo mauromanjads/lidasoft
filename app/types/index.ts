@@ -41,6 +41,7 @@ export interface ProductoPresentacion {
   precio_venta?: number;
   precio_compra?: number;
   stock_actual?:number;
+  control_inventario?:string;
 }
 
 // ===================== PRODUCTO + PRESENTACIONES =====================

@@ -32,6 +32,7 @@ interface Presentacion {
   precio_venta?: number;
   stock_actual:number;
   activo:boolean;
+  control_inventario:string;
 }
 
 interface Variante {
@@ -140,7 +141,7 @@ const ProductWithPresentation: React.FC<Props> = ({
   /* =======================
      Modales
   ======================= */
- const abrirModalVariantes = (producto: Producto, variantes: Variante[]) => {
+ const abrirModalVariantes = (producto: Producto, variantes: Variante[], presentaciones: Presentacion[]) => {
   ReactSwal.fire({
     title: "Selecciona la variante",
     html: (
@@ -159,8 +160,32 @@ const ProductWithPresentation: React.FC<Props> = ({
               disabled={deshabilitada}
               onClick={() => {
                 if (deshabilitada) return;
-                ReactSwal.close();
-                abrirModalPresentaciones(producto, v);
+                ReactSwal.close();    
+                
+                  // 👉 UNA sola presentación → carga directa
+                if (presentaciones.length === 1) {
+                  const pres = presentaciones[0];
+
+                  onSelect({
+                    producto_id: producto.id,
+                    variante_id: v.id,
+                    presentacion_id: pres.id,
+                    descripcion: `${v.descripcion} - ${pres.tipo_presentacion}`,
+                    precio_unitario:
+                      (v.precio_venta ?? 0) *
+                      (pres.cantidad_equivalente ?? 1),
+                    presentacion_nombre: pres.tipo_presentacion,
+                  });
+
+                  return;
+                }
+
+                // 👉 VARIAS presentaciones → modal presentaciones
+                if (presentaciones.length > 1) {
+                  abrirModalPresentaciones(producto, v, presentaciones);
+                  return;
+                }
+                
               }}
               className={`
                 w-full p-3 mb-2 rounded border text-left transition
@@ -205,28 +230,17 @@ const ProductWithPresentation: React.FC<Props> = ({
   });
 };
 
-
-
   const abrirModalPresentaciones = async (
   producto: Producto,
-  variante: Variante | null
+  variante: Variante | null,
+  presentacion: Presentacion[]
 ) => {
-  const sucursal = JSON.parse(localStorage.getItem("sucursal") || "{}");
- const presRaw = await listarPresentaciones(producto.id, { con_stock: true, id_sucursal: Number(sucursal.id || 0) });   
-  const presentaciones: Presentacion[] = presRaw.map((p) => ({
-    id: p.id!,
-    tipo_presentacion: p.tipo_presentacion || "",
-    cantidad_equivalente: p.cantidad_equivalente ?? 1,
-    precio_venta: p.precio_venta ?? 0,
-    stock_actual: p.stock_actual ?? 0, // 👈 solo se usa si variante === null
-    activo: p.activo ?? true,
-  }));
-
+ 
   ReactSwal.fire({
     title: "Selecciona la presentación",
     html: (
       <div className="max-h-[60vh] overflow-y-auto">
-        {presentaciones.map((p) => {
+        {presentacion.map((p) => {
           const esProductoSimple = variante === null;
           const sinStock = esProductoSimple && p.stock_actual! <= 0;
 
@@ -336,9 +350,10 @@ const ProductWithPresentation: React.FC<Props> = ({
                   setQuery("");
 
                   try {
-                    // 1️⃣ VARIANTES
+                
                     const sucursal = JSON.parse(localStorage.getItem("sucursal") || "{}");
-                    
+
+                    // 1️⃣ CARGA VARIANTES    
                     const variantesRaw = await listarVariantes(p.id, { con_stock: true, id_sucursal: Number(sucursal.id || 0) });
                     const variantes: Variante[] = variantesRaw.map((v) => ({
                       id: v.id!,
@@ -349,12 +364,7 @@ const ProductWithPresentation: React.FC<Props> = ({
                       control_inventario:v.control_inventario ?? "N",
                     }));
 
-                    if (variantes.length > 0) {
-                      abrirModalVariantes(p, variantes);
-                      return;
-                    }
-
-                    // 2️⃣ PRESENTACIONES                     
+                    // 2️⃣ CARGA PRESENTACIONES                     
                     const presRaw = await listarPresentaciones(p.id, { con_stock: true, id_sucursal: Number(sucursal.id || 0) });                    
                     const presentaciones: Presentacion[] = presRaw.map((pr) => ({
                       id: pr.id!,
@@ -362,27 +372,65 @@ const ProductWithPresentation: React.FC<Props> = ({
                       cantidad_equivalente: pr.cantidad_equivalente ?? 1,
                       precio_venta: pr.precio_venta ?? 0,
                       stock_actual: pr.stock_actual ?? 0,
-                      activo: pr.activo ?? true
+                      activo: pr.activo ?? true,
+                      control_inventario:pr.control_inventario ?? "N",
                     }));
 
-                    // 👉 UNA sola → auto cargar (ESTO ERA CLAVE)
-                    if (presentaciones.length === 1) {
-                      const pres = presentaciones[0];
-                      onSelect({
-                        producto_id: p.id,
-                        variante_id: null,
-                        presentacion_id: pres.id,
-                        descripcion: pres.tipo_presentacion,
-                        precio_unitario: pres.precio_venta ?? 0,
-                        presentacion_nombre: pres.tipo_presentacion,
-                      });
-                      return;
-                    }
+                      // 🔴 MÁS DE UNA VARIANTE → modal variantes
+                      if (variantes.length > 1) {
+                        abrirModalVariantes(p, variantes,presentaciones);
+                        return;
+                      }
 
-                    // 👉 Varias → modal
-                    if (presentaciones.length > 1) {
-                      abrirModalPresentaciones(p, null);
-                    }
+                      // 🟡 EXACTAMENTE UNA VARIANTE
+                      if (variantes.length === 1) {
+                        const variante = variantes[0];
+
+                        // 👉 UNA presentación → carga directa
+                        if (presentaciones.length === 1) {
+                          const pres = presentaciones[0];
+                          onSelect({
+                            producto_id: p.id,
+                            variante_id: variante.id,
+                            presentacion_id: pres.id,
+                            descripcion: `${variante.descripcion} - ${pres.tipo_presentacion}`,
+                            precio_unitario:
+                              (variante.precio_venta ?? 0) * (pres.cantidad_equivalente ?? 1),
+                            presentacion_nombre: pres.tipo_presentacion,
+                          });
+                          return;
+                        }
+
+                        // 👉 VARIAS presentaciones → modal presentaciones (con variante)
+                        if (presentaciones.length > 1) {
+                          abrirModalPresentaciones(p, variante, presentaciones);
+                          return;
+                        }
+                      }
+
+                      // 🟢 SIN VARIANTES (producto simple)
+                      if (variantes.length === 0) {
+                        // 👉 UNA presentación → carga directa
+                        if (presentaciones.length === 1) {
+                          const pres = presentaciones[0];
+                          onSelect({
+                            producto_id: p.id,
+                            variante_id: null,
+                            presentacion_id: pres.id,
+                            descripcion: pres.tipo_presentacion,
+                            precio_unitario: pres.precio_venta ?? 0,
+                            presentacion_nombre: pres.tipo_presentacion,
+                          });
+                          return;
+                        }
+
+                        // 👉 VARIAS presentaciones → modal
+                        if (presentaciones.length > 1) {
+                          abrirModalPresentaciones(p, null, presentaciones);
+                          return;
+                        }
+                      }
+
                   } catch (err) {
                     console.error(err);
                   }
