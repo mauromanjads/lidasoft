@@ -79,7 +79,7 @@ export const obtenerResolucionesPorTipo = async (
     }
 
     if (predeterminado !== undefined) {
-      params.append("predeterminado", predeterminado ? "1" : "0");
+      params.append("predeterminado", predeterminado.toString());
     }
 
     const res = await fetch(

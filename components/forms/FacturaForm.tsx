@@ -66,7 +66,7 @@ const FacturaFormComponent: React.FC<FacturaFormProps> = ({ factura }) => {
               setFormData(prev => ({ ...prev, fecha: hoy }));
             }
            //AQUI VA LA CARGA DE LA RESOLUCION INICIAL 
-
+            cargarResolucionPorTipo (undefined,"1");
           }
       
       }
@@ -74,8 +74,8 @@ const FacturaFormComponent: React.FC<FacturaFormProps> = ({ factura }) => {
       loadData();
     }, []);
 
-const cargarResolucionPorTipo = async (tipoDocumento: string) => {
-  const res = await obtenerResolucionesPorTipo(tipoDocumento);
+const cargarResolucionPorTipo = async (tipoDocumento?: string,predeterminado?: string) => {
+  const res = await obtenerResolucionesPorTipo(tipoDocumento,predeterminado);
 
   if (res?.length > 0) {
     const r = res[0];
@@ -84,7 +84,16 @@ const cargarResolucionPorTipo = async (tipoDocumento: string) => {
 
     // 🚨 Validación de rango DIAN
     if (next > r.rango_final) {
-      alert("Se agotó la numeración autorizada por la DIAN");
+
+       Swal.fire({
+              title: "Oops...!",
+              icon: "error",
+              text: "Se agotó la numeración autorizada por la DIAN",        
+              confirmButtonText: "Entendido",
+              timer: 4000,
+              timerProgressBar: true,
+            });    
+     
       return;
     }
 
@@ -93,8 +102,19 @@ const cargarResolucionPorTipo = async (tipoDocumento: string) => {
       ...prev,
       prefijo: r.prefijo,
       consecutivo: next,
-      resolucion_id: r.id
+      resolucion_id: r.id,
+      tipo_documento: r.tipo_documento
     }));
+  }else{
+      Swal.fire({
+            title: "Oops...!",
+            icon: "error",
+            text: "No existe una resolución DIAN para el tipo de documento seleccionado",        
+            confirmButtonText: "Entendido",
+            timer: 4000,
+            timerProgressBar: true,
+          });
+
   }
 };
 
@@ -486,9 +506,10 @@ const cargarResolucionPorTipo = async (tipoDocumento: string) => {
           <div> <SelectMedioPago formData ={formData} handleChange={handleChange} /> </div>
           
          <div>
-            <label className="font-semibold block mb-1">Numeración</label>
+            
 
             <div className="grid grid-cols-2 gap-2">
+             
               <Input
                 name="prefijo"
                 value={formData.prefijo}

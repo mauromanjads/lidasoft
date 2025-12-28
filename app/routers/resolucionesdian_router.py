@@ -59,12 +59,15 @@ def listar_resoluciones(
 ):
     query = db.query(ResolucionDian)
 
+    filtros = []
+
     if idsucursal:
-        filtros = [
-            ResolucionDian.id_sucursal == idsucursal,
-            ResolucionDian.activo == 1,
-            ResolucionDian.tipo_documento == tipodocumento
-        ]
+        
+        filtros.append(ResolucionDian.id_sucursal == idsucursal)
+        filtros.append(ResolucionDian.activo == 1)
+
+    if tipodocumento:
+        filtros.append(ResolucionDian.tipo_documento == tipodocumento)
 
     if predeterminado:
         filtros.append(ResolucionDian.predeterminado == 1)
