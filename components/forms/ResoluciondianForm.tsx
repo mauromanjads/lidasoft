@@ -30,7 +30,7 @@ interface ResoluciondianFormProps {
   tipo_documento: string;
   activo: number;
   id_sucursal: number;
-  modalidad: string;
+  predeterminado: number;
   };
   onSubmit: (data: {    
     numero_resolucion: string;
@@ -45,7 +45,7 @@ interface ResoluciondianFormProps {
     tipo_documento: string;
     activo: number;
     id_sucursal: number;
-    modalidad: string;
+    predeterminado: number;
    
   }) => Promise<void>;
   onClose?: () => void;
@@ -68,7 +68,7 @@ export default function ResoluciondianForm({resoluciondian, onClose,onSaved }: R
     tipo_documento: "",
     activo: 1,
     id_sucursal: 1,
-    modalidad:"FE",
+    predeterminado:1,
   });
 
   const [loading, setLoading] = useState(false);
@@ -353,31 +353,30 @@ export default function ResoluciondianForm({resoluciondian, onClose,onSaved }: R
             required
           >
             <option value="">Seleccione...</option>
-            <option value="FV">Factura Venta</option>
-            <option value="POS">POS</option>
-            <option value="NC">Nota Crédito</option>
-            <option value="ND">Nota Débito</option>
+            <option value="FE">Factura Electronica</option>
+            <option value="DE">Documento Equivalente</option>           
           </select>
         </div>
 
-        {/* Modalidad */}
+        {/* Predeterminado */}
         <div className="flex flex-col w-full">
           <label className="text-sm font-semibold mb-1 text-gray-700">
-            Modalidad
+            Predeterminado
           </label>
 
           <select
-            name="modalidad"
-            value={formData.modalidad || ""}
+            name="predeterminado"
+            value={formData.predeterminado ?? ""}
             onChange={handleChange}
             className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           >
             <option value="">Seleccione...</option>
-            <option value="FE">Factura Electrónica (FE)</option>
-            <option value="DE">Documento Equivalente (POS)</option>
+            <option value="1">SI</option>
+            <option value="0">NO</option>
           </select>
         </div>
+
 
         {/* Sucursal */}
         <div className="flex flex-col w-full">

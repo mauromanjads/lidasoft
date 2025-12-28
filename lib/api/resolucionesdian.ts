@@ -18,7 +18,7 @@ export interface ResolucionDian {
   tipo_documento: string;
   activo: number;
   id_sucursal: number;
-  modalidad: string;
+  predeterminado: number;
 }
 
 export interface ResolucionDianData {
@@ -34,7 +34,7 @@ export interface ResolucionDianData {
   tipo_documento: string;
   activo: number;
   id_sucursal: number;
-  modalidad: string;
+  predeterminado: number;
 }
 
 /* ============================================

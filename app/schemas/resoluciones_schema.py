@@ -19,20 +19,13 @@ class ResolucionDianBase(BaseModel):
 
     llave_tecnica: Optional[str] = None
 
-    tipo_documento: str = "FV"   # FV | POS
-    modalidad: str = "FE"        # FE | DE
+    tipo_documento: str = "FE"   # FE | DE    
     activo: int = 1
+    predeterminado: int = 1
 
     id_sucursal: int
 
-
-    @field_validator("modalidad")
-    @classmethod
-    def validar_modalidad(cls, v: str) -> str:
-        if v not in ("FE", "DE"):
-            raise ValueError("modalidad debe ser 'FE' o 'DE'")
-        return v
-
+    
     @field_validator("rango_final")
     @classmethod
     def validar_rango(cls, v: int, info) -> int:
@@ -66,9 +59,9 @@ class ResolucionDianUpdate(BaseModel):
 
     llave_tecnica: Optional[str] = None
 
-    tipo_documento: Optional[str] = None
-    modalidad: Optional[str] = None
+    tipo_documento: Optional[str] = None    
     activo: Optional[int] = None
+    predeterminado: Optional[int] = None
     id_sucursal: Optional[int] = None
 
 

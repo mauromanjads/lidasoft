@@ -29,7 +29,8 @@ interface Resoluciondian {
   fecha_fin: Date;
   llave_tecnica: string
   tipo_documento: string;
-  activo: number
+  activo: number;
+  predeterminado: number;
 }
 
 interface Props {
@@ -77,7 +78,21 @@ export default function ResolucionesdianTable({ resoluciondian, onEdit, onDelete
             },
 
             { accessorKey: "tipo_documento", header: "Tipo" },
-            { accessorKey: "modalidad", header: "Modalidad" },
+            {
+              accessorKey: "predeterminado",
+              header: "Predeterminado",
+              cell: ({ row }) => {
+                const value = !!row.original.predeterminado;
+                return (
+                  <input
+                    type="checkbox"
+                    checked={value}
+                    disabled
+                    className="w-4 h-4 accent-green-600"
+                  />
+                );
+              },
+            }, 
             {
               accessorKey: "activo",
               header: "Activo",

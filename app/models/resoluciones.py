@@ -20,8 +20,8 @@ class ResolucionDian(Base):
 
     llave_tecnica = Column(Text)
 
-    tipo_documento = Column(String(5), nullable=False, default="FV")
+    tipo_documento = Column(String(5), nullable=False, default="FE")
     activo = Column(Integer, nullable=False, default=1)
 
     id_sucursal = Column(Integer, nullable=False)
-    modalidad = Column(String(2), nullable=False, default="FE")
+    predeterminado = Column(Integer, nullable=False, default=1)
