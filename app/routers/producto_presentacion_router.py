@@ -30,12 +30,11 @@ def listar_presentaciones_producto(
     query = (
         db.query(
             ProductoPresentacion,
-            func.coalesce(Inventario.stock_actual, 0).label("stock_actual"),
+           func.coalesce(func.sum(Inventario.stock_actual), 0).label("stock_actual"),
             Producto.control_inventario.label("control_inventario")
         )
         .join(Producto, Producto.id == ProductoPresentacion.producto_id)
-        .filter(ProductoPresentacion.producto_id == producto_id)
-        .order_by(ProductoPresentacion.id.asc())
+        .filter(ProductoPresentacion.producto_id == producto_id)       
     )
 
     # JOIN dinámico inventario
@@ -51,6 +50,13 @@ def listar_presentaciones_producto(
             Inventario.presentacion_id == ProductoPresentacion.id
         )
 
+    # 🔑 GROUP BY obligatorio (una fila por presentación)
+    query = query.group_by(
+        ProductoPresentacion.id,
+        Producto.control_inventario
+    )
+    
+    query = query.order_by(ProductoPresentacion.id.asc())
     rows = query.all()
 
     resultado = []
