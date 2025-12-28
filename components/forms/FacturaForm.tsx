@@ -356,17 +356,19 @@ const cargarResolucionPorTipo = async (tipoDocumento?: string,predeterminado?: s
       const hoy = new Date().toLocaleDateString("en-CA");
 
       // 🔁 Volver a pedir resolución para mostrar el próximo consecutivo
-      const res = await obtenerResolucionesPorTipo();
+      const res = await obtenerResolucionesPorTipo(undefined,"1");
 
       let prefijo = "";
       let consecutivo = 0;
       let resolucion_id = 0;
+      let tipo_documento ="FE";
 
       if (res?.length > 0) {
         const r = res[0];
         prefijo = r.prefijo;
         consecutivo = (r.rango_actual ?? 0) + 1;
         resolucion_id = r.id;
+        tipo_documento = r.tipo_documento;
       }
 
       setFormData({
@@ -380,7 +382,7 @@ const cargarResolucionPorTipo = async (tipoDocumento?: string,predeterminado?: s
         medio_pago_id: 0,
         notas: "",
         fecha: hoy,
-        tipo_documento: "FE",
+        tipo_documento: tipo_documento,
         detalles: [
           {
             producto_id: null,
