@@ -68,7 +68,7 @@ const FacturaFormComponent: React.FC<FacturaFormProps> = ({ factura }) => {
               setFormData(prev => ({ ...prev, fecha: hoy }));
             }
 
-            const res = await obtenerResolucionesPorTipo("FV");
+            const res = await obtenerResolucionesPorTipo();
 
             if (res?.length > 0) {
               const r = res[0];
@@ -341,7 +341,7 @@ const FacturaFormComponent: React.FC<FacturaFormProps> = ({ factura }) => {
       const hoy = new Date().toLocaleDateString("en-CA");
 
       // 🔁 Volver a pedir resolución para mostrar el próximo consecutivo
-      const res = await obtenerResolucionesPorTipo("FV");
+      const res = await obtenerResolucionesPorTipo();
 
       let prefijo = "";
       let consecutivo = 0;

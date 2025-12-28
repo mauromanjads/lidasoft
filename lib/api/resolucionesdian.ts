@@ -61,9 +61,11 @@ export const obtenerResolucionesDian = async (): Promise<ResolucionDian[] | null
 /* ============================================
    OBTENER RESOLUCIONES FILTRADAS POR TIPO
 ============================================ */
-export const obtenerResolucionesPorTipo = async (tipodoc: string) => {
+export const obtenerResolucionesPorTipo = async () => {
   try {
-    const res = await fetch(`${API_URL}/resolucionesdian/?tipodoc=${tipodoc}`,{
+    const sucursal = JSON.parse(localStorage.getItem("sucursal") || "{}");
+
+    const res = await fetch(`${API_URL}/resolucionesdian/?idsucursal=${sucursal.id}`,{
       headers: authHeaders(),
     });
 

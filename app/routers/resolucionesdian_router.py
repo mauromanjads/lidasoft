@@ -51,14 +51,14 @@ def crear_resolucion(
 # 👉 Listar todas o por tipo de documento
 @router.get("/", response_model=list[ResolucionDianResponse])
 def listar_resoluciones(
-    tipodoc: str | None = None,
+    idsucursal: int | None = None,
     db: Session = Depends(get_empresa_db)
 ):
     query = db.query(ResolucionDian)
 
-    if tipodoc:
+    if idsucursal:
          query = query.filter(
-        ResolucionDian.tipo_documento == tipodoc,
+        ResolucionDian.id_sucursal == idsucursal,
         ResolucionDian.activo == 1
     )
 
