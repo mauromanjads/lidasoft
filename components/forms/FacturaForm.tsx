@@ -57,55 +57,50 @@ const FacturaFormComponent: React.FC<FacturaFormProps> = ({ factura }) => {
         setVendedores(vend ?? []);  
         setVendedorId(idvend);        
         setFormData(prev => ({ ...prev, vendedor_id: Number(idvend) }));
-        
-        // ---------------------------------------
-        // 🚀 TRAER PREFIJO RESOLUCIÓN SI ES NUEVO REGISTRO
-        // ---------------------------------------
+       
+      
         if (!formData.id) {
 
            if (!formData.fecha) {
               const hoy = new Date().toLocaleDateString("en-CA");
               setFormData(prev => ({ ...prev, fecha: hoy }));
             }
+           //AQUI VA LA CARGA DE LA RESOLUCION INICIAL 
 
-            const res = await obtenerResolucionesPorTipo();
-
-            if (res?.length > 0) {
-              const r = res[0];
-
-              const next = (r.rango_actual ?? 0) + 1;
-
-              // 🚨 Validación de rango DIAN
-              if (next > r.rango_final) {
-                alert("Se agotó la numeración autorizada por la DIAN");
-                return; // <-- Detiene el proceso
-              }
-
-              // ✔ Actualiza prefijo y consecutivo
-              setFormData(prev => ({
-                ...prev,
-                prefijo: r.prefijo,
-                consecutivo: next,
-                resolucion_id: r.id
-              }));
-            }
           }
-
-        //PARA EL DETALLE
-        //setPresentaciones((prev) =>
-        //  prev.map((p) => ({
-          //  ...p,
-          //  unidad_medida_id: u[0]?.id || 0,
-         // }))
-        //);
+      
       }
   
       loadData();
     }, []);
 
+const cargarResolucionPorTipo = async (tipoDocumento: string) => {
+  const res = await obtenerResolucionesPorTipo(tipoDocumento);
+
+  if (res?.length > 0) {
+    const r = res[0];
+
+    const next = (r.rango_actual ?? 0) + 1;
+
+    // 🚨 Validación de rango DIAN
+    if (next > r.rango_final) {
+      alert("Se agotó la numeración autorizada por la DIAN");
+      return;
+    }
+
+    // ✔ Actualiza prefijo y consecutivo
+    setFormData(prev => ({
+      ...prev,
+      prefijo: r.prefijo,
+      consecutivo: next,
+      resolucion_id: r.id
+    }));
+  }
+};
 
   const [formData, setFormData] = useState<FacturaForm>({
     id:null,
+    tipo_documento: "FE",
     tercero_id: 0,
     vendedor_id:0,
     resolucion_id: 0,
@@ -365,6 +360,7 @@ const FacturaFormComponent: React.FC<FacturaFormProps> = ({ factura }) => {
         medio_pago_id: 0,
         notas: "",
         fecha: hoy,
+        tipo_documento: "FE",
         detalles: [
           {
             producto_id: null,
@@ -459,17 +455,28 @@ const FacturaFormComponent: React.FC<FacturaFormProps> = ({ factura }) => {
               className="w-full border rounded p-2"
             />
           </div>
-
+          
           <div>
-            <label className="font-semibold block">Prefijo</label>
-            <Input
-              name="prefijo"
-              value={formData.prefijo}
-              readOnly
-              required
-              className="w-full border rounded p-2 bg-gray-100 text-gray-700 cursor-not-allowed"
-            />
+            <label className="font-semibold block">Tipo de documento</label>
+            <select
+                value={formData.tipo_documento}
+                onChange={(e) => {
+                  const tipo = e.target.value;
+
+                  setFormData(prev => ({
+                    ...prev,
+                    tipo_documento: tipo
+                  }));
+
+                  cargarResolucionPorTipo(tipo);
+                }}
+              >
+                <option value="FE">Factura Electrónica</option>
+                <option value="DE">Documento Equivalente</option>
+              </select>
+
           </div>
+         
         </div>
 
         {/* Columna 3: Pagos y Consecutivo */}
@@ -477,17 +484,32 @@ const FacturaFormComponent: React.FC<FacturaFormProps> = ({ factura }) => {
           <div><SelectFormasPago formData={formData} handleChange={handleChange} /> </div>
 
           <div> <SelectMedioPago formData ={formData} handleChange={handleChange} /> </div>
+          
+         <div>
+            <label className="font-semibold block mb-1">Numeración</label>
 
-          <div>
-            <label className="font-semibold block">Consecutivo</label>
-            <Input
-              type="number"
-              name="consecutivo"
-              value={formData.consecutivo}
-              readOnly
-              className="w-full border rounded p-2 bg-gray-100 text-gray-700 cursor-not-allowed"
-            />
+            <div className="grid grid-cols-2 gap-2">
+              <Input
+                name="prefijo"
+                value={formData.prefijo}
+                readOnly
+                required
+                placeholder="Prefijo"
+                className="border rounded p-2 bg-gray-100 text-gray-700 cursor-not-allowed"
+              />
+
+              <Input
+                type="number"
+                name="consecutivo"
+                value={formData.consecutivo}
+                readOnly
+                placeholder="Consecutivo"
+                className="border rounded p-2 bg-gray-100 text-gray-700 cursor-not-allowed"
+              />
+            </div>
           </div>
+
+
         </div>
 
         {/* Columna 4: Notas */}

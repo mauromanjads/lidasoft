@@ -61,25 +61,45 @@ export const obtenerResolucionesDian = async (): Promise<ResolucionDian[] | null
 /* ============================================
    OBTENER RESOLUCIONES FILTRADAS POR TIPO
 ============================================ */
-export const obtenerResolucionesPorTipo = async () => {
+export const obtenerResolucionesPorTipo = async (
+  tipodocumento?: string,
+  predeterminado?: string
+) => {
   try {
     const sucursal = JSON.parse(localStorage.getItem("sucursal") || "{}");
 
-    const res = await fetch(`${API_URL}/resolucionesdian/?idsucursal=${sucursal.id}`,{
-      headers: authHeaders(),
-    });
+    const params = new URLSearchParams();
+
+    if (sucursal?.id) {
+      params.append("idsucursal", String(sucursal.id));
+    }
+
+    if (tipodocumento) {
+      params.append("tipodocumento", tipodocumento);
+    }
+
+    if (predeterminado !== undefined) {
+      params.append("predeterminado", predeterminado ? "1" : "0");
+    }
+
+    const res = await fetch(
+      `${API_URL}/resolucionesdian/?${params.toString()}`,
+      {
+        headers: authHeaders(),
+      }
+    );
 
     if (!res.ok) {
-      throw new Error(`Error al listar resoluciones por tipo: ${res.status}`);
+      throw new Error(`Error al listar resoluciones: ${res.status}`);
     }
 
     return await res.json();
-
   } catch (error) {
-    console.error("Error filtreando resoluciones:", error);
+    console.error("Error filtrando resoluciones:", error);
     return null;
   }
 };
+
 
 /* ============================================
    BUSCAR (prefijo o resolución)

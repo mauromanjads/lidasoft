@@ -23,6 +23,7 @@ export interface FacturaForm {
   forma_pago_id?: number;
   medio_pago_id?: number;
   notas?: string;
+  tipo_documento: string;
   detalles: FacturaDetalleForm[];
 }
 

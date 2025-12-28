@@ -1,6 +1,7 @@
 # app/routers/resolucionesdian_router.py
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
+from pyparsing import Optional
 from sqlalchemy.orm import Session
 from sqlalchemy import or_
 from datetime import datetime, timezone
@@ -52,15 +53,24 @@ def crear_resolucion(
 @router.get("/", response_model=list[ResolucionDianResponse])
 def listar_resoluciones(
     idsucursal: int | None = None,
+    tipodocumento: str | None = None,
+    predeterminado: str | None = None,
     db: Session = Depends(get_empresa_db)
 ):
     query = db.query(ResolucionDian)
 
     if idsucursal:
-         query = query.filter(
-        ResolucionDian.id_sucursal == idsucursal,
-        ResolucionDian.activo == 1
-    )
+        filtros = [
+            ResolucionDian.id_sucursal == idsucursal,
+            ResolucionDian.activo == 1,
+            ResolucionDian.tipo_documento == tipodocumento
+        ]
+
+    if predeterminado:
+        filtros.append(ResolucionDian.predeterminado == 1)
+
+    query = query.filter(*filtros)
+
 
     return query.order_by(ResolucionDian.prefijo.asc()).all()
 
