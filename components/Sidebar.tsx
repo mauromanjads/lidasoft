@@ -120,7 +120,7 @@ export default function Sidebar() {
                         🛒 Facturar Ventas
                       </a>
                       <a
-                        href="/dashboard/facturas"
+                        href="/dashboard/listarfacturas"
                         className="block bg-[#0d2f5a]/70 hover:bg-[#103766]/90 
                         p-2 rounded-lg transition-all shadow-md"
                       >
