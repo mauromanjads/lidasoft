@@ -230,19 +230,19 @@ const ProductWithPresentation: React.FC<Props> = ({
   });
 };
 
-  const abrirModalPresentaciones = async (
+const abrirModalPresentaciones = async (
   producto: Producto,
   variante: Variante | null,
   presentacion: Presentacion[]
 ) => {
- 
   ReactSwal.fire({
     title: "Selecciona la presentación",
     html: (
       <div className="max-h-[60vh] overflow-y-auto">
         {presentacion.map((p) => {
-          const esProductoSimple = variante === null;
-          const sinStock = esProductoSimple && p.stock_actual! <= 0;
+          const esProductoSimple = !producto.tiene_variantes;
+          const stock = p.stock_actual ?? 0;
+          const sinStock = esProductoSimple && stock <= 0;
 
           const precio =
             variante
@@ -282,18 +282,15 @@ const ProductWithPresentation: React.FC<Props> = ({
                 <strong>${precio.toLocaleString()}</strong>
               </div>
 
-              {/* 🔥 STOCK SOLO SI NO HAY VARIANTE */}
-              {esProductoSimple && (
-                <div className="text-sm mt-1">
-                  {sinStock ? (
-                    <span className="text-red-600">Sin stock</span>
-                  ) : (
-                    <span className="text-green-600">
-                      Stock disponible: {p.stock_actual}
-                    </span>
-                  )}
-                </div>
-              )}
+              <div className="text-sm mt-1">
+                {sinStock ? (
+                  <span className="text-red-600">Sin stock</span>
+                ) : (
+                  <span className="text-green-600">
+                    Stock disponible: {stock}
+                  </span>
+                )}
+              </div>
             </button>
           );
         })}
@@ -303,6 +300,7 @@ const ProductWithPresentation: React.FC<Props> = ({
     width: 900,
   });
 };
+
 
 
   /* =======================
