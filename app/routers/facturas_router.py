@@ -4,6 +4,7 @@ from typing import List
 from decimal import Decimal
 from datetime import datetime,timezone
 from fastapi import Request
+from sqlalchemy import desc
 
 from app.models.facturas import Factura
 from app.models.factura_detalle import FacturaDetalle
@@ -140,10 +141,22 @@ def crear_factura(
 # -----------------------
 # Listar facturas
 # -----------------------
+
 @router.get("/", response_model=List[FacturaResponse])
-def listar_facturas(skip: int = 0, limit: int = 100, db: Session = Depends(get_empresa_db)):
-    facturas = db.query(Factura).offset(skip).limit(limit).all()
+def listar_facturas(
+    skip: int = 0,
+    limit: int = 100,
+    db: Session = Depends(get_empresa_db)
+):
+    facturas = (
+        db.query(Factura)
+        .order_by(desc(Factura.fecha))
+        .offset(skip)
+        .limit(limit)
+        .all()
+    )
     return facturas
+
 
 # -----------------------
 # Obtener factura por ID

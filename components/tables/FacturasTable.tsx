@@ -9,11 +9,13 @@ import {
   flexRender,
   ColumnDef,
 } from "@tanstack/react-table";
-import { Eye, Trash2 } from "lucide-react";
+import { Eye, Trash2,FileCode } from "lucide-react";
 import Button from "@/components/ui/button";
 import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+
+import { generarXMLFactura } from "@/app/services/xmlservice";
 
 interface Factura {
   id: number;
@@ -65,6 +67,8 @@ export default function FacturasTable({ facturas, onView, onDelete }: Props) {
       id: "acciones",
       header: "Acciones",
       cell: ({ row }) => (
+        
+        
         <div className="flex justify-center gap-2">
           <Button
             className="bg-blue-600 hover:bg-blue-700 text-white px-2 py-1 rounded-lg"
@@ -74,12 +78,21 @@ export default function FacturasTable({ facturas, onView, onDelete }: Props) {
           </Button>
 
           <Button
+            className="bg-blue-600 hover:bg-blue-700 text-white px-2 py-1 rounded-lg"
+            onClick={() => generarXMLFactura(row.original.id)}
+            title="Generar XML"
+          >
+            <FileCode  size={16} />
+          </Button>
+
+          <Button
             className="bg-red-600 hover:bg-red-700 text-white px-2 py-1 rounded-lg"
             onClick={() => onDelete?.(row.original.id)}
           >
             <Trash2 size={16} />
           </Button>
         </div>
+
       ),
     },
   ], [onView, onDelete]);
