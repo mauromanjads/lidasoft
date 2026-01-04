@@ -1,4 +1,5 @@
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends,Response
+import requests
 from sqlalchemy.orm import Session
 from typing import List
 from decimal import Decimal
@@ -249,6 +250,100 @@ def eliminar_factura(factura_id: int, db: Session = Depends(get_empresa_db)):
     db.commit()
     return {"mensaje": f"Factura {factura.numero_completo} eliminada correctamente"}
 
+# -----------------------
+# Generar el XML de la factura
+# -----------------------
 
+@router.post("/{factura_id}/xml")
+def generar_xml_factura(
+    factura_id: int,
+    db: Session = Depends(get_empresa_db)
+):
+    # 1️⃣ Obtener factura
+    factura: Factura = (
+        db.query(Factura)
+        .filter(Factura.id == factura_id)
+        .first()
+    )
 
+    if not factura:
+        raise HTTPException(status_code=404, detail="Factura no encontrada")
 
+    if not factura.detalles:
+        raise HTTPException(status_code=400, detail="Factura sin detalle")
+
+    # 2️⃣ Construir JSON DIAN
+    factura_json = {
+        "tipo_documento": "FE",
+        "regimen": "Régimen común",
+        "metodo_pago": "1",
+        "forma_pago": "Contado",
+        "observaciones": factura.notas or "",
+
+        "emisor_nombre": "MI EMPRESA S.A.S",
+        "emisor_nit": "900123456",
+        "pin_dian": "12345678901234567890",
+
+        "numero": factura.numero_completo,
+        "fecha": factura.fecha.date().isoformat(),
+
+        "cliente_nombre": f"Tercero {factura.tercero_id}",
+        "cliente_nit": str(factura.tercero_id),
+
+        "items": [
+            {
+                "codigo": str(det.producto_id),
+                "descripcion": det.descripcion,
+                "cantidad": float(det.cantidad),
+                "unidad": "UND",
+                "precio_unitario": float(det.precio_unitario),
+                "subtotal": float(det.subtotal),
+                "impuesto": float(det.iva),
+                "descuento": float(det.descuento)
+            }
+            for det in factura.detalles
+        ],
+
+        "total_sin_impuesto": float(factura.subtotal),
+        "total_impuesto": float(factura.iva_total),
+        "total_con_impuesto": float(factura.total),
+        "moneda": "COP"
+    }
+
+    XMLSERVICE_URL = "http://localhost:8001/api/factura/xml"
+    XMLSERVICE_TOKEN = "8F3kL9Q2T7xWmA5R"
+     
+    try:
+        response = requests.post(
+            XMLSERVICE_URL,
+            json=factura_json,
+            headers={
+                "Authorization": f"Bearer {XMLSERVICE_TOKEN}",
+                "Content-Type": "application/json"
+            },
+            timeout=20
+         )
+    except requests.RequestException as e:
+        raise HTTPException(
+        status_code=500,
+        detail=f"Error conectando con XMLService: {str(e)}"
+    )
+    if response.status_code != 200:
+        raise HTTPException(
+            status_code=500,
+            detail=f"XMLService error: {response.text}"
+        )
+
+    xml = response.text
+    
+    return Response(
+        content=xml,
+        media_type="application/xml",
+        headers={
+            "Content-Disposition": f'attachment; filename="{factura.numero_completo}.xml"'
+        }
+    )
+
+    
+
+   

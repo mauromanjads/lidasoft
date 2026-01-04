@@ -79,7 +79,7 @@ export default function FacturasTable({ facturas, onView, onDelete }: Props) {
 
           <Button
             className="bg-blue-600 hover:bg-blue-700 text-white px-2 py-1 rounded-lg"
-            onClick={() => generarXMLFactura(row.original.id)}
+            onClick={() => generarXMLFactura(row.original.id,row.original.numero_completo)}
             title="Generar XML"
           >
             <FileCode  size={16} />
