@@ -47,22 +47,14 @@ export  const generarXMLFactura = async (facturaId: number) => {
       body: JSON.stringify(facturaJson)
     });
 
-    console.log("status:", response.status);
-    console.log("ok:", response.ok);
-
-    const text = await response.text();
-    console.log("response:", text);
+    const xml = await response.text();    
 
     if (!response.ok) {
        alert("ERRROR");
       throw new Error("Error generando XML");
     }
 
-    const xml = await response.text();
-
-    // 👉 Opción 1: mostrar XML en consola
-    //console.log(xml);
-
+ 
     // 👉 Opción 2: descargar el XML
     const blob = new Blob([xml], { type: "application/xml" });
     const url = URL.createObjectURL(blob);
