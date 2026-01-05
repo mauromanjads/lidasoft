@@ -297,12 +297,12 @@ def generar_xml_factura(
     # 2️⃣ Construir JSON DIAN
     factura_json = {
         "tipo_documento": tipo_documento,  # usar la variable tipo_documento
-        "regimen": "Régimen común",
+        "regimen": configdian.regimen,
         "metodo_pago": mediospago.codigo,
         "forma_pago": formaspago.nombre,
         "observaciones": factura.notas or "",
 
-        "emisor_nombre": "MI EMPRESA S.A.S",
+        "emisor_nombre":configdian.nombre_emisor,
         "emisor_nit": str(configdian.nit_emisor),
         "pin_dian": str(configdian.pin_software),
 
@@ -331,10 +331,7 @@ def generar_xml_factura(
         "total_con_impuesto": float(factura.total),
         "moneda": "COP"
     }
-
-    print(json.dumps(factura_json, indent=4, ensure_ascii=False))
-
-
+  
     XMLSERVICE_URL = "http://localhost:8001/api/factura/xml"
     XMLSERVICE_TOKEN = "8F3kL9Q2T7xWmA5R"
      
