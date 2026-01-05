@@ -7,23 +7,27 @@ import { authHeaders } from "@/lib/utils";
 export interface ConfiguracionDian {
   id: number;
   nit_emisor: string;
+  nombre_emisor: string;
   software_id: string;
   pin_software: string;
   ambiente: string;
   certificado_firma: string
   clave_certificado: string
   activo: number
+  regimen: string
 
 }
 
 export interface ConfiguracionDianData {
   nit_emisor: string;
+  nombre_emisor: string;
   software_id: string;
   pin_software: string;
   ambiente: string;
   certificado_firma: string
   clave_certificado: string
   activo: number
+  regimen: string
 }
 
 /* ============================================

@@ -10,6 +10,8 @@ class ConfiguracionDianBase(BaseModel):
     certificado_firma: Optional[str] = None
     clave_certificado: Optional[str] = None
     activo: int = 1
+    nombre_emisor: str
+    regimen: str
 
 
 class ConfiguracionDianCreate(ConfiguracionDianBase):
@@ -24,6 +26,8 @@ class ConfiguracionDianUpdate(BaseModel):
     certificado_firma: Optional[str] = None
     clave_certificado: Optional[str] = None
     activo: Optional[int] = None
+    nombre_emisor: Optional[str] = None
+    regimen: Optional[str] = None
 
 
 class ConfiguracionDianResponse(ConfiguracionDianBase):

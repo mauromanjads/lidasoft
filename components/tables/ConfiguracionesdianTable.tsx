@@ -15,18 +15,19 @@ import Modal from "@/components/ui/modal";
 import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
-import ConfiguraciondianForm from "@/components/forms/ConfiguraciondianForm";
 import ConfiguraciondianaForm from "@/components/forms/ConfiguraciondianForm";
 
 interface Configuraciondian {
   id: number;
   nit_emisor: string;
+  nombre_emisor: string;
   software_id: string;
   pin_software: string;
   ambiente: string;
   certificado_firma: string
   clave_certificado: string
   activo: number
+  regimen: string
 }
 
 interface Props {
@@ -46,6 +47,7 @@ export default function ConfiguracionesdianTable({ configuraciondian, onEdit, on
 
   const columns = useMemo<ColumnDef<Configuraciondian>[]>(
         () => [
+            { accessorKey: "nombre_emisor", header: "Nombre Emisor" },
             { accessorKey: "nit_emisor", header: "Nit Emisor" },
             { accessorKey: "software_id", header: "Software ID" },
             { accessorKey: "pin_software", header: "PIN" },

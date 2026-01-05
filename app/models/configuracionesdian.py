@@ -16,4 +16,7 @@ class ConfiguracionDian(Base):
     certificado_firma = Column(Text)
     clave_certificado = Column(Text)
 
+    nombre_emisor = Column(String(100), nullable=False)
+    regimen = Column(String(100), nullable=False)
+
     activo = Column(Integer, default=1)

@@ -14,21 +14,25 @@ interface ConfiguraciondianFormProps {
   configuraciondian?: {
     id: number;
     nit_emisor: string;
+    nombre_emisor: string;
     software_id: string;
     pin_software: string;
     ambiente: string;
     certificado_firma: string
     clave_certificado: string
     activo: number
+    regimen: string
   };
   onSubmit: (data: {    
     nit_emisor: string;
+    nombre_emisor: string;
     software_id: string;
     pin_software: string;
     ambiente: string;
     certificado_firma: string
     clave_certificado: string
     activo: number
+    regimen: string
    
   }) => Promise<void>;
   onClose?: () => void;
@@ -40,16 +44,27 @@ export default function ConfiguraciondianaForm({configuraciondian, onClose,onSav
   const [formData, setFormData] = useState( configuraciondian || { 
   
     nit_emisor: "",
+    nombre_emisor: "",
     software_id: "",
     pin_software:"",
     ambiente:"",
     certificado_firma:"",
     clave_certificado:"",
-    activo: 1  
+    activo: 1 ,
+    regimen: "" 
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-     
+  
+  
+  const REGIMENES = [
+  "Régimen común",
+  "Régimen simplificado",
+  "Gran contribuyente",
+  "Responsable de IVA",
+  "Otros",
+  ];
+ 
   const handleChange = (
       e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
     ) => {
@@ -137,6 +152,43 @@ export default function ConfiguraciondianaForm({configuraciondian, onClose,onSav
   
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full">
   
+         <div className="flex flex-col w-full">
+          <label className="text-sm font-semibold mb-1 text-gray-700">
+            Nombre Emisor
+          </label>
+          <Input
+            name="nombre_emisor"
+            value={formData.nombre_emisor || ""}
+            onChange={handleChange}
+            placeholder="Nombre del Emisor"
+            className="w-full"
+            required
+          />
+        </div>
+
+       <div className="flex flex-col w-full">
+          <label className="text-sm font-semibold mb-1 text-gray-700">
+            Régimen
+          </label>
+          <select
+            name="regimen"
+            value={formData.regimen}
+            onChange={e =>
+              setFormData(prev => ({ ...prev, regimen: e.target.value }))
+            }
+            className="w-full border-gray-300 rounded-md p-2"
+            required
+          >
+            <option value="">Seleccione un régimen</option>
+            {REGIMENES.map(r => (
+              <option key={r} value={r}>
+                {r}
+              </option>
+            ))}
+          </select>
+        </div>
+
+
        <div className="flex flex-col w-full">
           <label className="text-sm font-semibold mb-1 text-gray-700">
             NIT Emisor

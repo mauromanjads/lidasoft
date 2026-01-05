@@ -1,3 +1,4 @@
+import json
 from fastapi import APIRouter, HTTPException, Depends,Response
 import requests
 from sqlalchemy.orm import Session
@@ -12,6 +13,12 @@ from app.models.factura_detalle import FacturaDetalle
 
 from app.schemas.facturas_schema import FacturaSchema, FacturaResponse
 from app.models.resoluciones import ResolucionDian
+from app.models.mediosdepago import MediosDePago
+from app.models.formasdepago import FormasDePago
+from app.models.terceros import Terceros
+from app.models.configuracionesdian import ConfiguracionDian
+
+
 
 from app.dependencias.empresa import get_empresa_db
 
@@ -259,36 +266,51 @@ def generar_xml_factura(
     factura_id: int,
     db: Session = Depends(get_empresa_db)
 ):
-    # 1️⃣ Obtener factura
-    factura: Factura = (
-        db.query(Factura)
+    # 1️⃣ Obtener factura + tipo_documento
+    resultado = (
+        db.query(
+            Factura, 
+            ResolucionDian.tipo_documento,
+            MediosDePago,
+            FormasDePago,
+            Terceros
+        )
+        .join(ResolucionDian, Factura.resolucion_id == ResolucionDian.id)
+        .join(MediosDePago, Factura.medio_pago_id == MediosDePago.id)
+        .join(FormasDePago, Factura.forma_pago_id == FormasDePago.id)
+        .join(Terceros, Factura.tercero_id == Terceros.id)
         .filter(Factura.id == factura_id)
         .first()
     )
 
-    if not factura:
+    configdian = db.query(ConfiguracionDian).first()
+
+
+    if not resultado:
         raise HTTPException(status_code=404, detail="Factura no encontrada")
+
+    factura, tipo_documento,mediospago,formaspago,tercero = resultado  # ✅ desempaquetamos la tupla
 
     if not factura.detalles:
         raise HTTPException(status_code=400, detail="Factura sin detalle")
 
     # 2️⃣ Construir JSON DIAN
     factura_json = {
-        "tipo_documento": "FE",
+        "tipo_documento": tipo_documento,  # usar la variable tipo_documento
         "regimen": "Régimen común",
-        "metodo_pago": "1",
-        "forma_pago": "Contado",
+        "metodo_pago": mediospago.codigo,
+        "forma_pago": formaspago.nombre,
         "observaciones": factura.notas or "",
 
         "emisor_nombre": "MI EMPRESA S.A.S",
-        "emisor_nit": "900123456",
-        "pin_dian": "12345678901234567890",
+        "emisor_nit": str(configdian.nit_emisor),
+        "pin_dian": str(configdian.pin_software),
 
         "numero": factura.numero_completo,
         "fecha": factura.fecha.date().isoformat(),
 
-        "cliente_nombre": f"Tercero {factura.tercero_id}",
-        "cliente_nit": str(factura.tercero_id),
+        "cliente_nombre": str(tercero.nombre),
+        "cliente_nit": str(tercero.documento),
 
         "items": [
             {
@@ -310,6 +332,9 @@ def generar_xml_factura(
         "moneda": "COP"
     }
 
+    print(json.dumps(factura_json, indent=4, ensure_ascii=False))
+
+
     XMLSERVICE_URL = "http://localhost:8001/api/factura/xml"
     XMLSERVICE_TOKEN = "8F3kL9Q2T7xWmA5R"
      
@@ -325,9 +350,10 @@ def generar_xml_factura(
          )
     except requests.RequestException as e:
         raise HTTPException(
-        status_code=500,
-        detail=f"Error conectando con XMLService: {str(e)}"
-    )
+            status_code=500,
+            detail=f"Error conectando con XMLService: {str(e)}"
+        )
+
     if response.status_code != 200:
         raise HTTPException(
             status_code=500,
@@ -343,7 +369,3 @@ def generar_xml_factura(
             "Content-Disposition": f'attachment; filename="{factura.numero_completo}.xml"'
         }
     )
-
-    
-
-   
