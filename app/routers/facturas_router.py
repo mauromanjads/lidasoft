@@ -295,9 +295,14 @@ def generar_xml_factura(
     if not factura.detalles:
         raise HTTPException(status_code=400, detail="Factura sin detalle")
 
-    # 2️⃣ Construir JSON DIAN
-    factura_json = {
-        "tipo_documento": tipo_documento,  # usar la variable tipo_documento
+    #  Construir JSON DIAN
+    factura_json = {}
+    if tipo_documento == "FE":
+        
+         #  FACTURA ELECTRÓNICA
+
+        factura_json = {
+        "tipo_documento": tipo_documento,  
         "regimen": configdian.regimen,
         "metodo_pago": mediospago.codigo,
         "forma_pago": formaspago.nombre,
@@ -331,6 +336,43 @@ def generar_xml_factura(
         "total_impuesto": float(factura.iva_total),
         "total_con_impuesto": float(factura.total),
         "moneda": "COP"
+    }
+  
+    else:
+       #  DOCUMENTO EQUIVALENTE DE FACTURA - DIFERENTE A FE
+       factura_json = {
+        "tipo_documento": tipo_documento,  
+        "numero": factura.numero_completo,
+        "fecha": factura.fecha.date().isoformat(),
+        "moneda": "COP",        
+
+        "emisor_nombre":configdian.nombre_emisor,
+        "emisor_nit": str(configdian.nit_emisor),
+
+        "cliente_nombre": str(tercero.nombre),
+        "cliente_nit": str(tercero.documento),
+
+        "motivo": factura.notas or "",
+        "regimen": configdian.regimen,
+        
+        "total_sin_impuesto": float(factura.subtotal),
+        "total_impuesto": float(factura.iva_total),
+        "total_con_impuesto": float(factura.total),
+
+        "items": [
+            {
+                "codigo": str(det.producto.codigo),
+                "descripcion": det.producto.nombre,
+                "cantidad": float(det.cantidad),
+                "unidad": det.producto.unidad_medida.codigo,
+                "precio_unitario": float(det.precio_unitario),
+                "subtotal": float(det.subtotal),
+                "impuesto": float(det.iva),
+                "descuento": float(det.descuento)
+            }
+            for det in factura.detalles
+        ],
+        
     }
   
     XMLSERVICE_URL = os.getenv("NEXT_PUBLIC_API_DIAN")
