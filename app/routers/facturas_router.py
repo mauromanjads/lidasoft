@@ -328,20 +328,12 @@ def generar_factura(
     formato: str = "a4",
     db: Session = Depends(get_empresa_db)
 ): 
-    
-    factura = {
-        "numero": f"F-{factura_id}",
-        "cliente": "Juan Perez",
-        "detalle": [
-            {"producto": "Producto 1", "cantidad": 2, "precio_unitario": 100, "total": 200},
-            {"producto": "Producto 2", "cantidad": 1, "precio_unitario": 50, "total": 50}
-        ],
-        "total": 250
-    }
+    factura = construir_factura_json(db, factura_id)
+  
 
     # Generar QR
     qr_img_path = f"invoices/qr_{factura_id}.png"
-    qr_data = f"Pago factura {factura['numero']} total ${factura['total']}"
+    qr_data = f"Pago factura {factura['numero']} total ${factura['total_con_impuesto']}"
     qr = qrcode.QRCode(box_size=2, border=1)
     qr.add_data(qr_data)
     qr.make(fit=True)

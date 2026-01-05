@@ -17,8 +17,11 @@
   <div class="container">
     <div class="header">
    
-      <h2>Factura {{ factura.numero }}</h2>
-      <p>Cliente: {{ factura.cliente }}</p>
+     <h2>
+        {{ "Factura" if factura.tipo_documento == "FE" else "Documento equivalente" }}
+        {{ factura.numero }}
+     </h2>
+     <p>Cliente: {{ factura.cliente_nombre }}</p>
     </div>
     <table>
       <thead>
@@ -29,23 +32,23 @@
           <th>Total</th>
         </tr>
       </thead>
-      <tbody>
+      
        <tbody>
-          {% for item in factura["detalle"] %}
+          {% for item in factura["items"] %}
           <tr>
-            <td>{{ item["producto"] }}</td>
+            <td>{{ item["descripcion"] }}</td>
             <td>{{ item["cantidad"] }}</td>
             <td>{{ item["precio_unitario"] }}</td>
-            <td>{{ item["total"] }}</td>
+            <td>{{ item["subtotal"] }}</td>
           </tr>
           {% endfor %}
-        </tbody>
+       </tbody>
 
-
-      </tbody>
     </table>
 
-    <p class="total">Total: ${{ factura.total }}</p>  
+    <p class="total">Total: ${{ factura.total_sin_impuesto }}</p>
+    <p class="total">Total: ${{ factura.total_impuesto }}</p>
+    <p class="total">Total: ${{ factura.total_con_impuesto }}</p>  
 
      {% if qr_path %}
       <div class="qr">

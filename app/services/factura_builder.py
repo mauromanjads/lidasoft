@@ -37,7 +37,7 @@ def construir_factura_json(db, factura_id: int) -> dict:
     items = [
         {
             "codigo": str(det.producto.codigo),
-            "descripcion": det.producto.nombre,
+            "descripcion":( f"{det.producto.nombre} - {det.descripcion}"),
             "cantidad": float(det.cantidad),
             "unidad": det.producto.unidad_medida.codigo,
             "precio_unitario": float(det.precio_unitario),
