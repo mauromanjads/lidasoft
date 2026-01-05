@@ -1,3 +1,4 @@
+from concurrent.futures import process
 import json
 from fastapi import APIRouter, HTTPException, Depends,Response
 import requests
@@ -17,7 +18,7 @@ from app.models.mediosdepago import MediosDePago
 from app.models.formasdepago import FormasDePago
 from app.models.terceros import Terceros
 from app.models.configuracionesdian import ConfiguracionDian
-
+import os
 
 
 from app.dependencias.empresa import get_empresa_db
@@ -314,8 +315,8 @@ def generar_xml_factura(
 
         "items": [
             {
-                "codigo": str(det.producto_id),
-                "descripcion": det.descripcion,
+                "codigo": str(det.producto.codigo),
+                "descripcion": det.producto.nombre,
                 "cantidad": float(det.cantidad),
                 "unidad": "UND",
                 "precio_unitario": float(det.precio_unitario),
@@ -332,8 +333,8 @@ def generar_xml_factura(
         "moneda": "COP"
     }
   
-    XMLSERVICE_URL = "http://localhost:8001/api/factura/xml"
-    XMLSERVICE_TOKEN = "8F3kL9Q2T7xWmA5R"
+    XMLSERVICE_URL = os.getenv("NEXT_PUBLIC_API_DIAN")
+    XMLSERVICE_TOKEN = configdian.token
      
     try:
         response = requests.post(
