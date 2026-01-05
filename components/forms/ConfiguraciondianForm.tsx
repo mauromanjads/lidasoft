@@ -22,6 +22,7 @@ interface ConfiguraciondianFormProps {
     clave_certificado: string
     activo: number
     regimen: string
+    token: string
   };
   onSubmit: (data: {    
     nit_emisor: string;
@@ -33,6 +34,7 @@ interface ConfiguraciondianFormProps {
     clave_certificado: string
     activo: number
     regimen: string
+    token: string
    
   }) => Promise<void>;
   onClose?: () => void;
@@ -51,7 +53,8 @@ export default function ConfiguraciondianaForm({configuraciondian, onClose,onSav
     certificado_firma:"",
     clave_certificado:"",
     activo: 1 ,
-    regimen: "" 
+    regimen: "" ,
+    token: "" ,
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -268,6 +271,20 @@ export default function ConfiguraciondianaForm({configuraciondian, onClose,onSav
             value={formData.clave_certificado || ""}
             onChange={handleChange}
             placeholder="Clave del Certificado"
+            className="w-full"
+            required
+          />
+        </div>
+        
+        <div className="flex flex-col w-full">
+          <label className="text-sm font-semibold mb-1 text-gray-700">
+            Token
+          </label>
+          <Input
+            name="token"
+            value={formData.token || ""}
+            onChange={handleChange}
+            placeholder="token de autenticación"
             className="w-full"
             required
           />

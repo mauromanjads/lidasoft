@@ -12,6 +12,7 @@ class ConfiguracionDianBase(BaseModel):
     activo: int = 1
     nombre_emisor: str
     regimen: str
+    token: str
 
 
 class ConfiguracionDianCreate(ConfiguracionDianBase):
@@ -28,6 +29,7 @@ class ConfiguracionDianUpdate(BaseModel):
     activo: Optional[int] = None
     nombre_emisor: Optional[str] = None
     regimen: Optional[str] = None
+    token: Optional[str] = None
 
 
 class ConfiguracionDianResponse(ConfiguracionDianBase):

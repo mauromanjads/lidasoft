@@ -15,6 +15,7 @@ export interface ConfiguracionDian {
   clave_certificado: string
   activo: number
   regimen: string
+  token: string
 
 }
 
@@ -28,6 +29,7 @@ export interface ConfiguracionDianData {
   clave_certificado: string
   activo: number
   regimen: string
+  token: string
 }
 
 /* ============================================

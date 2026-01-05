@@ -20,3 +20,4 @@ class ConfiguracionDian(Base):
     regimen = Column(String(100), nullable=False)
 
     activo = Column(Integer, default=1)
+    token = Column(String(100), nullable=False)
