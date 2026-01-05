@@ -1,5 +1,4 @@
-from concurrent.futures import process
-import json
+
 from fastapi import APIRouter, HTTPException, Depends,Response
 import requests
 from sqlalchemy.orm import Session
@@ -11,15 +10,11 @@ from sqlalchemy import desc
 
 from app.models.facturas import Factura
 from app.models.factura_detalle import FacturaDetalle
-
 from app.schemas.facturas_schema import FacturaSchema, FacturaResponse
 from app.models.resoluciones import ResolucionDian
-from app.models.mediosdepago import MediosDePago
-from app.models.formasdepago import FormasDePago
-from app.models.terceros import Terceros
 from app.models.configuracionesdian import ConfiguracionDian
+from app.services.factura_builder import construir_factura_json
 import os
-
 
 from app.dependencias.empresa import get_empresa_db
 
@@ -267,113 +262,9 @@ def generar_xml_factura(
     factura_id: int,
     db: Session = Depends(get_empresa_db)
 ):
-    # 1️⃣ Obtener factura + tipo_documento
-    resultado = (
-        db.query(
-            Factura, 
-            ResolucionDian.tipo_documento,
-            MediosDePago,
-            FormasDePago,
-            Terceros
-        )
-        .join(ResolucionDian, Factura.resolucion_id == ResolucionDian.id)
-        .join(MediosDePago, Factura.medio_pago_id == MediosDePago.id)
-        .join(FormasDePago, Factura.forma_pago_id == FormasDePago.id)
-        .join(Terceros, Factura.tercero_id == Terceros.id)
-        .filter(Factura.id == factura_id)
-        .first()
-    )
+    factura_json = construir_factura_json(db, factura_id)
 
     configdian = db.query(ConfiguracionDian).first()
-
-
-    if not resultado:
-        raise HTTPException(status_code=404, detail="Factura no encontrada")
-
-    factura, tipo_documento,mediospago,formaspago,tercero = resultado  # ✅ desempaquetamos la tupla
-
-    if not factura.detalles:
-        raise HTTPException(status_code=400, detail="Factura sin detalle")
-
-    #  Construir JSON DIAN
-    factura_json = {}
-    if tipo_documento == "FE":
-        
-         #  FACTURA ELECTRÓNICA
-
-        factura_json = {
-        "tipo_documento": tipo_documento,  
-        "regimen": configdian.regimen,
-        "metodo_pago": mediospago.codigo,
-        "forma_pago": formaspago.nombre,
-        "observaciones": factura.notas or "",
-
-        "emisor_nombre":configdian.nombre_emisor,
-        "emisor_nit": str(configdian.nit_emisor),
-        "pin_dian": str(configdian.pin_software),
-
-        "numero": factura.numero_completo,
-        "fecha": factura.fecha.date().isoformat(),
-
-        "cliente_nombre": str(tercero.nombre),
-        "cliente_nit": str(tercero.documento),
-
-        "items": [
-            {
-                "codigo": str(det.producto.codigo),
-                "descripcion": det.producto.nombre,
-                "cantidad": float(det.cantidad),
-                "unidad": det.producto.unidad_medida.codigo,
-                "precio_unitario": float(det.precio_unitario),
-                "subtotal": float(det.subtotal),
-                "impuesto": float(det.iva),
-                "descuento": float(det.descuento)
-            }
-            for det in factura.detalles
-        ],
-
-        "total_sin_impuesto": float(factura.subtotal),
-        "total_impuesto": float(factura.iva_total),
-        "total_con_impuesto": float(factura.total),
-        "moneda": "COP"
-    }
-  
-    else:
-       #  DOCUMENTO EQUIVALENTE DE FACTURA - DIFERENTE A FE
-       factura_json = {
-        "tipo_documento": tipo_documento,  
-        "numero": factura.numero_completo,
-        "fecha": factura.fecha.date().isoformat(),
-        "moneda": "COP",        
-
-        "emisor_nombre":configdian.nombre_emisor,
-        "emisor_nit": str(configdian.nit_emisor),
-
-        "cliente_nombre": str(tercero.nombre),
-        "cliente_nit": str(tercero.documento),
-
-        "motivo": factura.notas or "",
-        "regimen": configdian.regimen,
-        
-        "total_sin_impuesto": float(factura.subtotal),
-        "total_impuesto": float(factura.iva_total),
-        "total_con_impuesto": float(factura.total),
-
-        "items": [
-            {
-                "codigo": str(det.producto.codigo),
-                "descripcion": det.producto.nombre,
-                "cantidad": float(det.cantidad),
-                "unidad": det.producto.unidad_medida.codigo,
-                "precio_unitario": float(det.precio_unitario),
-                "subtotal": float(det.subtotal),
-                "impuesto": float(det.iva),
-                "descuento": float(det.descuento)
-            }
-            for det in factura.detalles
-        ],
-        
-    }
   
     XMLSERVICE_URL = os.getenv("NEXT_PUBLIC_API_DIAN")
     XMLSERVICE_TOKEN = configdian.token
@@ -406,7 +297,7 @@ def generar_xml_factura(
         content=xml,
         media_type="application/xml",
         headers={
-            "Content-Disposition": f'attachment; filename="{factura.numero_completo}.xml"'
+            "Content-Disposition": f'attachment; filename="{factura_json["numero"]}.xml"'
         }
     )
 
@@ -418,7 +309,6 @@ def generar_xml_factura(
 from fastapi.responses import FileResponse
 from jinja2 import Environment, FileSystemLoader
 from weasyprint import HTML
-import os
 import qrcode
 
 PDF_FOLDER = "invoices"
