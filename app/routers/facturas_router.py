@@ -8,6 +8,8 @@ from datetime import datetime,timezone
 from fastapi import Request
 from sqlalchemy import desc
 
+from app.models.empresa import Empresa
+
 from app.models.facturas import Factura
 from app.models.factura_detalle import FacturaDetalle
 from app.schemas.facturas_schema import FacturaSchema, FacturaResponse
@@ -17,6 +19,7 @@ from app.services.factura_builder import construir_factura_json
 import os
 
 from app.dependencias.empresa import get_empresa_db
+from app.database_master import get_db_master
 
 from app.services.inventario_service import (
     descontar_inventario,
@@ -325,8 +328,10 @@ env = Environment(
 @router.get("/{factura_id}/pdf")
 def generar_factura(
     factura_id: int,
-    formato: str = "a4",
-    db: Session = Depends(get_empresa_db)
+    id_empresa: int,
+    formato: str = "a4",    
+    db: Session = Depends(get_empresa_db),
+    db_master: Session = Depends(get_db_master)
 ): 
     factura = construir_factura_json(db, factura_id)
   
@@ -334,7 +339,7 @@ def generar_factura(
     # Generar QR
     qr_img_path = f"invoices/qr_{factura_id}.png"
     qr_data = f"Pago factura {factura['numero']} total ${factura['total_con_impuesto']}"
-    qr = qrcode.QRCode(box_size=2, border=1)
+    qr = qrcode.QRCode(box_size=4, border=2)
     qr.add_data(qr_data)
     qr.make(fit=True)
     img = qr.make_image(fill_color="black", back_color="white")
@@ -345,9 +350,20 @@ def generar_factura(
         "factura_pos.html" if formato.lower() == "pos" else "factura_a4.html"
     )
    
+    BASE_API_URL = os.getenv("NEXT_PUBLIC_API_URL")  
+
+    empresa = db_master.query(Empresa).filter(Empresa.id == id_empresa).first()
+
+    logo_url = (
+        f"{BASE_API_URL}{empresa.logo_url}"
+        if empresa.logo_url
+        else None
+    )
+
     html_out = template.render(
         factura=factura,
-        qr_path=qr_path
+        qr_path=qr_path,
+        logo_url=logo_url   
     )
 
     pdf_file = os.path.join(PDF_FOLDER, f"factura_{factura_id}_{formato}.pdf")

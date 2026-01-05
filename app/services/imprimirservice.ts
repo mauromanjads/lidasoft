@@ -1,12 +1,15 @@
 import Swal from "sweetalert2";
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 import { authHeaders } from "@/lib/utils";
+import { getEmpresaFromStorage } from "@/app/dependencias/autenticacion";
 
 export  const generarFactura = async (facturaId: number,formato:string) => {
   try {
-    
+
+        const id_empresa = getEmpresaFromStorage();
+
         const response = await fetch(
-          `${API_URL}/facturas/${facturaId}/pdf?formato=${formato}`,
+          `${API_URL}/facturas/${facturaId}/pdf?formato=${formato}&id_empresa=${id_empresa}`,
           {
             method: "GET",
             headers: authHeaders(),
