@@ -423,8 +423,14 @@ import qrcode
 
 PDF_FOLDER = "invoices"
 os.makedirs(PDF_FOLDER, exist_ok=True)
-env = Environment(loader=FileSystemLoader("templates"))
-LOGO_PATH = os.path.abspath("static/logo.png")
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+TEMPLATES_DIR = os.path.join(BASE_DIR, "..", "templates")
+
+env = Environment(
+    loader=FileSystemLoader(TEMPLATES_DIR),
+    autoescape=True
+)
 
 @router.get("/{factura_id}/pdf")
 def generar_factura(
@@ -436,9 +442,9 @@ def generar_factura(
     factura = {
         "numero": f"F-{factura_id}",
         "cliente": "Juan Perez",
-        "items": [
-            {"descripcion": "Producto 1", "cantidad": 2, "precio": 100},
-            {"descripcion": "Producto 2", "cantidad": 1, "precio": 50}
+        "detalle": [
+            {"producto": "Producto 1", "cantidad": 2, "precio_unitario": 100, "total": 200},
+            {"producto": "Producto 2", "cantidad": 1, "precio_unitario": 50, "total": 50}
         ],
         "total": 250
     }
@@ -451,16 +457,30 @@ def generar_factura(
     qr.make(fit=True)
     img = qr.make_image(fill_color="black", back_color="white")
     img.save(qr_img_path)
-    qr_path = os.path.abspath(qr_img_path)
+    qr_path = os.path.abspath(qr_img_path).replace("\\", "/")
 
-    # Seleccionar plantilla según formato
-    if formato.lower() == "pos":
-        template = env.get_template("factura_pos.html")
-    else:
-        template = env.get_template("factura_a4.html")
+    template = env.get_template(
+        "factura_pos.html" if formato.lower() == "pos" else "factura_a4.html"
+    )
+   
+    html_out = template.render(
+        factura=factura,
+        qr_path=qr_path
+    )
 
-    html_out = template.render(factura=factura, logo_path=LOGO_PATH, qr_path=qr_path)
     pdf_file = os.path.join(PDF_FOLDER, f"factura_{factura_id}_{formato}.pdf")
-    HTML(string=html_out).write_pdf(pdf_file)
 
-    return FileResponse(pdf_file, media_type="application/pdf", filename=os.path.basename(pdf_file))
+    HTML(
+        string=html_out,
+        base_url=os.getcwd()
+    ).write_pdf(pdf_file)
+
+    return FileResponse(
+        pdf_file,
+        media_type="application/pdf",
+        filename=os.path.basename(pdf_file)
+    )
+
+   
+    
+

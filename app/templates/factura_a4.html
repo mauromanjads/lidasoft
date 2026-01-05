@@ -16,29 +16,43 @@
 <body>
   <div class="container">
     <div class="header">
-      <img src="{{ logo_path }}" class="logo">
+   
       <h2>Factura {{ factura.numero }}</h2>
       <p>Cliente: {{ factura.cliente }}</p>
     </div>
-
     <table>
-      <tr><th>Item</th><th>Cantidad</th><th>Precio</th></tr>
-      {% for item in factura.items %}
-      <tr>
-        <td>{{ item.descripcion }}</td>
-        <td>{{ item.cantidad }}</td>
-        <td>{{ item.precio }}</td>
-      </tr>
-      {% endfor %}
+      <thead>
+        <tr>
+          <th>Producto</th>
+          <th>Cantidad</th>
+          <th>Precio Unitario</th>
+          <th>Total</th>
+        </tr>
+      </thead>
+      <tbody>
+       <tbody>
+          {% for item in factura["detalle"] %}
+          <tr>
+            <td>{{ item["producto"] }}</td>
+            <td>{{ item["cantidad"] }}</td>
+            <td>{{ item["precio_unitario"] }}</td>
+            <td>{{ item["total"] }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+
+
+      </tbody>
     </table>
 
-    <p class="total">Total: ${{ factura.total }}</p>
+    <p class="total">Total: ${{ factura.total }}</p>  
 
-    {% if qr_path %}
-    <div class="qr">
-      <img src="{{ qr_path }}">
-    </div>
-    {% endif %}
+     {% if qr_path %}
+      <div class="qr">
+         <img src="file:///{{ qr_path }}" width="120">
+      </div>
+      {% endif %}
+    
   </div>
 </body>
 </html>

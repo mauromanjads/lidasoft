@@ -13,7 +13,6 @@ export  const generarFactura = async (facturaId: number,formato:string) => {
           }
         );
    
-    alert(response.status);
     if (!response.ok) {
       
        const mierror ="Error imprimiendo archivo"

@@ -14,31 +14,6 @@
   </style>
 </head>
 <body>
-  <div class="ticket">
-    <div class="header">
-      <img src="{{ logo_path }}" class="logo">
-      <h3>Factura {{ factura.numero }}</h3>
-      <p>Cliente: {{ factura.cliente }}</p>
-    </div>
-
-    <table>
-      <tr><th>Item</th><th>Cant</th><th>Precio</th></tr>
-      {% for item in factura.items %}
-      <tr>
-        <td>{{ item.descripcion }}</td>
-        <td>{{ item.cantidad }}</td>
-        <td>{{ item.precio }}</td>
-      </tr>
-      {% endfor %}
-    </table>
-
-    <p class="total">Total: ${{ factura.total }}</p>
-
-    {% if qr_path %}
-    <div class="qr">
-      <img src="{{ qr_path }}">
-    </div>
-    {% endif %}
-  </div>
+  hhhhhhhhhh
 </body>
 </html>
