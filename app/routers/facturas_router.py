@@ -415,21 +415,18 @@ def generar_xml_factura(
 # Imprimir factura en PDF
 # -----------------------
 
-
-from fastapi import FastAPI
 from fastapi.responses import FileResponse
 from jinja2 import Environment, FileSystemLoader
 from weasyprint import HTML
 import os
 import qrcode
 
-app = FastAPI()
 PDF_FOLDER = "invoices"
 os.makedirs(PDF_FOLDER, exist_ok=True)
 env = Environment(loader=FileSystemLoader("templates"))
 LOGO_PATH = os.path.abspath("static/logo.png")
 
-@app.get("/factura/{factura_id}/pdf")
+@router.get("/{factura_id}/pdf")
 def generar_factura(
     factura_id: int,
     formato: str = "a4",
