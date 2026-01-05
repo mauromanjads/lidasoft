@@ -318,7 +318,7 @@ def generar_xml_factura(
                 "codigo": str(det.producto.codigo),
                 "descripcion": det.producto.nombre,
                 "cantidad": float(det.cantidad),
-                "unidad": "UND",
+                "unidad": det.producto.unidad_medida.codigo,
                 "precio_unitario": float(det.precio_unitario),
                 "subtotal": float(det.subtotal),
                 "impuesto": float(det.iva),
