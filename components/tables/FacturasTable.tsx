@@ -74,7 +74,15 @@ export default function FacturasTable({ facturas, onView, onDelete }: Props) {
           <Button
             className="bg-blue-600 hover:bg-blue-700 text-white px-2 py-1 rounded-lg"
             onClick={() => generarFactura(row.original.id,"a4")}
-            title="Imprimir factura"
+            title="Imprimir factura carta"
+          >
+            <Eye size={16} />
+          </Button>
+
+          <Button
+            className="bg-blue-600 hover:bg-blue-700 text-white px-2 py-1 rounded-lg"
+            onClick={() => generarFactura(row.original.id,"pos")}
+            title="Imprimir factura POS"
           >
             <Eye size={16} />
           </Button>
@@ -86,13 +94,7 @@ export default function FacturasTable({ facturas, onView, onDelete }: Props) {
           >
             <FileCode  size={16} />
           </Button>
-
-          <Button
-            className="bg-red-600 hover:bg-red-700 text-white px-2 py-1 rounded-lg"
-            onClick={() => onDelete?.(row.original.id)}
-          >
-            <Trash2 size={16} />
-          </Button>
+         
         </div>
 
       ),
