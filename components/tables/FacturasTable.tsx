@@ -16,6 +16,7 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 
 import { generarXMLFactura } from "@/app/services/xmlservice";
+import { generarFactura } from "@/app/services/imprimirservice";
 
 interface Factura {
   id: number;
@@ -72,7 +73,8 @@ export default function FacturasTable({ facturas, onView, onDelete }: Props) {
         <div className="flex justify-center gap-2">
           <Button
             className="bg-blue-600 hover:bg-blue-700 text-white px-2 py-1 rounded-lg"
-            onClick={() => onView?.(row.original.id)}
+            onClick={() => generarFactura(row.original.id,"a4")}
+            title="Imprimir factura"
           >
             <Eye size={16} />
           </Button>

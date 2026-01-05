@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body { font-family: monospace; font-size: 10px; }
+    .ticket { width: 220px; margin: 0 auto; }
+    .header { text-align: center; }
+    .logo { max-width: 80px; margin-bottom: 5px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    th, td { padding: 2px 0; text-align: left; }
+    .total { text-align: right; font-weight: bold; margin-top: 5px; }
+    .qr { text-align: center; margin-top: 5px; }
+  </style>
+</head>
+<body>
+  <div class="ticket">
+    <div class="header">
+      <img src="{{ logo_path }}" class="logo">
+      <h3>Factura {{ factura.numero }}</h3>
+      <p>Cliente: {{ factura.cliente }}</p>
+    </div>
+
+    <table>
+      <tr><th>Item</th><th>Cant</th><th>Precio</th></tr>
+      {% for item in factura.items %}
+      <tr>
+        <td>{{ item.descripcion }}</td>
+        <td>{{ item.cantidad }}</td>
+        <td>{{ item.precio }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+
+    <p class="total">Total: ${{ factura.total }}</p>
+
+    {% if qr_path %}
+    <div class="qr">
+      <img src="{{ qr_path }}">
+    </div>
+    {% endif %}
+  </div>
+</body>
+</html>

@@ -409,3 +409,61 @@ def generar_xml_factura(
             "Content-Disposition": f'attachment; filename="{factura.numero_completo}.xml"'
         }
     )
+
+
+# -----------------------
+# Imprimir factura en PDF
+# -----------------------
+
+
+from fastapi import FastAPI
+from fastapi.responses import FileResponse
+from jinja2 import Environment, FileSystemLoader
+from weasyprint import HTML
+import os
+import qrcode
+
+app = FastAPI()
+PDF_FOLDER = "invoices"
+os.makedirs(PDF_FOLDER, exist_ok=True)
+env = Environment(loader=FileSystemLoader("templates"))
+LOGO_PATH = os.path.abspath("static/logo.png")
+
+@app.get("/factura/{factura_id}/pdf")
+def generar_factura(
+    factura_id: int,
+    formato: str = "a4",
+    db: Session = Depends(get_empresa_db)
+): 
+    
+    factura = {
+        "numero": f"F-{factura_id}",
+        "cliente": "Juan Perez",
+        "items": [
+            {"descripcion": "Producto 1", "cantidad": 2, "precio": 100},
+            {"descripcion": "Producto 2", "cantidad": 1, "precio": 50}
+        ],
+        "total": 250
+    }
+
+    # Generar QR
+    qr_img_path = f"invoices/qr_{factura_id}.png"
+    qr_data = f"Pago factura {factura['numero']} total ${factura['total']}"
+    qr = qrcode.QRCode(box_size=2, border=1)
+    qr.add_data(qr_data)
+    qr.make(fit=True)
+    img = qr.make_image(fill_color="black", back_color="white")
+    img.save(qr_img_path)
+    qr_path = os.path.abspath(qr_img_path)
+
+    # Seleccionar plantilla según formato
+    if formato.lower() == "pos":
+        template = env.get_template("factura_pos.html")
+    else:
+        template = env.get_template("factura_a4.html")
+
+    html_out = template.render(factura=factura, logo_path=LOGO_PATH, qr_path=qr_path)
+    pdf_file = os.path.join(PDF_FOLDER, f"factura_{factura_id}_{formato}.pdf")
+    HTML(string=html_out).write_pdf(pdf_file)
+
+    return FileResponse(pdf_file, media_type="application/pdf", filename=os.path.basename(pdf_file))
