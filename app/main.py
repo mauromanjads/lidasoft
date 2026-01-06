@@ -23,7 +23,7 @@ from app.routers import sucursales_router
 from app.routers import empresas_router
 from app.routers import roles_router
 from app.routers import permisos_router
-
+from app.routers import configuracionimpresora_router
 
 
 from fastapi.middleware.cors import CORSMiddleware
@@ -66,6 +66,7 @@ app.include_router(sucursales_router.router)
 app.include_router(empresas_router.router)
 app.include_router(roles_router.router)
 app.include_router(permisos_router.router)
+app.include_router(configuracionimpresora_router.router)
 
 
 @app.get("/")

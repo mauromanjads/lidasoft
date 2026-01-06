@@ -85,6 +85,13 @@ export default function Sidebar() {
                       >
                         🏬 Sucursales
                       </a>
+                      <a
+                        href="/dashboard/configuracionimpresora"
+                        className="block bg-[#0d2f5a]/70 hover:bg-[#103766]/90 
+                        p-2 rounded-lg transition-all shadow-md"
+                      >
+                        🖨️ Impresión
+                      </a>
                     </motion.div>
                   )}
                 </AnimatePresence>
