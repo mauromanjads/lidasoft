@@ -11,7 +11,7 @@ def get_db(empresa):
     DATABASE_URL = (
         f"postgresql+psycopg2://{empresa.db_user}:{empresa.db_password}"
         f"@{empresa.db_host}:{empresa.db_port}/{empresa.db_name}"
-        "?sslmode=require"
+        "?sslmode=disable"
     )
 
     engine = create_engine(
