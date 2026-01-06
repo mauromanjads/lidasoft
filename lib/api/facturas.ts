@@ -1,4 +1,5 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
+import { generarXMLFactura } from "@/app/services/xmlservice";
 import { authHeaders } from "@/lib/utils";
 
 /* ============================================
@@ -116,7 +117,9 @@ export async function crearFactura(data: FacturaData) {
       throw new Error(errorData?.detail || "Error al crear factura");
     }
 
-    return await response.json();
+    const factura = await response.json();    
+    
+    return factura;
 
   } catch (err) {
     console.error("Error en crearFactura:", err);

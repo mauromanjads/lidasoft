@@ -12,6 +12,7 @@ import { FaIdCard, FaMapMarkerAlt, FaPhone, FaMobileAlt, FaEnvelope } from "reac
 import { actualizarFactura, crearFactura } from "@/lib/api/facturas";
 import DetalleVentaGrid from "@/components/ui/detalleVentaGrid";
 import Swal from "sweetalert2";
+import { generarXMLFactura } from "@/app/services/xmlservice";
 
 interface FacturaFormProps {
   factura?: FacturaForm | null;
@@ -300,20 +301,25 @@ const cargarResolucionPorTipo = async (tipoDocumento?: string,predeterminado?: s
          if (factura?.id) {
             await actualizarFactura(factura.id, payload); // EDITAR
           } else {
-            await crearFactura(payload); // CREAR
-          }
+              const facturaCreada = await crearFactura(payload);
 
-          const mensaje =factura
-          ? "Factura actualizada"
-          : "Factura creada correctamente";
-           Swal.fire({
-                title: "¡Listo!",
-                text: mensaje,
-                icon: "success",
-                confirmButtonText: "Aceptar",
-                timer: 4000,
-                timerProgressBar: true,
-              });
+              const result = await Swal.fire({
+              title: "Factura creada",
+              text: "¿Desea descargar el XML?",
+              icon: "question",
+              showCancelButton: true,
+              confirmButtonText: "Sí, descargar",
+              cancelButtonText: "No",
+            });
+
+            if (result.isConfirmed) {
+              await generarXMLFactura(
+                facturaCreada.id,
+                facturaCreada.numero_completo
+              );
+            }                    
+
+          }
           
           if (!factura?.id) {
             await resetFormulario();
