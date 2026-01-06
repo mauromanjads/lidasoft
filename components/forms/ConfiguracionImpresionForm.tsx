@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import Button from "@/components/ui/button";
-import Input from "@/components/ui/input";
 import Swal from "sweetalert2";
 import { actualizarConfiguracion } from "@/lib/api/configuracionimpresion";
 
@@ -12,13 +11,10 @@ interface ConfiguracionImpresionFormProps {
     habilitar_pos: boolean;
     habilitar_a4: boolean;
   };
-  onGuardar?: () => void;
+  onSaved?: () => void;
 }
 
-export default function ConfiguracionImpresionForm({
-  config,
-  onGuardar,
-}: ConfiguracionImpresionFormProps) {
+export default function ConfiguracionImpresionForm({ config, onSaved }: ConfiguracionImpresionFormProps) {
   const [formData, setFormData] = useState({
     habilitar_pos: config.habilitar_pos,
     habilitar_a4: config.habilitar_a4,
@@ -26,50 +22,37 @@ export default function ConfiguracionImpresionForm({
 
   const [loading, setLoading] = useState(false);
 
-  /* ===================== HANDLER ===================== */
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, checked } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: checked, // ojo con los booleanos
+      [e.target.name]: e.target.checked,
     }));
   };
 
-  /* ===================== SUBMIT ===================== */
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      const payload = {
-        habilitar_pos: formData.habilitar_pos,
-        habilitar_a4: formData.habilitar_a4,
-      };
-
-      await actualizarConfiguracion(payload);
+      await actualizarConfiguracion(formData);
 
       Swal.fire({
         title: "¡Listo!",
-        text: "Configuración de impresión actualizada",
+        text: "Configuración actualizada correctamente",
         icon: "success",
         confirmButtonText: "Aceptar",
-        timer: 4000,
+        timer: 3000,
         timerProgressBar: true,
       });
 
-      onGuardar?.();
-    } catch (error: unknown) {
-      const message =
-        error instanceof Error
-          ? error.message
-          : "Ocurrió un error inesperado";
-
+      onSaved?.();
+    } catch (err: unknown) {
       Swal.fire({
-        title: "Oops...!",
-        text: message,
+        title: "Error",
+        text: err instanceof Error ? err.message : "Ocurrió un error inesperado",
         icon: "error",
         confirmButtonText: "Entendido",
-        timer: 4000,
+        timer: 3000,
         timerProgressBar: true,
       });
     } finally {
@@ -77,41 +60,39 @@ export default function ConfiguracionImpresionForm({
     }
   };
 
-  /* ===================== RENDER ===================== */
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-
-      {/* ====== CHECKBOXES ====== */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="flex items-center gap-2">
-          <input
-            type="checkbox"
-            name="habilitar_pos"
-            checked={formData.habilitar_pos}
-            onChange={handleChange}
-            className="w-5 h-5"
-          />
-          <label className="text-sm font-semibold">Habilitar POS (térmica)</label>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <input
-            type="checkbox"
-            name="habilitar_a4"
-            checked={formData.habilitar_a4}
-            onChange={handleChange}
-            className="w-5 h-5"
-          />
-          <label className="text-sm font-semibold">Habilitar A4</label>
-        </div>
+   <form
+      onSubmit={handleSubmit}
+      className="space-y-4 border border-gray-300 rounded-lg p-4 bg-white max-w-md mx-auto"
+    >
+      <div className="flex items-center gap-4">
+        <input
+          type="checkbox"
+          name="habilitar_pos"
+          checked={formData.habilitar_pos}
+          onChange={handleChange}
+          className="w-5 h-5"
+        />
+        <label className="text-sm font-medium">Habilitar POS (térmica)</label>
       </div>
 
-      {/* ====== BOTONES ====== */}
-      <div className="flex justify-end gap-2">
+      <div className="flex items-center gap-4">
+        <input
+          type="checkbox"
+          name="habilitar_a4"
+          checked={formData.habilitar_a4}
+          onChange={handleChange}
+          className="w-5 h-5"
+        />
+        <label className="text-sm font-medium">Habilitar A4</label>
+      </div>
+
+      <div className="flex justify-center mt-4">
         <Button type="submit" disabled={loading}>
-          {loading ? "Actualizando..." : "💾 Guardar"}
+          {loading ? "Guardando..." : "💾 Guardar"}
         </Button>
       </div>
     </form>
+
   );
 }
