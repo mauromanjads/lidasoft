@@ -29,7 +29,7 @@ export default function ConfiguracionImpresionPage() {
   return (
     <ConfiguracionImpresionForm
       config={config}
-      onGuardar={() => console.log("Configuración actualizada")}
+      onSaved={() => console.log("Configuración actualizada")}
     />
   );
 }
