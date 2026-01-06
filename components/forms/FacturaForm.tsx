@@ -13,6 +13,8 @@ import { actualizarFactura, crearFactura } from "@/lib/api/facturas";
 import DetalleVentaGrid from "@/components/ui/detalleVentaGrid";
 import Swal from "sweetalert2";
 import { generarXMLFactura } from "@/app/services/xmlservice";
+import { generarFactura } from "@/app/services/imprimirservice";
+import { obtenerConfiguracionImpresion } from "@/lib/api/configuracionimpresion";
 
 interface FacturaFormProps {
   factura?: FacturaForm | null;
@@ -301,6 +303,8 @@ const cargarResolucionPorTipo = async (tipoDocumento?: string,predeterminado?: s
          if (factura?.id) {
             await actualizarFactura(factura.id, payload); // EDITAR
           } else {
+              
+            //CREACION DE FACTURA
               const facturaCreada = await crearFactura(payload);
 
               const result = await Swal.fire({
@@ -311,13 +315,58 @@ const cargarResolucionPorTipo = async (tipoDocumento?: string,predeterminado?: s
               confirmButtonText: "Sí, descargar",
               cancelButtonText: "No",
             });
-
+            
+            //XML DE FACTURA
             if (result.isConfirmed) {
               await generarXMLFactura(
                 facturaCreada.id,
                 facturaCreada.numero_completo
               );
-            }                    
+            }             
+            
+            // 🖨️ IMPRESIÓN SEGÚN CONFIGURACIÓN
+            const configImpresion = await obtenerConfiguracionImpresion();
+            const imprimirPos = configImpresion?.pos ?? false;
+            const imprimirCarta = configImpresion?.carta ?? false;
+
+
+            if (!imprimirPos && !imprimirCarta) {
+              // ❌ No imprimir
+            } 
+            else if (imprimirPos && imprimirCarta) {
+
+              // 🟡 Preguntar
+              const printResult = await Swal.fire({
+                title: "Imprimir factura",
+                text: "Seleccione el formato de impresión",
+                icon: "question",
+                showCancelButton: true,
+                showDenyButton: true,
+                confirmButtonText: "POS",
+                denyButtonText: "Carta (A4)",
+                cancelButtonText: "Cancelar",
+              });
+
+              if (printResult.isConfirmed) {
+                await generarFactura(facturaCreada.id, "pos");
+              } 
+              else if (printResult.isDenied) {
+                await generarFactura(facturaCreada.id, "a4");
+              }
+
+            } 
+            else if (imprimirPos) {
+
+              // 🟢 Solo POS
+              await generarFactura(facturaCreada.id, "pos");
+
+            } 
+            else if (imprimirCarta) {
+
+              // 🟢 Solo CARTA
+              await generarFactura(facturaCreada.id, "a4");
+            }
+
 
           }
           

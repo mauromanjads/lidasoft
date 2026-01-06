@@ -86,3 +86,24 @@ export async function actualizarConfiguracion(data: ConfiguracionImpresionData) 
     throw err;
   }
 }
+
+
+/* ============================
+   OBTENER CONFIGURACION IMPRESION
+============================= */
+export const obtenerConfiguracionImpresion = async ()=> {
+  try {
+    const res = await fetch(`${API_URL}/configuracion-impresion/impresion`, {
+      headers: authHeaders(),
+    });
+
+    if (!res.ok) {
+      throw new Error(`Error al cargar configuración: ${res.status}`);
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error("Error obteniendo configuración:", error);
+    return null;
+  }
+};

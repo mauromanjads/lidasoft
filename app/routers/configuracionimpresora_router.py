@@ -44,3 +44,21 @@ def actualizar_configuracion(config_data: ConfiguracionImpresionUpdate, db: Sess
     db.commit()
     db.refresh(config)
     return config
+
+@router.get("/impresion")
+def obtener_configuracion_impresion(
+    db: Session = Depends(get_empresa_db),    
+):
+    config = (db.query(ConfiguracionImpresion).first())
+
+    if not config:
+        # 🔹 valores por defecto
+        return {
+            "pos": True,
+            "carta": True
+        }
+
+    return {
+        "pos": config.habilitar_pos,
+        "carta": config.habilitar_a4
+    }
