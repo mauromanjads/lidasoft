@@ -1,11 +1,11 @@
 import React from "react";
 import MovimientoFormComponent from "@/components/forms/MovimientoForm";
 
-const FacturasPage: React.FC = () => {
+const MovimientosPage: React.FC = () => {
   return (    
       <MovimientoFormComponent />    
   );
 };
 
-export default FacturasPage;
+export default MovimientosPage;
    
