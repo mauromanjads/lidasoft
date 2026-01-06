@@ -61,3 +61,67 @@ def descontar_inventario(
     )
 
     db.add(movimiento)
+
+
+
+def ingresar_inventario(
+    db: Session,
+    producto_id: int,
+    presentacion_id: int,
+    variante_id: int | None,
+    cantidad: int,
+    documento_tipo: str,
+    tipo_movimiento: str,  # "ENTRADA"
+    documento_id: int,
+    nombre_producto: str,
+    controla_inventario: str,
+    id_sucursal: int,
+    id_usuario: int,
+):
+    if controla_inventario.upper() != "S":
+        return
+
+    # 🔒 Buscar inventario (con bloqueo)
+    query = db.query(Inventario).filter(
+        Inventario.producto_id == producto_id,
+        Inventario.presentacion_id == presentacion_id,
+        Inventario.id_sucursal == id_sucursal
+    )
+
+    if variante_id is None:
+        query = query.filter(Inventario.variante_id.is_(None))
+    else:
+        query = query.filter(Inventario.variante_id == variante_id)
+
+    inventario = query.with_for_update().first()
+
+    # ➕ Si no existe inventario, lo creamos
+    if not inventario:
+        inventario = Inventario(
+            producto_id=producto_id,
+            presentacion_id=presentacion_id,
+            variante_id=variante_id,
+            stock_actual=0,
+            id_sucursal=id_sucursal,
+        )
+        db.add(inventario)
+        db.flush()  # 👈 importante
+
+    # ➕ SUMAR stock
+    inventario.stock_actual += cantidad
+
+    # 🧾 Registrar movimiento
+    movimiento = MovimientoInventario(
+        producto_id=producto_id,
+        presentacion_id=presentacion_id,
+        variante_id=variante_id,
+        cantidad=cantidad,
+        tipo_movimiento=tipo_movimiento,      # "ENTRADA"
+        documento_tipo=documento_tipo,        # COMPRA / NC / AJUSTE
+        documento_id=documento_id,
+        id_sucursal=id_sucursal,
+        id_usuario=id_usuario,
+    )
+
+    db.add(movimiento)
+

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import "@/styles/sidebar.css";
 
 export default function Sidebar() {
   const [open, setOpen] = useState(false);
@@ -44,8 +45,7 @@ export default function Sidebar() {
               {/* ITEM INICIO */}
               <a
                 href="/dashboard"
-                className="block bg-[#0d2f5a]/70 hover:bg-[#103766]/90 
-                p-2 rounded-lg transition-all shadow-md"
+                className="sidebar-item-flex"
               >
                 🏠 Inicio
               </a>
@@ -53,8 +53,7 @@ export default function Sidebar() {
                {/* SUBMENÚ DE LA ORGANIZACIÓN */}
               <div>
                 <div
-                  className="flex justify-between items-center bg-[#0d2f5a]/70 hover:bg-[#103766]/90 
-                  p-2 rounded-lg cursor-pointer transition-all shadow-md"
+                  className="sidebar-item-flex"
                   onClick={() => toggleSubMenu("organizacion")}
                 >
                   🏛️ Organización
@@ -73,22 +72,19 @@ export default function Sidebar() {
                     >
                       <a
                         href="/dashboard/empresas"
-                        className="block bg-[#0d2f5a]/70 hover:bg-[#103766]/90 
-                        p-2 rounded-lg transition-all shadow-md"
+                        className="sidebar-item"
                       >
                         🏢 Empresa
                       </a>
                       <a
                         href="/dashboard/sucursales"
-                        className="block bg-[#0d2f5a]/70 hover:bg-[#103766]/90 
-                        p-2 rounded-lg transition-all shadow-md"
+                        className="sidebar-item"
                       >
                         🏬 Sucursales
                       </a>
                       <a
                         href="/dashboard/configuracionimpresora"
-                        className="block bg-[#0d2f5a]/70 hover:bg-[#103766]/90 
-                        p-2 rounded-lg transition-all shadow-md"
+                        className="sidebar-item"
                       >
                         🖨️ Impresión
                       </a>
@@ -101,8 +97,7 @@ export default function Sidebar() {
                {/* SUBMENÚ VENTAS */}
               <div>
                 <div
-                  className="flex justify-between items-center bg-[#0d2f5a]/70 hover:bg-[#103766]/90 
-                  p-2 rounded-lg cursor-pointer transition-all shadow-md"
+                  className="sidebar-item-flex"
                   onClick={() => toggleSubMenu("ventas")}
                 >
                   🛍️ Ventas
@@ -121,15 +116,13 @@ export default function Sidebar() {
                     >
                       <a
                         href="/dashboard/facturas"
-                        className="block bg-[#0d2f5a]/70 hover:bg-[#103766]/90 
-                        p-2 rounded-lg transition-all shadow-md"
+                        className="sidebar-item"
                       >
                         🛒 Facturar Ventas
                       </a>
                       <a
                         href="/dashboard/listarfacturas"
-                        className="block bg-[#0d2f5a]/70 hover:bg-[#103766]/90 
-                        p-2 rounded-lg transition-all shadow-md"
+                        className="sidebar-item"
                       >
                         📋 Listar facturas
                       </a>
@@ -138,11 +131,62 @@ export default function Sidebar() {
                 </AnimatePresence>
               </div>
 
+                {/* SUBMENÚ INVENTARIO */}
+              <div>
+                <div
+                  className="sidebar-item-flex"
+                  onClick={() => toggleSubMenu("inventario")}
+                >
+                  📦 Inventario
+                  <span className="text-sm">
+                    {subMenuOpen === "inventario" ? "▲" : "▼"}
+                  </span>
+                </div>
+
+                <AnimatePresence>
+                  {subMenuOpen === "inventario" && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      className="pl-4 mt-2 space-y-2"
+                    >
+                      <a
+                        href="/dashboard/invproductos"
+                        className="sidebar-item"
+                      >
+                        🛒 Productos
+                      </a>
+                      <a
+                        href="/dashboard/existencias"
+                        className="sidebar-item"
+                      >
+                        🧮 Existencias
+                      </a>
+
+                       <a
+                        href="/dashboard/movimientos"
+                        className="sidebar-item"
+                      >
+                        📤 Entradas/Salidas
+                      </a>
+
+                      <a
+                        href="/dashboard/kardex"
+                        className="sidebar-item"
+                      >
+                        📊 Kardex
+                      </a>
+
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
               {/* SUBMENÚ TERCEROS */}
               <div>
                 <div
-                  className="flex justify-between items-center bg-[#0d2f5a]/70 hover:bg-[#103766]/90 
-                  p-2 rounded-lg cursor-pointer transition-all shadow-md"
+                  className="sidebar-item-flex"
                   onClick={() => toggleSubMenu("terceros")}
                 >
                   🧑‍🤝‍🧑 Terceros
@@ -161,23 +205,20 @@ export default function Sidebar() {
                     >
                       <a
                         href="/dashboard/terceros/clientes"
-                        className="block bg-[#0d2f5a]/70 hover:bg-[#103766]/90 
-                        p-2 rounded-lg transition-all shadow-md"
+                        className="sidebar-item"
                       >
                         🧑‍💼 Clientes
                       </a>
                       <a
                         href="/dashboard/terceros/proveedores"
-                        className="block bg-[#0d2f5a]/70 hover:bg-[#103766]/90 
-                        p-2 rounded-lg transition-all shadow-md"
+                        className="sidebar-item"
                       >
                         🏪 Proveedores
                       </a>
 
                        <a
                         href="/dashboard/terceros/vendedores"
-                        className="block bg-[#0d2f5a]/70 hover:bg-[#103766]/90 
-                        p-2 rounded-lg transition-all shadow-md"
+                        className="sidebar-item"
                       >
                         🧑‍💼 Vendedores
                       </a>
@@ -190,11 +231,10 @@ export default function Sidebar() {
               {/* SUBMENÚ CATALOGOS */}
               <div>
                 <div
-                  className="flex justify-between items-center bg-[#0d2f5a]/70 hover:bg-[#103766]/90 
-                  p-2 rounded-lg cursor-pointer transition-all shadow-md"
+                  className="sidebar-item-flex"
                   onClick={() => toggleSubMenu("catalogos")}
                 >
-                  📦 Catálogos
+                  📚 Catálogos
                   <span className="text-sm">
                     {subMenuOpen === "catalogos" ? "▲" : "▼"}
                   </span>
@@ -210,24 +250,21 @@ export default function Sidebar() {
                     >
                       <a
                         href="/dashboard/productos"
-                        className="block bg-[#0d2f5a]/70 hover:bg-[#103766]/90 
-                        p-2 rounded-lg transition-all shadow-md"
+                        className="sidebar-item"
                       >
                         🛒 Productos
                       </a>
 
                       <a
                         href="/dashboard/categorias"
-                        className="block bg-[#0d2f5a]/70 hover:bg-[#103766]/90 
-                        p-2 rounded-lg transition-all shadow-md"
+                        className="sidebar-item"
                       >
                         🧩 Categorías
                       </a>
 
                       <a
                         href="/dashboard/unidades"
-                        className="block bg-[#0d2f5a]/70 hover:bg-[#103766]/90 
-                        p-2 rounded-lg transition-all shadow-md"
+                        className="sidebar-item"
                       >
                         ⚖️ Unidades de Medida
                       </a>
@@ -239,8 +276,7 @@ export default function Sidebar() {
                {/* SUBMENÚ DIAN */}
               <div>
                 <div
-                  className="flex justify-between items-center bg-[#0d2f5a]/70 hover:bg-[#103766]/90 
-                  p-2 rounded-lg cursor-pointer transition-all shadow-md"
+                  className="sidebar-item-flex"
                   onClick={() => toggleSubMenu("configdian")}
                 >
                   📘 Dian
@@ -259,16 +295,14 @@ export default function Sidebar() {
                     >
                       <a
                         href="/dashboard/configuracionesdian"
-                        className="block bg-[#0d2f5a]/70 hover:bg-[#103766]/90 
-                        p-2 rounded-lg transition-all shadow-md"
+                        className="sidebar-item"
                       >
                         ⚙️ Configuración
                       </a>
 
                       <a
                         href="/dashboard/resolucionesdian"
-                        className="block bg-[#0d2f5a]/70 hover:bg-[#103766]/90 
-                        p-2 rounded-lg transition-all shadow-md"
+                        className="sidebar-item"
                       >
                         🔤 Resoluciones
                       </a>
@@ -281,8 +315,7 @@ export default function Sidebar() {
                {/* SUBMENÚ ACCESOS */}
               <div>
                 <div
-                  className="flex justify-between items-center bg-[#0d2f5a]/70 hover:bg-[#103766]/90 
-                  p-2 rounded-lg cursor-pointer transition-all shadow-md"
+                  className="sidebar-item-flex"
                   onClick={() => toggleSubMenu("accesos")}
                 >
                   🔑 Accesos
@@ -301,16 +334,14 @@ export default function Sidebar() {
                     >
                       <a
                         href="/dashboard/usuarios"
-                        className="block bg-[#0d2f5a]/70 hover:bg-[#103766]/90 
-                        p-2 rounded-lg transition-all shadow-md"
+                        className="sidebar-item"
                       >
                         🧑‍🤝‍🧑 Usuarios
                       </a>
 
                       <a
                         href="/dashboard/roles"
-                        className="block bg-[#0d2f5a]/70 hover:bg-[#103766]/90 
-                        p-2 rounded-lg transition-all shadow-md"
+                        className="sidebar-item"
                       >
                         🏷️ Roles
                       </a>
