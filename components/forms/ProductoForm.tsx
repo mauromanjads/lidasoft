@@ -263,10 +263,18 @@ export default function ProductoForm({
         if (!pres.tipo_presentacion || pres.tipo_presentacion.trim() === "") {
           throw new Error("Cada presentación debe tener un nombre.");
         }
-
         //if (!pres.precio_venta || pres.precio_venta <= 0) {
         //  throw new Error(`La presentación "${pres.tipo_presentacion}" debe tener un precio de venta válido.`);
        // }
+      }
+
+      for (const variante of variantes) {
+        if (!variante.sku || variante.sku.trim() === "") {
+          throw new Error("La variante debe tener SKU.");
+        }
+        if (!variante.precio_venta || variante.precio_venta <= 0) {
+          throw new Error(`La variante "${variante.sku}" debe tener un precio de venta válido.`);
+        }
       }
 
       if (!productoId) {
@@ -864,6 +872,7 @@ export default function ProductoForm({
                           onChange={(e) =>
                             handleVarianteChange(index, "sku", e.target.value)
                           }
+                          required
                         />
                       </td>
 
