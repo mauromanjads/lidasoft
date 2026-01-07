@@ -1,131 +1,368 @@
 "use client";
 
-import { useState } from "react";
- 
-import { MovimientoaData,actualizarInventario } from "@/lib/api/movimientos";
+import { useEffect, useState } from "react";
+import {
+  MovimientoaData,
+  actualizarInventario,
+} from "@/lib/api/movimientos";
 
+import {
+  obtenerProductosActivos,
+  listarPresentaciones,
+  listarVariantes,
+} from "@/lib/api/productos";
+
+import {
+  Producto,
+  ProductoPresentacion,
+  ProductoVariante,
+} from "@/app/types";
+
+/* ===========================
+   Tipado fila con ID interno
+=========================== */
+type MovimientoFila = MovimientoaData & {
+  row_id: number;
+};
+
+/* ===========================
+   Componente
+=========================== */
 export default function MovimientoInventarioForm() {
-  const [form, setForm] = useState({   
+  /* ===========================
+     Fila base
+  =========================== */
+  const nuevaFila = (): MovimientoFila => ({
+    row_id: Date.now() + Math.random(),
     producto_id: 0,
     presentacion_id: 0,
     variante_id: null,
     cantidad: 1,
-    tipo_movimiento:"",
+    tipo_movimiento: "",
     documento_tipo: "",
-    documento_id: 0,  
+    documento_id: 0,
   });
 
-  const handleChange = (e: any) => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value,
+  /* ===========================
+     Estados
+  =========================== */
+  const [movimientos, setMovimientos] = useState<MovimientoFila[]>([
+    nuevaFila(),
+  ]);
+
+  const [productos, setProductos] = useState<Producto[]>([]);
+
+  const [presentacionesPorFila, setPresentacionesPorFila] = useState<
+    Record<number, ProductoPresentacion[]>
+  >({});
+
+  const [variantesPorFila, setVariantesPorFila] = useState<
+    Record<number, ProductoVariante[]>
+  >({});
+
+  /* ===========================
+     Cargar productos
+  =========================== */
+  useEffect(() => {
+    obtenerProductosActivos()
+      .then(setProductos)
+      .catch(console.error);
+  }, []);
+
+  /* ===========================
+     Helpers
+  =========================== */
+  const handleChange = (
+    rowId: number,
+    field: keyof MovimientoaData,
+    value: any
+  ) => {
+    setMovimientos((prev) =>
+      prev.map((m) =>
+        m.row_id === rowId ? { ...m, [field]: value } : m
+      )
+    );
+  };
+
+  const agregarFila = () => {
+    setMovimientos((prev) => [...prev, nuevaFila()]);
+  };
+
+  const eliminarFila = (rowId: number) => {
+    setMovimientos((prev) => prev.filter((m) => m.row_id !== rowId));
+
+    setPresentacionesPorFila((p) => {
+      const copia = { ...p };
+      delete copia[rowId];
+      return copia;
+    });
+
+    setVariantesPorFila((p) => {
+      const copia = { ...p };
+      delete copia[rowId];
+      return copia;
     });
   };
 
-  const handleSubmit = async (e: any) => {
-    e.preventDefault();
+  /* ===========================
+     Selects dependientes
+  =========================== */
+  const onProductoChange = async (rowId: number, productoId: number) => {
+    setMovimientos((prev) =>
+      prev.map((m) =>
+        m.row_id === rowId
+          ? {
+              ...m,
+              producto_id: productoId,
+              presentacion_id: 0,
+              variante_id: null,
+            }
+          : m
+      )
+    );
 
-    if (form.cantidad <= 0) {
-      alert("La cantidad debe ser mayor a cero");
-      return;
-    }
+    setPresentacionesPorFila((p) => ({ ...p, [rowId]: [] }));
+    setVariantesPorFila((p) => ({ ...p, [rowId]: [] }));
 
-    try{
-        const movimiento: MovimientoaData = {
-          producto_id: form.producto_id,
-          presentacion_id: form.presentacion_id,
-          variante_id: form.variante_id ,
-          cantidad: form.cantidad,
-          tipo_movimiento: form.tipo_movimiento, // ej: "ENTRADA" o "SALIDA"
-          documento_tipo: form.documento_tipo,   // ej: "FACTURA"
-          documento_id: form.documento_id,          
-        };
-      
-      
-        // Llamamos a la API
-        const respuesta = await actualizarInventario(movimiento);      
-        return respuesta
+    if (!productoId) return;
 
-      } catch (error: any) {
-        console.error("Error creando movimiento:", error.message);
-        alert("Ocurrió un error al crear el movimiento: " + error.message);
-      }
-  
+    const [presentaciones, variantes] = await Promise.all([
+      listarPresentaciones(productoId),
+      listarVariantes(productoId),
+    ]);
 
+    setPresentacionesPorFila((p) => ({
+      ...p,
+      [rowId]: presentaciones,
+    }));
+
+    setVariantesPorFila((p) => ({
+      ...p,
+      [rowId]: variantes,
+    }));
   };
 
+  const onPresentacionChange = (rowId: number, presentacionId: number) => {
+    handleChange(rowId, "presentacion_id", presentacionId);
+  };
+
+  /* ===========================
+     Guardar
+  =========================== */
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    try {
+      for (const mov of movimientos) {
+        if (!mov.producto_id || !mov.presentacion_id || mov.cantidad <= 0) {
+          alert("Hay filas con datos incompletos");
+          return;
+        }
+
+        const { row_id, ...payload } = mov;
+        await actualizarInventario(payload);
+      }
+
+      alert("Movimientos registrados correctamente");
+
+      setMovimientos([nuevaFila()]);
+      setPresentacionesPorFila({});
+      setVariantesPorFila({});
+    } catch (error: any) {
+      console.error(error);
+      alert(error.message || "Error al guardar");
+    }
+  };
+
+  /* ===========================
+     Render
+  =========================== */
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 max-w-md">
+    <form onSubmit={handleSubmit} className="space-y-6">
 
-      {/* Tipo Movimiento*/}
-      <select
-        name="tipo_movimiento"
-        value={form.tipo_movimiento}
-        onChange={handleChange}
-        className="w-full border p-2"
-      >
-        <option value="">Seleccione tipo de movimiento</option>
-        <option value="ENTRADA">Entrada</option>
-        <option value="SALIDA">Salida</option>
-      </select>
+        <div className="grid grid-cols-3 gap-4 max-w-3xl">
+        <select
+          value={movimientos[0].tipo_movimiento}
+          onChange={(e) =>
+            setMovimientos(
+              movimientos.map((m) => ({
+                ...m,
+                tipo_movimiento: e.target.value,
+              }))
+            )
+          }
+          className="border p-2"
+          required
+        >
+          <option value="">Tipo movimiento</option>
+          <option value="ENTRADA">Entrada</option>
+          <option value="SALIDA">Salida</option>
+        </select>
+
+        <select
+          value={movimientos[0].documento_tipo}
+          onChange={(e) =>
+            setMovimientos(
+              movimientos.map((m) => ({
+                ...m,
+                documento_tipo: e.target.value,
+              }))
+            )
+          }
+          className="border p-2"
+          required
+        >
+          <option value="">Tipo documento</option>
+          <option value="COMPRA">Compra</option>
+          <option value="AJUSTE">Ajuste</option>
+        </select>
+
+        <input
+          type="number"
+          placeholder="Documento ID"
+          value={movimientos[0].documento_id}
+          onChange={(e) =>
+            setMovimientos(
+              movimientos.map((m) => ({
+                ...m,
+                documento_id: Number(e.target.value),
+              }))
+            )
+          }
+          className="border p-2"
+        />
+      </div>
 
 
-       {/* Documento tipoo*/}
-      <select
-        name="documento_tipo"
-        value={form.documento_tipo}
-        onChange={handleChange}
-        className="w-full border p-2"
-      >
-        <option value="">Seleccione tipo de documento</option>
-        <option value="COMPRA">Compra</option>
-        <option value="AJUSTE">Ajuste</option>
-      </select>
 
-      {/* Producto */}
-      <input
-        name="producto_id"
-        placeholder="Producto ID"
-        value={form.producto_id}
-        onChange={handleChange}
-        className="w-full border p-2"
-      />
+      {/* Tabla */}
+      <table className="w-full border border-gray-300">
+        <thead className="bg-gray-100">
+          <tr>
+            <th className="p-2">Producto</th>
+            <th className="p-2">Presentación</th>
+            <th className="p-2">Variante</th>
+            <th className="p-2">Cantidad</th>
+            <th></th>
+          </tr>
+        </thead>
 
-      {/* Presentación */}
-      <input
-        name="presentacion_id"
-        placeholder="Presentación ID"
-        value={form.presentacion_id}
-        onChange={handleChange}
-        className="w-full border p-2"
-      />
+        <tbody>
+          {movimientos.map((mov) => (
+            <tr key={mov.row_id} className="border-t">
+              {/* Producto */}
+              <td className="p-1">
+                <select
+                  value={mov.producto_id}
+                  onChange={(e) =>
+                    onProductoChange(mov.row_id, Number(e.target.value))
+                  }
+                  className="border p-1 w-full"
+                >
+                  <option value={0}>Seleccione</option>
+                  {productos.map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.nombre}
+                    </option>
+                  ))}
+                </select>
+              </td>
 
-      {/* Variante */}
-      <input
-        name="variante_id"
-        placeholder="Variante (opcional)"
-        value={form.variante_id ??"" }
-        onChange={handleChange}
-        className="w-full border p-2"
-      />
+              {/* Presentación */}
+              <td className="p-1">
+                <select
+                  value={mov.presentacion_id}
+                  onChange={(e) =>
+                    onPresentacionChange(
+                      mov.row_id,
+                      Number(e.target.value)
+                    )
+                  }
+                  className="border p-1 w-full"
+                  disabled={!presentacionesPorFila[mov.row_id]}
+                >
+                  <option value={0}>Seleccione</option>
+                  {(presentacionesPorFila[mov.row_id] || []).map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.tipo_presentacion}
+                    </option>
+                  ))}
+                </select>
+              </td>
 
-      {/* Cantidad */}
-      <input
-        type="number"
-        name="cantidad"
-        min={1}
-        value={form.cantidad}
-        onChange={handleChange}
-        className="w-full border p-2"
-      />
+              {/* Variante */}
+              <td className="p-1">
+                <select
+                  value={mov.variante_id ?? ""}
+                  onChange={(e) =>
+                    handleChange(
+                      mov.row_id,
+                      "variante_id",
+                      e.target.value ? Number(e.target.value) : null
+                    )
+                  }
+                  className="border p-1 w-full"
+                  disabled={!variantesPorFila[mov.row_id]}
+                >
+                  <option value="">Sin variante</option>
+                  {(variantesPorFila[mov.row_id] || []).map((v) => (
+                    <option key={v.id} value={v.id}>
+                      {v.sku}
+                    </option>
+                  ))}
+                </select>
+              </td>
 
-     
-      <button
-        type="submit"
-        className="bg-blue-600 text-white px-4 py-2 rounded"
-      >
-        Guardar movimiento
-      </button>
+              {/* Cantidad */}
+              <td className="p-1">
+                <input
+                  type="number"
+                  min={1}
+                  value={mov.cantidad}
+                  onChange={(e) =>
+                    handleChange(
+                      mov.row_id,
+                      "cantidad",
+                      Number(e.target.value)
+                    )
+                  }
+                  className="border p-1 w-full"
+                />
+              </td>
+
+              <td className="text-center">
+                {movimientos.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => eliminarFila(mov.row_id)}
+                    className="text-red-600 font-bold"
+                  >
+                    ✕
+                  </button>
+                )}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      {/* Acciones */}
+      <div className="flex gap-3">
+        <button
+          type="button"
+          onClick={agregarFila}
+          className="bg-gray-600 text-white px-4 py-2 rounded"
+        >
+          + Agregar producto
+        </button>
+
+        <button
+          type="submit"
+          className="bg-blue-600 text-white px-6 py-2 rounded"
+        >
+          Guardar movimientos
+        </button>
+      </div>
     </form>
   );
 }
