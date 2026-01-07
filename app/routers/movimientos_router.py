@@ -8,7 +8,7 @@ from datetime import datetime,timezone
 from fastapi import Request
 from sqlalchemy import desc
 
-from app.models.movimientos import MovimientoInventario
+from app.models.productos import Producto
 from app.schemas.movimientos_schema import MovimientoInventarioBase, MovimientoInventarioRead
 
 from app.dependencias.empresa import get_empresa_db
@@ -33,55 +33,45 @@ def crear_movimiento(
     movimiento_data: MovimientoInventarioBase,
     db: Session = Depends(get_empresa_db)
 ):
-    #try:
-       # with db.begin():  # 🔐 TRANSACCIÓN ATÓMICA
+    try:
+        with db.begin():  # 🔐 TRANSACCIÓN ATÓMICA
          
-            # 5️⃣ Crear factura
-           # factura = Factura(
-            #    tercero_id=factura_data.tercero_id,
-             #   vendedor_id=factura_data.vendedor_id,
-             #   resolucion_id=resolucion.id,
-             #   prefijo=resolucion.prefijo,
-             #   consecutivo=nuevo_consecutivo,
-             #   numero_completo=numero_completo,
-             #   forma_pago_id=factura_data.forma_pago_id,
-             #   medio_pago_id=factura_data.medio_pago_id,
-             #   subtotal=subtotal_total,
-             #   descuento_total=descuento_total,
-             #   iva_total=iva_total,
-             #   total=total_total,
-             #   notas=factura_data.notas,
-             #   usuario_creacion=request.cookies.get("usuario"),
-             #   fecha_creacion=datetime.now(timezone.utc),
-             #   id_sucursal=factura_data.id_sucursal,
-             #   id_usuario=factura_data.id_usuario,
-             #   detalles=detalles_model
-            #)
 
-            #db.add(factura)
+        # 🔍 Buscar producto
+            producto = (
+                db.query(Producto)
+                .filter(Producto.id == movimiento_data.producto_id)
+                .first()
+            )
 
-            #db.flush()
-            #for det in factura.detalles:
-            #    descontar_inventario( 
-            #        db=db,                 
-            #        producto_id=det.producto_id,
-            #        presentacion_id=det.presentacion_id,
-            #        variante_id=det.variante_id,
-            #        cantidad=det.cantidad,
-            #        documento_tipo="FACTURA",
-            #        tipo_movimiento="SALIDA",
-            #        documento_id=factura.id,
-            #        nombre_producto=det.descripcion,
-            #        controla_inventario=det.producto.control_inventario,
-            #        id_sucursal=factura.id_sucursal,
-            #        id_usuario=factura.id_usuario,
-            #    )
+            if not producto:
+                raise HTTPException(status_code=404, detail="Producto no existe")
+
+            controla_inventario = producto.control_inventario
+            
+        
+            movimiento = actualizar_inventario( 
+                    db=db,                 
+                    producto_id=movimiento_data.producto_id,
+                    presentacion_id=movimiento_data.presentacion_id,
+                    variante_id=movimiento_data.variante_id,
+                    cantidad=movimiento_data.cantidad,
+                    documento_tipo=movimiento_data.documento_tipo,
+                    tipo_movimiento=movimiento_data.tipo_movimiento,
+                    documento_id=0,
+                    nombre_producto="",
+                    controla_inventario=controla_inventario,
+                    id_sucursal=movimiento_data.id_sucursal,
+                    id_usuario=movimiento_data.id_usuario,
+             )
+
+           
 
 
         # 🔁 commit automático si todo salió bien
-        #db.refresh(factura)
-        #return factura
+        db.refresh(movimiento)
+        return movimiento
 
-    #except Exception as e:        
-     #   raise HTTPException(status_code=500, detail=str(e))
-    print
+    except Exception as e:        
+        raise HTTPException(status_code=500, detail=str(e))
+    

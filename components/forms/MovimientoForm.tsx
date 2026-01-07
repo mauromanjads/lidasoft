@@ -1,15 +1,18 @@
 "use client";
 
 import { useState } from "react";
+ 
+import { MovimientoaData,actualizarInventario } from "@/lib/api/movimientos";
 
 export default function MovimientoInventarioForm() {
-  const [form, setForm] = useState({
-    tipo_movimiento: "ENTRADA",
-    producto_id: "",
-    presentacion_id: "",
-    variante_id: "",
+  const [form, setForm] = useState({   
+    producto_id: 0,
+    presentacion_id: 0,
+    variante_id: null,
     cantidad: 1,
-    observacion: "",
+    tipo_movimiento:"",
+    documento_tipo: "",
+    documento_id: 0,  
   });
 
   const handleChange = (e: any) => {
@@ -27,30 +30,56 @@ export default function MovimientoInventarioForm() {
       return;
     }
 
-    await fetch("/api/inventario/movimiento", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        ...form,
-        variante_id: form.variante_id || null,
-      }),
-    });
+    try{
+        const movimiento: MovimientoaData = {
+          producto_id: form.producto_id,
+          presentacion_id: form.presentacion_id,
+          variante_id: form.variante_id ,
+          cantidad: form.cantidad,
+          tipo_movimiento: form.tipo_movimiento, // ej: "ENTRADA" o "SALIDA"
+          documento_tipo: form.documento_tipo,   // ej: "FACTURA"
+          documento_id: form.documento_id,          
+        };
+      
+      
+        // Llamamos a la API
+        const respuesta = await actualizarInventario(movimiento);      
+        return respuesta
 
-    alert("Movimiento registrado");
+      } catch (error: any) {
+        console.error("Error creando movimiento:", error.message);
+        alert("Ocurrió un error al crear el movimiento: " + error.message);
+      }
+  
+
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4 max-w-md">
 
-      {/* Tipo */}
+      {/* Tipo Movimiento*/}
       <select
         name="tipo_movimiento"
         value={form.tipo_movimiento}
         onChange={handleChange}
         className="w-full border p-2"
       >
+        <option value="">Seleccione tipo de movimiento</option>
         <option value="ENTRADA">Entrada</option>
         <option value="SALIDA">Salida</option>
+      </select>
+
+
+       {/* Documento tipoo*/}
+      <select
+        name="documento_tipo"
+        value={form.documento_tipo}
+        onChange={handleChange}
+        className="w-full border p-2"
+      >
+        <option value="">Seleccione tipo de documento</option>
+        <option value="COMPRA">Compra</option>
+        <option value="AJUSTE">Ajuste</option>
       </select>
 
       {/* Producto */}
@@ -75,7 +104,7 @@ export default function MovimientoInventarioForm() {
       <input
         name="variante_id"
         placeholder="Variante (opcional)"
-        value={form.variante_id}
+        value={form.variante_id ??"" }
         onChange={handleChange}
         className="w-full border p-2"
       />
@@ -90,15 +119,7 @@ export default function MovimientoInventarioForm() {
         className="w-full border p-2"
       />
 
-      {/* Observación */}
-      <textarea
-        name="observacion"
-        placeholder="Observación"
-        value={form.observacion}
-        onChange={handleChange}
-        className="w-full border p-2"
-      />
-
+     
       <button
         type="submit"
         className="bg-blue-600 text-white px-4 py-2 rounded"

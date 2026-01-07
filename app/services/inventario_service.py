@@ -82,3 +82,5 @@ def actualizar_inventario(
         id_usuario=id_usuario,
     )
     db.add(movimiento)
+    db.flush()
+    return movimiento
