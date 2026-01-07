@@ -4,50 +4,72 @@ from app.models.movimientos import MovimientoInventario
 
 
 class InventarioError(Exception):
-    def __init__(self, mensaje: str):
-        super().__init__(mensaje)
+    pass
 
 
-def descontar_inventario(
+def actualizar_inventario(
     db: Session,
     producto_id: int,
     presentacion_id: int,
     variante_id: int | None,
     cantidad: int,
     documento_tipo: str,
-    tipo_movimiento: str,
+    tipo_movimiento: str,  # "ENTRADA" o "SALIDA"
     documento_id: int,
-    nombre_producto:str,
-    controla_inventario:str,
+    nombre_producto: str,
+    controla_inventario: str,
     id_sucursal: int,
     id_usuario: int,
 ):
-    if controla_inventario.upper() != "S": return
+    """Función genérica para ingresar o descontar inventario según tipo_movimiento."""
     
-    inventario = (
-        db.query(Inventario)
-        .filter(
-            Inventario.producto_id == producto_id,
-            Inventario.presentacion_id == presentacion_id,
-            Inventario.variante_id == variante_id,
-            Inventario.id_sucursal == id_sucursal
-        )
-        .with_for_update()
-        .first()
+    if controla_inventario.upper() != "S":
+        return
+
+    # 🔒 Buscar inventario con bloqueo
+    query = db.query(Inventario).filter(
+        Inventario.producto_id == producto_id,
+        Inventario.presentacion_id == presentacion_id,
+        Inventario.id_sucursal == id_sucursal
     )
+    if variante_id is None:
+        query = query.filter(Inventario.variante_id.is_(None))
+    else:
+        query = query.filter(Inventario.variante_id == variante_id)
 
+    inventario = query.with_for_update().first()
+
+    # ➕ Si no existe inventario y es ENTRADA, creamos
     if not inventario:
-        raise InventarioError(
-            f"No existe inventario para el producto {nombre_producto}"
+        if tipo_movimiento == "SALIDA":
+            raise InventarioError(
+                f"No existe inventario para el producto {nombre_producto}"
+            )
+        inventario = Inventario(
+            producto_id=producto_id,
+            presentacion_id=presentacion_id,
+            variante_id=variante_id,
+            stock_actual=0,
+            id_sucursal=id_sucursal,
         )
+        db.add(inventario)
+        db.flush()
 
-    if inventario.stock_actual < cantidad:
+    # ➖ Validar stock si es SALIDA
+    if tipo_movimiento == "SALIDA" and inventario.stock_actual < cantidad:
         raise InventarioError(
             f"Stock insuficiente para el producto {nombre_producto}"
         )
 
-    inventario.stock_actual -= cantidad
+    # 🔄 Actualizar stock
+    if tipo_movimiento == "ENTRADA":
+        inventario.stock_actual += cantidad
+    elif tipo_movimiento == "SALIDA":
+        inventario.stock_actual -= cantidad
+    else:
+        raise InventarioError(f"Tipo de movimiento inválido: {tipo_movimiento}")
 
+    # 🧾 Registrar movimiento
     movimiento = MovimientoInventario(
         producto_id=producto_id,
         presentacion_id=presentacion_id,
@@ -59,69 +81,4 @@ def descontar_inventario(
         id_sucursal=id_sucursal,
         id_usuario=id_usuario,
     )
-
     db.add(movimiento)
-
-
-
-def ingresar_inventario(
-    db: Session,
-    producto_id: int,
-    presentacion_id: int,
-    variante_id: int | None,
-    cantidad: int,
-    documento_tipo: str,
-    tipo_movimiento: str,  # "ENTRADA"
-    documento_id: int,
-    nombre_producto: str,
-    controla_inventario: str,
-    id_sucursal: int,
-    id_usuario: int,
-):
-    if controla_inventario.upper() != "S":
-        return
-
-    # 🔒 Buscar inventario (con bloqueo)
-    query = db.query(Inventario).filter(
-        Inventario.producto_id == producto_id,
-        Inventario.presentacion_id == presentacion_id,
-        Inventario.id_sucursal == id_sucursal
-    )
-
-    if variante_id is None:
-        query = query.filter(Inventario.variante_id.is_(None))
-    else:
-        query = query.filter(Inventario.variante_id == variante_id)
-
-    inventario = query.with_for_update().first()
-
-    # ➕ Si no existe inventario, lo creamos
-    if not inventario:
-        inventario = Inventario(
-            producto_id=producto_id,
-            presentacion_id=presentacion_id,
-            variante_id=variante_id,
-            stock_actual=0,
-            id_sucursal=id_sucursal,
-        )
-        db.add(inventario)
-        db.flush()  # 👈 importante
-
-    # ➕ SUMAR stock
-    inventario.stock_actual += cantidad
-
-    # 🧾 Registrar movimiento
-    movimiento = MovimientoInventario(
-        producto_id=producto_id,
-        presentacion_id=presentacion_id,
-        variante_id=variante_id,
-        cantidad=cantidad,
-        tipo_movimiento=tipo_movimiento,      # "ENTRADA"
-        documento_tipo=documento_tipo,        # COMPRA / NC / AJUSTE
-        documento_id=documento_id,
-        id_sucursal=id_sucursal,
-        id_usuario=id_usuario,
-    )
-
-    db.add(movimiento)
-

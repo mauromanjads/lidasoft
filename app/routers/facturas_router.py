@@ -22,7 +22,7 @@ from app.dependencias.empresa import get_empresa_db
 from app.database_master import get_db_master
 
 from app.services.inventario_service import (
-    descontar_inventario,
+    actualizar_inventario,
     InventarioError
 )
 
@@ -120,7 +120,7 @@ def crear_factura(
 
             db.flush()
             for det in factura.detalles:
-                descontar_inventario( 
+                actualizar_inventario( 
                     db=db,                 
                     producto_id=det.producto_id,
                     presentacion_id=det.presentacion_id,
