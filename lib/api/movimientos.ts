@@ -1,6 +1,7 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
-import { authHeaders } from "@/lib/utils";
 
+import { authHeaders } from "@/lib/utils";
+import Swal from "sweetalert2";
 
 /* ============================================
    INTERFACES
@@ -48,13 +49,33 @@ export async function actualizarInventario(movimientos: MovimientoLoteData) {
     }
 
     const respuesta = await response.json();
-    console.log("Respuesta del servidor:", respuesta);
-
-     alert("SUPER, LO LOGRASTE:" + respuesta);
+    
+     Swal.fire({
+           title: "¡Listo!",
+           text: "Movimiento Registrado correctamente",
+           icon: "success",
+           confirmButtonText: "Aceptar",
+           timer: 4000,
+           timerProgressBar: true,
+         });
 
     return respuesta; // opcional, si quieres usar el resultado
   } catch (error: any) {
     console.error("Error registrando movimientos:", error.message);
-    alert("Ocurrió un error: " + error.message);
+    
+    const message =
+          error instanceof Error
+            ? error.message
+            : "Ocurrió un error inesperado";
+    
+        Swal.fire({
+          title: "Oops...!",
+          text: message,
+          icon: "error",
+          confirmButtonText: "Entendido",
+          timer: 4000,
+          timerProgressBar: true,
+        });
+
   }
 }
