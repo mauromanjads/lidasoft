@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 from typing import Optional
 from datetime import datetime
+from typing import List
 
 class MovimientoInventarioBase(BaseModel):
     producto_id: int
@@ -20,6 +21,10 @@ class MovimientoInventarioRead(MovimientoInventarioBase):
     id: int
     fecha: datetime
 
+class MovimientoInventarioLote(BaseModel):
+    movimientos: List[MovimientoInventarioBase]     
+
 model_config = {
         "from_attributes": True
     }
+

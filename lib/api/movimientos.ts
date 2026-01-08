@@ -16,23 +16,24 @@ export interface MovimientoaData {
     documento_id: number
 }
 
+export type MovimientoLoteData = MovimientoaData[];
 
 
-
-export async function actualizarInventario(movimiento: MovimientoaData) {
+export async function actualizarInventario(movimientos: MovimientoLoteData) {
   try {
     // Mostramos lo que vamos a enviar para depuración
-    console.log("Enviando al servidor:", JSON.stringify(movimiento, null, 2));
+    console.log("Enviando al servidor:", JSON.stringify(movimientos, null, 2));
     
       // Capturar usuario y sucursal del localStorage
     const user = JSON.parse(localStorage.getItem("usuario") || "{}");
     const sucursal = JSON.parse(localStorage.getItem("sucursal") || "{}");
 
-      // Agregar id_usuario e id_sucursal al body
     const bodyData = {
-      ...movimiento,
-      id_usuario: user.id_usuario,
-      id_sucursal: sucursal.id,
+      movimientos: movimientos.map(m => ({
+        ...m,
+        id_usuario: user.id_usuario,
+        id_sucursal: sucursal.id,
+      })),
     };
 
 
@@ -49,10 +50,11 @@ export async function actualizarInventario(movimiento: MovimientoaData) {
     const respuesta = await response.json();
     console.log("Respuesta del servidor:", respuesta);
 
-    alert("Movimiento registrado");
+     alert("SUPER, LO LOGRASTE:" + respuesta);
+
     return respuesta; // opcional, si quieres usar el resultado
   } catch (error: any) {
-    console.error("Error registrando movimiento:", error.message);
+    console.error("Error registrando movimientos:", error.message);
     alert("Ocurrió un error: " + error.message);
   }
 }

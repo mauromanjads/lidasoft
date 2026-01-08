@@ -152,18 +152,31 @@ export default function MovimientoInventarioForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    if (
+      movimientos.some(
+        (m) =>
+          !m.producto_id ||
+          !m.presentacion_id ||
+          m.cantidad <= 0
+      )
+    ) {
+      alert("Hay filas con datos incompletos");
+      return;
+    }
+    const { tipo_movimiento, documento_tipo, documento_id } = movimientos[0];
+
+    const payload = movimientos.map(({ row_id, ...rest }) => ({
+      ...rest,
+       tipo_movimiento: tipo_movimiento,
+       documento_tipo: documento_tipo,
+       documento_id: documento_id
+    }));
+
+
     try {
-      for (const mov of movimientos) {
-        if (!mov.producto_id || !mov.presentacion_id || mov.cantidad <= 0) {
-          alert("Hay filas con datos incompletos");
-          return;
-        }
-
-        const { row_id, ...payload } = mov;
-        await actualizarInventario(payload);
-      }
-
-      alert("Movimientos registrados correctamente");
+     const inv = await actualizarInventario(payload);
+      
+      if (inv === undefined) return;
 
       setMovimientos([nuevaFila()]);
       setPresentacionesPorFila({});
@@ -172,6 +185,7 @@ export default function MovimientoInventarioForm() {
       console.error(error);
       alert(error.message || "Error al guardar");
     }
+
   };
 
   /* ===========================

@@ -8,8 +8,9 @@ from datetime import datetime,timezone
 from fastapi import Request
 from sqlalchemy import desc
 
+
 from app.models.productos import Producto
-from app.schemas.movimientos_schema import MovimientoInventarioBase, MovimientoInventarioRead
+from app.schemas.movimientos_schema import MovimientoInventarioLote, MovimientoInventarioRead
 
 from app.dependencias.empresa import get_empresa_db
 
@@ -25,53 +26,57 @@ router = APIRouter(
 
 
 # -----------------------
-# Crear movimiento 
+# Crear movimientos
 # -----------------------
-@router.post("/", response_model=MovimientoInventarioRead)
-def crear_movimiento(
+@router.post("/", response_model=List[MovimientoInventarioRead])
+def crear_movimientos_lote(
     request: Request,
-    movimiento_data: MovimientoInventarioBase,
+    data: MovimientoInventarioLote,
     db: Session = Depends(get_empresa_db)
 ):
     try:
+        movimientos_creados = []
+
         with db.begin():  # 🔐 TRANSACCIÓN ATÓMICA
-         
 
-        # 🔍 Buscar producto
-            producto = (
-                db.query(Producto)
-                .filter(Producto.id == movimiento_data.producto_id)
-                .first()
-            )
+            for mov in data.movimientos:
 
-            if not producto:
-                raise HTTPException(status_code=404, detail="Producto no existe")
+                # 🔍 Buscar producto
+                producto = (
+                    db.query(Producto)
+                    .filter(Producto.id == mov.producto_id)
+                    .first()
+                )
 
-            controla_inventario = producto.control_inventario
-            
-        
-            movimiento = actualizar_inventario( 
-                    db=db,                 
-                    producto_id=movimiento_data.producto_id,
-                    presentacion_id=movimiento_data.presentacion_id,
-                    variante_id=movimiento_data.variante_id,
-                    cantidad=movimiento_data.cantidad,
-                    documento_tipo=movimiento_data.documento_tipo,
-                    tipo_movimiento=movimiento_data.tipo_movimiento,
-                    documento_id=0,
+                if not producto:
+                    raise HTTPException(
+                        status_code=404,
+                        detail=f"Producto {mov.producto_id} no existe"
+                    )
+
+                controla_inventario = producto.control_inventario
+
+                movimiento = actualizar_inventario(
+                    db=db,
+                    producto_id=mov.producto_id,
+                    presentacion_id=mov.presentacion_id,
+                    variante_id=mov.variante_id,
+                    cantidad=mov.cantidad,
+                    documento_tipo=mov.documento_tipo,
+                    tipo_movimiento=mov.tipo_movimiento,
+                    documento_id=mov.documento_id,
                     nombre_producto="",
                     controla_inventario=controla_inventario,
-                    id_sucursal=movimiento_data.id_sucursal,
-                    id_usuario=movimiento_data.id_usuario,
-             )
+                    id_sucursal=mov.id_sucursal,
+                    id_usuario=mov.id_usuario,
+                )
 
-           
+                movimientos_creados.append(movimiento)
 
 
-        # 🔁 commit automático si todo salió bien
-        db.refresh(movimiento)
-        return movimiento
+        return movimientos_creados
 
-    except Exception as e:        
+    except HTTPException:
+        raise
+    except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-    
