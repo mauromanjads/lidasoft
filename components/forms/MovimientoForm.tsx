@@ -279,11 +279,11 @@ export default function MovimientoInventarioForm() {
         <table className="w-full border-collapse">
         <thead className="bg-gradient-to-r from-[#1d4e89] to-blue-800 text-white">
             <tr>
-              <th className="border p-2 sticky top-0 z-20 bg-[#1d4e89] min-w-[350px]">Producto</th>
-              <th className="border p-2 sticky top-0 z-20 bg-[#1d4e89]">Presentación</th>
-              <th className="border p-2 sticky top-0 z-20 bg-[#1d4e89]">Variante</th>
-              <th className="border p-2 sticky top-0 z-20 bg-[#1d4e89]">Cantidad</th>
-              <th></th>
+              <th className="border p-2 sticky top-0  bg-[#1d4e89] min-w-[350px]">Producto</th>
+              <th className="border p-2 sticky top-0  bg-[#1d4e89]">Presentación</th>
+              <th className="border p-2 sticky top-0  bg-[#1d4e89]">Variante</th>
+              <th className="border p-2 sticky top-0  bg-[#1d4e89]">Cantidad</th>
+              <th className="border p-2 sticky top-0  bg-[#1d4e89]"></th>
             </tr>
           </thead>
 
