@@ -18,6 +18,8 @@ import {
   ProductoVariante,
 } from "@/app/types";
 
+import SelectSearch from "@/components/ui/selectSearch";
+
 /* ===========================
    Tipado fila con ID interno
 =========================== */
@@ -50,7 +52,8 @@ export default function MovimientoInventarioForm() {
     nuevaFila(),
   ]);
 
-  const [productos, setProductos] = useState<Producto[]>([]);
+  const [productos, setProductos] = useState<Producto[]>([]);  
+  
 
   const [presentacionesPorFila, setPresentacionesPorFila] = useState<
     Record<number, ProductoPresentacion[]>
@@ -266,21 +269,23 @@ export default function MovimientoInventarioForm() {
             <tr key={mov.row_id} className="border-t">
               {/* Producto */}
               <td className="p-1">
-                <select
-                  value={mov.producto_id}
-                  onChange={(e) =>
-                    onProductoChange(mov.row_id, Number(e.target.value))
+                
+                <SelectSearch
+                  items={productos
+                    .filter((p): p is Producto & { id: number } => p.id !== undefined)
+                    .map(p => ({
+                      id: p.id,
+                      nombre: p.nombre,
+                    }))
                   }
-                  className="border p-1 w-full"
-                >
-                  <option value={0}>Seleccione</option>
-                  {productos.map((p) => (
-                    <option key={p.id} value={p.id}>
-                      {p.nombre}
-                    </option>
-                  ))}
-                </select>
-              </td>
+                  value={mov.producto_id || null}
+                  onChange={(value) => {
+                    onProductoChange(mov.row_id, Number(value));
+                  }}
+                  className="w-full border rounded p-2"
+                />
+
+                </td>
 
               {/* Presentación */}
               <td className="p-1">
