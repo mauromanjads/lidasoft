@@ -1,5 +1,5 @@
 "use client";
-
+import Swal from "sweetalert2";
 import { useEffect, useState } from "react";
 import {
   MovimientoaData,
@@ -19,6 +19,7 @@ import {
 } from "@/app/types";
 
 import SelectSearch from "@/components/ui/selectSearch";
+import Button from "@/components/ui/button";
 
 /* ===========================
    Tipado fila con ID interno
@@ -162,8 +163,18 @@ export default function MovimientoInventarioForm() {
           !m.presentacion_id ||
           m.cantidad <= 0
       )
-    ) {
-      alert("Hay filas con datos incompletos");
+    ) {      
+
+       Swal.fire({
+          title: "Oops...!",
+          text: "Hay filas con datos incompletos",
+          icon: "error",
+          confirmButtonText: "Entendido",
+          timer: 4000,
+          timerProgressBar: true,
+        });
+
+
       return;
     }
     const { tipo_movimiento, documento_tipo, documento_id } = movimientos[0];
@@ -186,7 +197,20 @@ export default function MovimientoInventarioForm() {
       setVariantesPorFila({});
     } catch (error: any) {
       console.error(error);
-      alert(error.message || "Error al guardar");
+      
+      const mensaje = (error.message || "Error al guardar");
+
+      Swal.fire({
+          title: "Oops...!",
+          text: mensaje,
+          icon: "error",
+          confirmButtonText: "Entendido",
+          timer: 4000,
+          timerProgressBar: true,
+        });
+
+      
+
     }
 
   };
@@ -250,137 +274,139 @@ export default function MovimientoInventarioForm() {
         />
       </div>
 
-
-
       {/* Tabla */}
-      <table className="w-full border border-gray-300">
-        <thead className="bg-gray-100">
-          <tr>
-            <th className="p-2">Producto</th>
-            <th className="p-2">Presentación</th>
-            <th className="p-2">Variante</th>
-            <th className="p-2">Cantidad</th>
-            <th></th>
-          </tr>
-        </thead>
+      <div className="flex-1 overflow-y-auto max-h-[400px] border rounded-xl">
+        <table className="w-full border-collapse">
+        <thead className="bg-gradient-to-r from-[#1d4e89] to-blue-800 text-white">
+            <tr>
+              <th className="border p-2 sticky top-0 z-20 bg-[#1d4e89] min-w-[350px]">Producto</th>
+              <th className="border p-2 sticky top-0 z-20 bg-[#1d4e89]">Presentación</th>
+              <th className="border p-2 sticky top-0 z-20 bg-[#1d4e89]">Variante</th>
+              <th className="border p-2 sticky top-0 z-20 bg-[#1d4e89]">Cantidad</th>
+              <th></th>
+            </tr>
+          </thead>
 
-        <tbody>
-          {movimientos.map((mov) => (
-            <tr key={mov.row_id} className="border-t">
-              {/* Producto */}
-              <td className="p-1">
-                
-                <SelectSearch
-                  items={productos
-                    .filter((p): p is Producto & { id: number } => p.id !== undefined)
-                    .map(p => ({
-                      id: p.id,
-                      nombre: p.nombre,
-                    }))
-                  }
-                  value={mov.producto_id || null}
-                  onChange={(value) => {
-                    onProductoChange(mov.row_id, Number(value));
-                  }}
-                  className="w-full border rounded p-2"
-                />
+          <tbody>
+            {movimientos.map((mov) => (
+              <tr key={mov.row_id} className="border-t">
+                {/* Producto */}
+                <td className="p-1">
+                  
+                  <SelectSearch
+                    items={productos
+                      .filter((p): p is Producto & { id: number } => p.id !== undefined)
+                      .map(p => ({
+                        id: p.id,
+                        nombre: p.nombre,
+                      }))
+                    }
+                    value={mov.producto_id || null}
+                    onChange={(value) => {
+                      onProductoChange(mov.row_id, Number(value));
+                    }}
+                    className="w-full border rounded p-2"
+                  />
 
+                  </td>
+
+                {/* Presentación */}
+                <td className="p-1">
+                  <select
+                    value={mov.presentacion_id}
+                    onChange={(e) =>
+                      onPresentacionChange(
+                        mov.row_id,
+                        Number(e.target.value)
+                      )
+                    }
+                    className="border p-1 w-full"
+                    disabled={!presentacionesPorFila[mov.row_id]}
+                  >
+                    <option value={0}>Seleccione</option>
+                    {(presentacionesPorFila[mov.row_id] || []).map((p) => (
+                      <option key={p.id} value={p.id}>
+                        {p.tipo_presentacion}
+                      </option>
+                    ))}
+                  </select>
                 </td>
 
-              {/* Presentación */}
-              <td className="p-1">
-                <select
-                  value={mov.presentacion_id}
-                  onChange={(e) =>
-                    onPresentacionChange(
-                      mov.row_id,
-                      Number(e.target.value)
-                    )
-                  }
-                  className="border p-1 w-full"
-                  disabled={!presentacionesPorFila[mov.row_id]}
-                >
-                  <option value={0}>Seleccione</option>
-                  {(presentacionesPorFila[mov.row_id] || []).map((p) => (
-                    <option key={p.id} value={p.id}>
-                      {p.tipo_presentacion}
-                    </option>
-                  ))}
-                </select>
-              </td>
-
-              {/* Variante */}
-              <td className="p-1">
-                <select
-                  value={mov.variante_id ?? ""}
-                  onChange={(e) =>
-                    handleChange(
-                      mov.row_id,
-                      "variante_id",
-                      e.target.value ? Number(e.target.value) : null
-                    )
-                  }
-                  className="border p-1 w-full"
-                  disabled={!variantesPorFila[mov.row_id]}
-                >
-                  <option value="">Sin variante</option>
-                  {(variantesPorFila[mov.row_id] || []).map((v) => (
-                    <option key={v.id} value={v.id}>
-                      {v.sku}
-                    </option>
-                  ))}
-                </select>
-              </td>
-
-              {/* Cantidad */}
-              <td className="p-1">
-                <input
-                  type="number"
-                  min={1}
-                  value={mov.cantidad}
-                  onChange={(e) =>
-                    handleChange(
-                      mov.row_id,
-                      "cantidad",
-                      Number(e.target.value)
-                    )
-                  }
-                  className="border p-1 w-full"
-                />
-              </td>
-
-              <td className="text-center">
-                {movimientos.length > 1 && (
-                  <button
-                    type="button"
-                    onClick={() => eliminarFila(mov.row_id)}
-                    className="text-red-600 font-bold"
+                {/* Variante */}
+                <td className="p-1">
+                  <select
+                    value={mov.variante_id ?? ""}
+                    onChange={(e) =>
+                      handleChange(
+                        mov.row_id,
+                        "variante_id",
+                        e.target.value ? Number(e.target.value) : null
+                      )
+                    }
+                    className="border p-1 w-full"
+                    disabled={!variantesPorFila[mov.row_id]}
                   >
-                    ✕
-                  </button>
-                )}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+                    <option value="">Sin variante</option>
+                    {(variantesPorFila[mov.row_id] || []).map((v) => (
+                      <option key={v.id} value={v.id}>
+                        {v.sku}
+                      </option>
+                    ))}
+                  </select>
+                </td>
 
+                {/* Cantidad */}
+                <td className="p-1">
+                  <input
+                    type="number"
+                    min={1}
+                    value={mov.cantidad}
+                    onChange={(e) =>
+                      handleChange(
+                        mov.row_id,
+                        "cantidad",
+                        Number(e.target.value)
+                      )
+                    }
+                    className="border p-1 w-full"
+                  />
+                </td>
+
+                <td className="text-center">
+                  {movimientos.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={() => eliminarFila(mov.row_id)}
+                      className="text-red-600 font-bold"
+                    >
+                      ✕
+                    </button>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
       {/* Acciones */}
       <div className="flex gap-3">
-        <button
+        <Button
           type="button"
           onClick={agregarFila}
           className="bg-gray-600 text-white px-4 py-2 rounded"
         >
-          + Agregar producto
-        </button>
+          <div className="flex items-center gap-2">
+            <img src="/icons/plus.png" alt="Pdf" className="w-6 h-6" />
+            <span>Agregar Producto</span>
+          </div>
+        </Button>
 
-        <button
+        <Button
           type="submit"
           className="bg-blue-600 text-white px-6 py-2 rounded"
         >
-          Guardar movimientos
-        </button>
+          💾 Guardar
+        </Button>
       </div>
     </form>
   );
