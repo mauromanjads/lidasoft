@@ -63,7 +63,20 @@ export default function FacturasTable({ facturas, onView, onDelete }: Props) {
 
   const columns = useMemo<ColumnDef<Factura>[]>(() => [
     { accessorKey: "numero_completo", header: "Número" },
-    { accessorKey: "fecha", header: "Fecha" },   
+    {
+      accessorKey: "fecha",
+      header: "Fecha",
+      cell: ({ getValue }) => {
+        const value = getValue() as string;
+        if (!value) return "-";
+
+        return new Date(value).toLocaleDateString("es-CO", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+        });
+      },
+    },
     {
       header: "T.Doc.",
       accessorFn: (row) => row.tercero?.tipo_documento?.codigo ?? "-",
