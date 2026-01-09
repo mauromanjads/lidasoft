@@ -98,7 +98,7 @@ export default function DateFilter({ onChange }: Props) {
       {/* Accesos rápidos */}
       <button
         onClick={() => apply({ mode: "day", from: today() })}
-        className="px-3 py-1 bg-blue-600 text-white rounded"
+        className="px-3 py-1 bg-blue-800 text-white rounded"
       >
         Hoy
       </button>
