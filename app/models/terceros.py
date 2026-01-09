@@ -1,6 +1,7 @@
 # app/models/clientes.py
 from sqlalchemy import Column, Integer, String, Date, DateTime, Boolean, DECIMAL
 from app.database import Base
+from sqlalchemy.orm import relationship
 
 class Terceros(Base):
     __tablename__ = "terceros"
@@ -47,4 +48,6 @@ class Terceros(Base):
     usuario_modifico = Column(String(100), nullable=True)
     fecha_modificacion = Column(DateTime, nullable=True)
     tipotercero = Column(String(100), nullable=True)
+
+    facturas = relationship("Factura", back_populates="tercero")
     

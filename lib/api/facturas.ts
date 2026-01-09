@@ -44,6 +44,12 @@ export interface Factura extends FacturaData {
   usuario_creacion?: string;
 }
 
+export interface Tercero {
+  id: number;
+  nombre: string;
+  documento:string;
+}
+
 /* ============================================
    OBTENER TODAS LAS FACTURAS
 ============================================ */

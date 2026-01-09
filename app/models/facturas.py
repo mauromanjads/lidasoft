@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, BigInteger, String, Numeric, Text, DateTime, func
+from sqlalchemy import Column, Integer, BigInteger, String, Numeric, Text, DateTime, func,ForeignKey
 from sqlalchemy.orm import relationship
 
 from app.database import Base
@@ -8,7 +8,10 @@ class Factura(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     fecha = Column(DateTime, nullable=False, server_default=func.now())
-    tercero_id = Column(Integer, nullable=False)
+
+    tercero_id = Column(Integer, ForeignKey("terceros.id"), nullable=True)
+    tercero = relationship("Terceros", back_populates="facturas")
+
     vendedor_id = Column(Integer, nullable=False)
     resolucion_id = Column(Integer, nullable=False)
     prefijo = Column(String(10), nullable=False)

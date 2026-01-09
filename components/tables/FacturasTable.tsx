@@ -20,7 +20,6 @@ import autoTable from "jspdf-autotable";
 import { generarXMLFactura } from "@/app/services/xmlservice";
 import { generarFactura } from "@/app/services/imprimirservice";
 
-import { obtenerTerceros, Terceros } from "@/lib/api/terceros";
 
 interface Factura {
   id: number;
@@ -31,7 +30,7 @@ interface Factura {
   total: number;
   fecha_creacion: string;
   usuario_creacion?: string;
-  tercero_id: number;
+  tercero?: Tercero; // 👈 objeto
 }
 
 interface Props {
@@ -39,6 +38,13 @@ interface Props {
   onView?: (id: number) => void;
   onDelete?: (id: number) => void;
 }
+
+export interface Tercero {
+  id: number;
+  nombre: string;
+  documento:string;
+}
+
 
 export default function FacturasTable({ facturas, onView, onDelete }: Props) {
   const [filter, setFilter] = useState("");
@@ -48,30 +54,16 @@ export default function FacturasTable({ facturas, onView, onDelete }: Props) {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [showColumnFilters, setShowColumnFilters] = useState(false);
 
-  const [terceros, setTerceros] = useState<Terceros[]>([]);
-
-  useEffect(() => {
-    obtenerTerceros("clientes").then(setTerceros);
-  }, []);
-
-  const tercerosMap = useMemo(() => {
-    const map = new Map<number, Terceros>();
-    for (const t of terceros) {
-      map.set(t.id, t);
-    }
-    return map;
-  }, [terceros]);
-
-
   const columns = useMemo<ColumnDef<Factura>[]>(() => [
     { accessorKey: "numero_completo", header: "Número" },
     { accessorKey: "fecha", header: "Fecha" },
     { accessorKey: "tercero_id", header: "idtercero" },
     {
-    header: "Cliente",
-     accessorFn: (row: Factura) => tercerosMap.get(row.tercero_id)?.nombre ?? "-",         
+      header: "Cliente",
+      accessorFn: (row) => row.tercero?.nombre ?? "-",
+      id: "cliente",      
     },
-    { accessorKey: "tipo_documento", header: "Documento" },
+    
     {
       accessorKey: "total",
       header: "Total",

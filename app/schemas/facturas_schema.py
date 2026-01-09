@@ -4,6 +4,16 @@ from datetime import datetime
 from decimal import Decimal
 from app.schemas.factura_detalle_schema import FacturaDetalleSchema
 
+# Schema para el cliente/tercero
+class TerceroResponse(BaseModel):
+    id: int
+    nombre: Optional[str]
+    documento: Optional[str]
+
+    class Config:
+        orm_mode = True  # Muy importante para relaciones SQLAlchemy
+
+# Schema base para crear/actualizar factura
 class FacturaSchema(BaseModel):
     tercero_id: int
     vendedor_id: int
@@ -22,6 +32,10 @@ class FacturaSchema(BaseModel):
 
     detalles: List[FacturaDetalleSchema]
 
+    class Config:
+        orm_mode = True
+
+# Schema de respuesta de la factura
 class FacturaResponse(FacturaSchema):
     id: int
     numero_completo: str
@@ -29,4 +43,8 @@ class FacturaResponse(FacturaSchema):
     usuario_creacion: Optional[str] = None
     fecha_creacion: Optional[datetime] = None
     usuario_modifico: Optional[str] = None
-    fecha_modificacion: Optional[datetime] = None 
+    fecha_modificacion: Optional[datetime] = None
+    tercero: Optional[TerceroResponse] = None  # <-- aquí incluimos el cliente
+
+    class Config:
+        orm_mode = True  # Muy importante

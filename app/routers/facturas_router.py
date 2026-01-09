@@ -7,6 +7,7 @@ from decimal import Decimal
 from datetime import datetime,timezone
 from fastapi import Request
 from sqlalchemy import desc
+from sqlalchemy.orm import joinedload
 
 from app.models.empresa import Empresa
 
@@ -158,6 +159,7 @@ def listar_facturas(
     facturas = (
         db.query(Factura)
         .order_by(desc(Factura.fecha))
+        .options(joinedload(Factura.tercero))
         .offset(skip)
         .limit(limit)
         .all()
