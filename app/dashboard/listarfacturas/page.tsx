@@ -14,6 +14,7 @@ interface Factura {
   total: number;
   fecha_creacion: string;
   usuario_creacion?: string;
+  tercero_id: number;
 }
 export default function FacturasPage() {
   const [facturas, setFacturas] = useState<Factura[]>([]);

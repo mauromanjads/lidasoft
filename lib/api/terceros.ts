@@ -18,7 +18,7 @@ export interface TercerosData {
   direccion?: string;
 }
 
-export const obtenerTerceros = async (tipotercero:string): Promise<Terceros[] | null> => {
+export const obtenerTerceros = async (tipotercero:string): Promise<Terceros[] > => {
   try {
     const res = await fetch(`${API_URL}/terceros/${tipotercero}` ,{
       headers: authHeaders(),
@@ -33,7 +33,7 @@ export const obtenerTerceros = async (tipotercero:string): Promise<Terceros[] | 
 
   } catch (error) {
     console.error("Error obteniendo datos:", error);
-    return null;  // ← importante para que no explote tu app
+    return [];  // ← importante para que no explote tu app
   }
 };
 
