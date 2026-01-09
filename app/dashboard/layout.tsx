@@ -11,12 +11,23 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const router = useRouter();
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const user = JSON.parse(localStorage.getItem("usuario") || "{}");
-  const sucursal = JSON.parse(localStorage.getItem("sucursal") || "{}");
+  const [user, setUser] = useState<any>(null);
+  const [sucursal, setSucursal] = useState<any>(null);
 
-  if (user.cambia_clave) {
-    router.replace("/cambiar-password");
-  }
+  useEffect(() => {
+    const u = localStorage.getItem("usuario");
+    const s = localStorage.getItem("sucursal");
+
+    if (u) setUser(JSON.parse(u));
+    if (s) setSucursal(JSON.parse(s));
+  }, []);
+
+  useEffect(() => {
+    if (user?.cambia_clave) {
+      router.replace("/cambiar-password");
+    }
+  }, [user, router]);
+
 
   useEffect(() => {
     const existingTab = localStorage.getItem("app_active");
