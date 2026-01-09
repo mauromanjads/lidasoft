@@ -20,6 +20,7 @@ import autoTable from "jspdf-autotable";
 import { generarXMLFactura } from "@/app/services/xmlservice";
 import { generarFactura } from "@/app/services/imprimirservice";
 
+import DateFilter, { DateFilterValue } from "@/components/ui/DateFilter";
 
 interface Factura {
   id: number;
@@ -53,6 +54,7 @@ export interface TipoDocumento {
 }
 
 
+
 export default function FacturasTable({ facturas, onView, onDelete }: Props) {
   const [filter, setFilter] = useState("");
   const [pageSize, setPageSize] = useState(10);
@@ -60,6 +62,40 @@ export default function FacturasTable({ facturas, onView, onDelete }: Props) {
 
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [showColumnFilters, setShowColumnFilters] = useState(false);
+
+  const [dateFilter, setDateFilter] = useState<DateFilterValue | null>(null);
+  const facturasFiltradas = useMemo(() => {
+    if (!dateFilter) return facturas;
+
+    return facturas.filter(f => {
+      const fecha = f.fecha_creacion.slice(0, 10);
+
+      switch (dateFilter.mode) {
+        case "day":
+          return fecha === dateFilter.from;
+
+        case "range":
+        case "quick":
+          return fecha >= dateFilter.from! && fecha <= dateFilter.to!;
+
+        case "month":
+          return fecha.startsWith(dateFilter.from!);
+
+        case "week": {
+          const start = new Date(dateFilter.from!);
+          const end = new Date(start);
+          end.setDate(start.getDate() + 6);
+          const fDate = new Date(fecha);
+          return fDate >= start && fDate <= end;
+        }
+
+        default:
+          return true;
+      }
+    });
+  }, [facturas, dateFilter]);
+
+
 
   const columns = useMemo<ColumnDef<Factura>[]>(() => [
     { accessorKey: "numero_completo", header: "Número" },
@@ -215,6 +251,8 @@ export default function FacturasTable({ facturas, onView, onDelete }: Props) {
           placeholder="Buscar factura..."
           className="border px-3 py-2 rounded-lg shadow-sm w-1/3 border-gray-600"
         />
+
+       
 
         <Button
           onClick={() => {
