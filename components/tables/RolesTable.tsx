@@ -11,6 +11,7 @@ import {
 } from "@tanstack/react-table";
 import { Pencil, Trash2 } from "lucide-react";
 import Button from "@/components/ui/button";
+import Buttonpag from "@/components/ui/buttonpag";
 import Modal from "@/components/ui/modal";
 import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
@@ -80,12 +81,7 @@ export default function RolesTable({ roles, onDelete, onSaved }: Props) {
           >
             <Pencil size={16} />
           </Button>
-          <Button
-            className="bg-red-600 hover:bg-red-700 text-white px-2 py-1 rounded-lg"
-            onClick={() => onDelete?.(row.original.id)}
-          >
-            <Trash2 size={16} />
-          </Button>
+          
         </div>
       ),
     },
@@ -164,15 +160,15 @@ export default function RolesTable({ roles, onDelete, onSaved }: Props) {
             setPageIndex(0);
           }}
           placeholder="Buscar..."
-          className="border px-3 py-2 rounded-lg shadow-sm w-1/3"
+          className="border px-3 py-2 rounded-lg shadow-sm w-1/3 border border-gray-600"
         />
 
 
         <div className="flex gap-3">
-          <Button onClick={exportToExcel} className="bg-green-600 text-white">
+          <Button onClick={exportToExcel}  title="Exportar Excel">
             <img src="/icons/excel.png" className="h-6" />
           </Button>
-          <Button onClick={exportToPDF} className="bg-red-600 text-white">
+          <Button onClick={exportToPDF}  title="Exportar Pdf">
             <img src="/icons/pdf.svg" className="h-6" />
           </Button>
         </div>
@@ -186,7 +182,7 @@ export default function RolesTable({ roles, onDelete, onSaved }: Props) {
               {hg.headers.map((header) => (
                 <th
                   key={header.id}
-                  className="p-3 cursor-pointer"
+                  className="p-2 cursor-pointer"
                   onClick={header.column.getToggleSortingHandler()}
                 >
                   {flexRender(header.column.columnDef.header, header.getContext())}
@@ -211,7 +207,7 @@ export default function RolesTable({ roles, onDelete, onSaved }: Props) {
       {/* Paginación */}
       <div className="flex justify-between items-center mt-4">
         <div className="flex gap-2">
-          <Button onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}>◀</Button>
+          <Buttonpag onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}> ❮ </Buttonpag>
 
           {Array.from({ length: endPage - startPage }).map((_, i) => {
             const num = startPage + i;
@@ -228,7 +224,7 @@ export default function RolesTable({ roles, onDelete, onSaved }: Props) {
             );
           })}
 
-          <Button onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>▶</Button>
+          <Buttonpag onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}> ❯ </Buttonpag>
         </div>
 
         <select

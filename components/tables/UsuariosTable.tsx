@@ -12,6 +12,7 @@ import {
 } from "@tanstack/react-table";
 import { Pencil, Trash2,KeyRound } from "lucide-react";
 import Button from "@/components/ui/button";
+import Buttonpag from "@/components/ui/buttonpag";
 import Modal from "@/components/ui/modal";
 import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
@@ -112,7 +113,6 @@ export default function UsuariosTable({ usuarios, onEdit, onDelete, onSaved }: P
           return (
             <div className="flex justify-center gap-2">
               <Button
-                className="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded-lg"
                 onClick={() => {
                   setUsuarioEdit(item);
                   setIsOpen(true);
@@ -124,20 +124,14 @@ export default function UsuariosTable({ usuarios, onEdit, onDelete, onSaved }: P
 
 
               {/* Reset password */}
-              <Button
-                className="bg-yellow-500 hover:bg-yellow-600 text-white px-2 py-1 rounded-lg"
+              <Button                
                 onClick={() => handleResetPassword(item)}
                 title="Restaurar contraseña"
               >
                 <KeyRound size={16} />
               </Button>
 
-              <Button
-                className="bg-red-600 hover:bg-red-700 text-white px-2 py-1 rounded-lg"
-                onClick={() => onDelete?.(item.id)}
-              >
-                <Trash2 size={16} />
-              </Button>
+             
             </div>
           );
         },
@@ -208,30 +202,29 @@ export default function UsuariosTable({ usuarios, onEdit, onDelete, onSaved }: P
             setPageIndex(0);
           }}
           placeholder="Buscar..."
-          className="border px-3 py-2 rounded-lg shadow-sm w-1/3"
+          className="border px-3 py-2 rounded-lg shadow-sm w-1/3 border border-gray-600"
         />
 
         <Button
-          onClick={() => setIsOpen(true)}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 shadow-md"
+          onClick={() => setIsOpen(true)}          
         >
           <div className="flex items-center gap-2">
             <img src="/icons/plus.png" alt="Nuevo" className="w-6 h-6" />
-            <span>Nuevo</span>
+            <span>Nuevo Usuario</span>
           </div>
         </Button>
 
         <div className="flex gap-3">
           <Button
             onClick={exportToExcel}
-            className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 shadow-md"
+            title="Exportar Excel"
           >
             <img src="/icons/excel.png" alt="Excel" className="w-6 h-6" />
           </Button>
 
           <Button
             onClick={exportToPDF}
-            className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 shadow-md"
+            title="Exportar Pdf"
           >
             <img src="/icons/pdf.svg" alt="Pdf" className="w-6 h-6" />
           </Button>
@@ -272,7 +265,7 @@ export default function UsuariosTable({ usuarios, onEdit, onDelete, onSaved }: P
               {headerGroup.headers.map((header) => (
                 <th
                   key={header.id}
-                  className="p-3 cursor-pointer hover:bg-blue-700 transition"
+                  className="p-2 cursor-pointer hover:bg-blue-700 transition"
                   onClick={header.column.getToggleSortingHandler()}
                 >
                   {flexRender(header.column.columnDef.header, header.getContext())}
@@ -304,13 +297,12 @@ export default function UsuariosTable({ usuarios, onEdit, onDelete, onSaved }: P
       {/* Paginación */}
       <div className="flex justify-between items-center mt-4">
         <div className="flex items-center gap-2">
-          <Button
+          <Buttonpag
             onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-            className="px-3 py-1 rounded-lg bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
+            disabled={!table.getCanPreviousPage()}          
           >
-            ◀
-          </Button>
+            ❮
+          </Buttonpag>
 
           {Array.from({ length: endPage - startPage }).map((_, i) => {
             const num = startPage + i;
@@ -329,13 +321,12 @@ export default function UsuariosTable({ usuarios, onEdit, onDelete, onSaved }: P
             );
           })}
 
-          <Button
+          <Buttonpag
             onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-            className="px-3 py-1 rounded-lg bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
+            disabled={!table.getCanNextPage()}           
           >
-            ▶
-          </Button>
+           ❯
+          </Buttonpag>
         </div>
 
         <span className="text-sm text-gray-600">

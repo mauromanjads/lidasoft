@@ -11,6 +11,7 @@ import {
 } from "@tanstack/react-table";
 import { Eye, Trash2,FileCode } from "lucide-react";
 import Button from "@/components/ui/button";
+import Buttonpag from "@/components/ui/buttonpag";
 import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
@@ -161,15 +162,15 @@ export default function FacturasTable({ facturas, onView, onDelete }: Props) {
           value={filter}
           onChange={(e) => { setFilter(e.target.value); setPageIndex(0); }}
           placeholder="Buscar factura..."
-          className="border px-3 py-2 rounded-lg shadow-sm w-1/3"
+          className="border px-3 py-2 rounded-lg shadow-sm w-1/3 border-gray-600"
         />
 
         <div className="flex gap-2">
-          <Button onClick={exportToExcel} className="bg-green-600 text-white">
-            Excel
+          <Button onClick={exportToExcel} title="Exportar Excel">
+           <img src="/icons/excel.png" alt="Excel" className="w- h-6" />
           </Button>
-          <Button onClick={exportToPDF} className="bg-red-600 text-white">
-            PDF
+          <Button onClick={exportToPDF}  title="Exportar Pdf">
+           <img src="/icons/pdf.svg" alt="Pdf" className="w- h-6" />
           </Button>
         </div>
       </div>
@@ -182,7 +183,7 @@ export default function FacturasTable({ facturas, onView, onDelete }: Props) {
               {hg.headers.map(h => (
                 <th
                   key={h.id}
-                  className="p-3 cursor-pointer"
+                  className="p-2 cursor-pointer"
                   onClick={h.column.getToggleSortingHandler()}
                 >
                   {flexRender(h.column.columnDef.header, h.getContext())}
@@ -211,13 +212,12 @@ export default function FacturasTable({ facturas, onView, onDelete }: Props) {
 
         {/* Botones paginación */}
         <div className="flex items-center gap-2">
-          <Button
+          <Buttonpag
             onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-            className="px-3 py-1 rounded-lg bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
+            disabled={!table.getCanPreviousPage()}            
           >
-            ◀
-          </Button>
+           ❮
+          </Buttonpag>
 
           {/* Primera página */}
           {startPage > 0 && (
@@ -263,13 +263,12 @@ export default function FacturasTable({ facturas, onView, onDelete }: Props) {
             </>
           )}
 
-          <Button
+          <Buttonpag
             onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-            className="px-3 py-1 rounded-lg bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
+            disabled={!table.getCanNextPage()}           
           >
-            ▶
-          </Button>
+            ❯
+          </Buttonpag>
         </div>
 
         {/* Info */}

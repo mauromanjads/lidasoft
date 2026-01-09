@@ -11,6 +11,7 @@ import {
 } from "@tanstack/react-table";
 import { Pencil, Trash2} from "lucide-react";
 import Button from "@/components/ui/button";
+import Buttonpag from "@/components/ui/buttonpag";
 import Modal from "@/components/ui/modal";
 import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
@@ -127,12 +128,7 @@ export default function ResolucionesdianTable({ resoluciondian, onEdit, onDelete
                     <Pencil size={16} />
                     </Button>
 
-                    <Button
-                    className="bg-red-600 hover:bg-red-700 text-white px-2 py-1 rounded-lg"
-                    onClick={() => onDelete?.(item.id)}
-                    >
-                    <Trash2 size={16} />
-                    </Button>
+                   
                 </div>
                 );
             },
@@ -191,23 +187,22 @@ export default function ResolucionesdianTable({ resoluciondian, onEdit, onDelete
     <div className="p-4 bg-white rounded-xl shadow-lg">
 
       {/* 🔎 BUSCAR + EXPORTAR ARRIBA */}
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex justify-between items-center mb-4 ">
 
         {/* Buscar */}
         <input
           value={filter}
           onChange={(e) => { setFilter(e.target.value); setPageIndex(0); }}
           placeholder="Buscar..."
-          className="border px-3 py-2 rounded-lg shadow-sm w-1/3"
+          className="border px-3 py-2 rounded-lg shadow-sm w-1/3 border border-gray-600"
         />
 
          {/* Crear */}
         <Button
-          onClick={() => setIsOpen(true)} // <-- Aquí podrías abrir modal o ir a formulario
-          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 shadow-md"
+          onClick={() => setIsOpen(true)} // <-- Aquí podrías abrir modal o ir a formulario         
         >  <div className="flex items-center gap-2">
             <img src="/icons/plus.png" alt="Pdf" className="w-6 h-6" />
-            <span>Nuevo</span>
+            <span>Nueva Resolución</span>
           </div>
         </Button>
 
@@ -243,11 +238,11 @@ export default function ResolucionesdianTable({ resoluciondian, onEdit, onDelete
 
         {/* Exportar */}
         <div className="flex gap-3">
-          <Button onClick={exportToExcel} className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 shadow-md">
+          <Button onClick={exportToExcel}  title="Exportar Excel">
              <img src="/icons/excel.png" alt="Excel" className="w- h-6" />
           </Button>
            
-          <Button onClick={exportToPDF} className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 shadow-md">
+          <Button onClick={exportToPDF}  title="Exportar Pdf">
              <img src="/icons/pdf.svg" alt="Pdf" className="w- h-6" />
           </Button>
         </div>
@@ -261,7 +256,7 @@ export default function ResolucionesdianTable({ resoluciondian, onEdit, onDelete
               {headerGroup.headers.map((header) => (
                 <th
                   key={header.id}
-                  className="p-3 cursor-pointer hover:bg-blue-700 transition"
+                  className="p-2 cursor-pointer hover:bg-blue-700 transition"
                   onClick={header.column.getToggleSortingHandler()}
                 >
                   {flexRender(header.column.columnDef.header, header.getContext())}
@@ -289,8 +284,7 @@ export default function ResolucionesdianTable({ resoluciondian, onEdit, onDelete
       <div className="flex justify-between items-center mt-4">
         {/* Botones paginación */}
         <div className="flex items-center gap-2">
-          <Button onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}
-            className="px-3 py-1 rounded-lg bg-gray-200 hover:bg-gray-300 disabled:opacity-50">◀</Button>
+          <Buttonpag onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}> ❮ </Buttonpag>
 
             {/* Mostrar primero */}
               {startPage > 0 && (
@@ -321,8 +315,7 @@ export default function ResolucionesdianTable({ resoluciondian, onEdit, onDelete
               </>
             )}
 
-          <Button onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}
-            className="px-3 py-1 rounded-lg bg-gray-200 hover:bg-gray-300 disabled:opacity-50">▶</Button>
+          <Buttonpag onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}> ❯ </Buttonpag>
         </div>
 
         {/* Info */}

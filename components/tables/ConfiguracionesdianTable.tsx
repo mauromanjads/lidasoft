@@ -11,6 +11,7 @@ import {
 } from "@tanstack/react-table";
 import { Pencil, Trash2} from "lucide-react";
 import Button from "@/components/ui/button";
+import Buttonpag from "@/components/ui/buttonpag";
 import Modal from "@/components/ui/modal";
 import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
@@ -71,12 +72,7 @@ export default function ConfiguracionesdianTable({ configuraciondian, onEdit, on
                     <Pencil size={16} />
                     </Button>
 
-                    <Button
-                    className="bg-red-600 hover:bg-red-700 text-white px-2 py-1 rounded-lg"
-                    onClick={() => onDelete?.(item.id)}
-                    >
-                    <Trash2 size={16} />
-                    </Button>
+                    
                 </div>
                 );
             },
@@ -142,7 +138,7 @@ export default function ConfiguracionesdianTable({ configuraciondian, onEdit, on
           value={filter}
           onChange={(e) => { setFilter(e.target.value); setPageIndex(0); }}
           placeholder="Buscar..."
-          className="border px-3 py-2 rounded-lg shadow-sm w-1/3"
+          className="border px-3 py-2 rounded-lg shadow-sm w-1/3 border border-gray-600"
         />
 
 
@@ -177,11 +173,11 @@ export default function ConfiguracionesdianTable({ configuraciondian, onEdit, on
          
         {/* Exportar */}
         <div className="flex gap-3">
-          <Button onClick={exportToExcel} className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 shadow-md">
+          <Button onClick={exportToExcel}  title="Exportar Excel">
              <img src="/icons/excel.png" alt="Excel" className="w- h-6" />
           </Button>
            
-          <Button onClick={exportToPDF} className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 shadow-md">
+          <Button onClick={exportToPDF} title="Exportar Pdf">
              <img src="/icons/pdf.svg" alt="Pdf" className="w- h-6" />
           </Button>
         </div>
@@ -195,7 +191,7 @@ export default function ConfiguracionesdianTable({ configuraciondian, onEdit, on
               {headerGroup.headers.map((header) => (
                 <th
                   key={header.id}
-                  className="p-3 cursor-pointer hover:bg-blue-700 transition"
+                  className="p-2 cursor-pointer hover:bg-blue-700 transition"
                   onClick={header.column.getToggleSortingHandler()}
                 >
                   {flexRender(header.column.columnDef.header, header.getContext())}
@@ -223,8 +219,7 @@ export default function ConfiguracionesdianTable({ configuraciondian, onEdit, on
       <div className="flex justify-between items-center mt-4">
         {/* Botones paginación */}
         <div className="flex items-center gap-2">
-          <Button onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}
-            className="px-3 py-1 rounded-lg bg-gray-200 hover:bg-gray-300 disabled:opacity-50">◀</Button>
+          <Buttonpag onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}>❮</Buttonpag>
 
             {/* Mostrar primero */}
               {startPage > 0 && (
@@ -255,8 +250,7 @@ export default function ConfiguracionesdianTable({ configuraciondian, onEdit, on
               </>
             )}
 
-          <Button onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}
-            className="px-3 py-1 rounded-lg bg-gray-200 hover:bg-gray-300 disabled:opacity-50">▶</Button>
+          <Buttonpag onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>❯</Buttonpag>
         </div>
 
         {/* Info */}

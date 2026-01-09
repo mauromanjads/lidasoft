@@ -134,8 +134,7 @@ export default function CategoriasTable({ categorias, onEdit, onDelete,onSaved }
 
          {/* Crear */}
         <Button
-          onClick={() => setIsOpen(true)} // <-- Aquí podrías abrir modal o ir a formulario
-          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 shadow-md"
+          onClick={() => setIsOpen(true)} // <-- Aquí podrías abrir modal o ir a formulario        
         >  <div className="flex items-center gap-2">
             <img src="/icons/plus.png" alt="Pdf" className="w-6 h-6" />
             <span>Nueva Categoría</span>
@@ -166,12 +165,12 @@ export default function CategoriasTable({ categorias, onEdit, onDelete,onSaved }
 
         {/* Exportar */}
         <div className="flex gap-3">
-          <Button onClick={exportToExcel} className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 shadow-md" title="Exportar Excel">
+          <Button onClick={exportToExcel}  title="Exportar Excel">
              <img src="/icons/excel.png" alt="Excel" className="w- h-6" />
              
           </Button>
            
-          <Button onClick={exportToPDF} className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 shadow-md" title="Exportar Pdf">
+          <Button onClick={exportToPDF} title="Exportar Pdf">
              <img src="/icons/pdf.svg" alt="Pdf" className="w- h-6" />
           </Button>
         </div>
@@ -185,7 +184,7 @@ export default function CategoriasTable({ categorias, onEdit, onDelete,onSaved }
               {headerGroup.headers.map((header) => (
                 <th
                   key={header.id}
-                  className="p-1 cursor-pointer hover:bg-blue-700 transition"
+                  className="p-2 cursor-pointer hover:bg-blue-700 transition"
                   onClick={header.column.getToggleSortingHandler()}
                 >
                   {flexRender(header.column.columnDef.header, header.getContext())}

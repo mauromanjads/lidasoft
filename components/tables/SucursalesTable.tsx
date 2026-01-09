@@ -12,6 +12,7 @@ import {
 } from "@tanstack/react-table";
 import { Pencil, Trash2 } from "lucide-react";
 import Button from "@/components/ui/button";
+import Buttonpag from "@/components/ui/buttonpag";
 import Modal from "@/components/ui/modal";
 import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
@@ -90,12 +91,6 @@ export default function SucursalesTable({
                 <Pencil size={16} />
               </Button>
 
-              <Button
-                className="bg-red-600 hover:bg-red-700 text-white px-2 py-1 rounded-lg"
-                onClick={() => onDelete?.(item.id)}
-              >
-                <Trash2 size={16} />
-              </Button>
             </div>
           );
         },
@@ -177,16 +172,15 @@ export default function SucursalesTable({
             setPageIndex(0);
           }}
           placeholder="Buscar..."
-          className="border px-3 py-2 rounded-lg shadow-sm w-1/3"
+          className="border px-3 py-2 rounded-lg shadow-sm w-1/3 border border-gray-600"
         />
 
         {/* Crear */}
         <Button
-          onClick={() => setIsOpen(true)} // <-- Aquí podrías abrir modal o ir a formulario
-          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 shadow-md"
+          onClick={() => setIsOpen(true)} // <-- Aquí podrías abrir modal o ir a formulario         
         >  <div className="flex items-center gap-2">
             <img src="/icons/plus.png" alt="Pdf" className="w-6 h-6" />
-            <span>Nuevo</span>
+            <span>Nueva Sucursal</span>
           </div>
         </Button>
 
@@ -219,14 +213,14 @@ export default function SucursalesTable({
         <div className="flex gap-3">
           <Button
             onClick={exportToExcel}
-            className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg"
+            title="Exportar Excel"
           >
             <img src="/icons/excel.png" alt="Excel" className="h-6" />
           </Button>
 
           <Button
             onClick={exportToPDF}
-            className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg"
+            title="Exportar Pdf"
           >
             <img src="/icons/pdf.svg" alt="PDF" className="h-6" />
           </Button>
@@ -241,7 +235,7 @@ export default function SucursalesTable({
               {hg.headers.map((h) => (
                 <th
                   key={h.id}
-                  className="p-3 cursor-pointer hover:bg-blue-700"
+                  className="p-2 cursor-pointer hover:bg-blue-700"
                   onClick={h.column.getToggleSortingHandler()}
                 >
                   {flexRender(h.column.columnDef.header, h.getContext())}
@@ -273,12 +267,12 @@ export default function SucursalesTable({
       {/* 📄 PAGINACIÓN */}
       <div className="flex justify-between items-center mt-4">
         <div className="flex items-center gap-2">
-          <Button
+          <Buttonpag
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
           >
-            ◀
-          </Button>
+            ❮
+          </Buttonpag>
 
           {Array.from({ length: endPage - startPage }).map((_, i) => {
             const num = startPage + i;
@@ -297,12 +291,12 @@ export default function SucursalesTable({
             );
           })}
 
-          <Button
+          <Buttonpag
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
           >
-            ▶
-          </Button>
+           ❯
+          </Buttonpag>
         </div>
 
         <span className="text-sm text-gray-600">
