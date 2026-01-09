@@ -221,7 +221,7 @@ export default function MovimientoInventarioForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
 
-        <div className="grid grid-cols-3 gap-4 max-w-3xl">
+        <div className="grid grid-cols-3 gap-4 max-w-3xl font-bold">
         <select
           value={movimientos[0].tipo_movimiento}
           onChange={(e) =>
@@ -258,20 +258,6 @@ export default function MovimientoInventarioForm() {
           <option value="AJUSTE">Ajuste</option>
         </select>
 
-        <input
-          type="number"
-          placeholder="Documento ID"
-          value={movimientos[0].documento_id}
-          onChange={(e) =>
-            setMovimientos(
-              movimientos.map((m) => ({
-                ...m,
-                documento_id: Number(e.target.value),
-              }))
-            )
-          }
-          className="border p-2"
-        />
       </div>
 
       {/* Tabla */}
