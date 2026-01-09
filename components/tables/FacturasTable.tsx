@@ -69,8 +69,7 @@ export default function FacturasTable({ facturas, onView, onDelete }: Props) {
     { accessorKey: "tercero_id", header: "idtercero" },
     {
     header: "Cliente",
-     accessorFn: (row: Factura) => tercerosMap.get(row.tercero_id)?.nombre ?? "-",
-         
+     accessorFn: (row: Factura) => tercerosMap.get(row.tercero_id)?.nombre ?? "-",         
     },
     { accessorKey: "tipo_documento", header: "Documento" },
     {
