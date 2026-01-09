@@ -74,13 +74,22 @@ export default function FacturasPage() {
 
  return (
   <div className="space-y-4">
-    <h1 className="flex items-center gap-2 text-lg font-semibold">
-      🧾 Listado de Facturas
-    </h1>
+    {/* 🧰 TOOLBAR */}
+    <div className="flex items-center justify-between  ">
+      <h1 className="text-lg font-semibold">
+        🧾 Listado de Facturas
+      </h1>
 
-    {/* 🔎 FILTRO DE FECHA */}
-    <DateFilter onChange={setDateFilter} />
+      {/* 🔎 FILTRO DE FECHA */}
+      <div className="flex items-center gap-2 px-2  rounded-lg">
+        <span>
+        <h1 className="text-lg font-semibold">Fecha:</h1> 
+        </span>
+        <DateFilter onChange={setDateFilter} />
+      </div>
+    </div>
 
+    {/* CONTENIDO */}
     {loading ? (
       <p className="text-sm text-gray-500">Cargando facturas...</p>
     ) : (
@@ -88,4 +97,6 @@ export default function FacturasPage() {
     )}
   </div>
 );
+
+
 }

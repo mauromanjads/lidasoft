@@ -21,7 +21,7 @@ export default function DateFilter({ onChange }: Props) {
   const apply = (v: DateFilterValue) => onChange(v);
 
   return (
-    <div className="flex flex-wrap gap-2 items-end bg-gray-100 p-3 rounded-lg">
+    <div className="flex flex-wrap gap-1 items-end rounded-lg">
 
       <select
         value={mode}
@@ -47,7 +47,7 @@ export default function DateFilter({ onChange }: Props) {
             setFrom(e.target.value);
             apply({ mode, from: e.target.value });
           }}
-          className="border rounded px-2 py-1"
+          className="border rounded px-1 py-1"
         />
       )}
 
@@ -57,7 +57,7 @@ export default function DateFilter({ onChange }: Props) {
             type="date"
             value={from}
             onChange={(e) => setFrom(e.target.value)}
-            className="border rounded px-2 py-1"
+            className="border rounded px-1 py-1"
           />
           <input
             type="date"
@@ -66,7 +66,7 @@ export default function DateFilter({ onChange }: Props) {
               setTo(e.target.value);
               apply({ mode, from, to: e.target.value });
             }}
-            className="border rounded px-2 py-1"
+            className="border rounded px-1 py-1"
           />
         </>
       )}
