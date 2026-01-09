@@ -8,6 +8,7 @@ import {
   getFilteredRowModel,
   flexRender,
   ColumnDef,
+  ColumnFiltersState
 } from "@tanstack/react-table";
 import { Eye, Trash2,FileCode } from "lucide-react";
 import Button from "@/components/ui/button";
@@ -40,6 +41,9 @@ export default function FacturasTable({ facturas, onView, onDelete }: Props) {
   const [filter, setFilter] = useState("");
   const [pageSize, setPageSize] = useState(10);
   const [pageIndex, setPageIndex] = useState(0);
+
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [showColumnFilters, setShowColumnFilters] = useState(false);
 
   const columns = useMemo<ColumnDef<Factura>[]>(() => [
     { accessorKey: "numero_completo", header: "Número" },
@@ -106,10 +110,11 @@ export default function FacturasTable({ facturas, onView, onDelete }: Props) {
     data: facturas,
     columns,
     state: {
-      globalFilter: filter,
+      globalFilter: filter,columnFilters,
       pagination: { pageIndex, pageSize },
     },
     onGlobalFilterChange: setFilter,
+    onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -165,6 +170,20 @@ export default function FacturasTable({ facturas, onView, onDelete }: Props) {
           className="border px-3 py-2 rounded-lg shadow-sm w-1/3 border-gray-600"
         />
 
+        <Button
+          onClick={() => {
+            setShowColumnFilters(prev => {
+              if (prev) setColumnFilters([]); // 👈 limpia filtros al ocultar
+              return !prev;
+            });
+          }}
+          className={`${
+            showColumnFilters ? "bg-red-600 hover:bg-red-700" : "bg-blue-600 hover:bg-blue-700"
+          } text-white`}
+        >
+          {showColumnFilters ? "🟢 Ocultar filtros" : "🔴Activar filtros"}
+        </Button>
+
         <div className="flex gap-2">
           <Button onClick={exportToExcel} title="Exportar Excel">
            <img src="/icons/excel.png" alt="Excel" className="w- h-6" />
@@ -181,15 +200,33 @@ export default function FacturasTable({ facturas, onView, onDelete }: Props) {
           {table.getHeaderGroups().map(hg => (
             <tr key={hg.id}>
               {hg.headers.map(h => (
-                <th
-                  key={h.id}
-                  className="p-2 cursor-pointer"
-                  onClick={h.column.getToggleSortingHandler()}
-                >
-                  {flexRender(h.column.columnDef.header, h.getContext())}
-                  {h.column.getIsSorted() === "asc" && " ▲"}
-                  {h.column.getIsSorted() === "desc" && " ▼"}
+                
+                 <th key={h.id} className="p-2 text-center">
+                    <div
+                      className="cursor-pointer hover:bg-blue-700 transition"
+                      onClick={h.column.getToggleSortingHandler()}
+                    >
+                      {flexRender(h.column.columnDef.header, h.getContext())}
+                      {h.column.getIsSorted() === "asc" && " ▲"}
+                      {h.column.getIsSorted() === "desc" && " ▼"}
+                    </div>
+
+                      {/* 🔎 Filtro por columna */}
+                      {showColumnFilters && h.column.getCanFilter() && (
+                      <input
+                        value={(h.column.getFilterValue() ?? "") as string}
+                        onChange={(e) => {
+                          h.column.setFilterValue(e.target.value);
+                          setPageIndex(0);
+                        }}
+                        placeholder="Filtrar..."
+                        className="mt-1 w-full rounded border px-2 py-1 text-sm text-white"
+                        onClick={(e) => e.stopPropagation()}
+                      />
+                    )}
                 </th>
+
+
               ))}
             </tr>
           ))}

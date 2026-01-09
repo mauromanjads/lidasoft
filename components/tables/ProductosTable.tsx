@@ -55,14 +55,13 @@ export default function ProductoTable({ productos, onEdit, onDelete,onSaved }: P
   const [showColumnFilters, setShowColumnFilters] = useState(false);
 
   const columns = useMemo<ColumnDef<Producto>[]>(() => [    
-    { accessorKey: "codigo", header: "Código" , enableColumnFilter: true},
-    { accessorKey: "nombre", header: "Nombre", enableColumnFilter: true },
+    { accessorKey: "codigo", header: "Código" },
+    { accessorKey: "nombre", header: "Nombre"},
     { accessorKey: "descripcion", header: "Descripción" },
     {
       header: "Categoría",
       accessorFn: (row) => row.categoria?.nombre ?? "-",
-      id: "categoria",
-      enableColumnFilter: true,
+      id: "categoria",      
     },        
     {
       accessorKey: "activo",
