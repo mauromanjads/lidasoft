@@ -3,7 +3,7 @@ from typing import Optional, Annotated
 from pydantic import field_validator
 
 from pydantic import BaseModel, EmailStr, Field, StringConstraints,ConfigDict
-
+from app.schemas.tipodocumentos_schema import TipoDocumentosBase
 
 # ====================================================
 # 🧩 1. BASE (Campos comunes)
@@ -134,5 +134,6 @@ class TerceroResponse(TerceroBase):
     fecha_creacion: Optional[datetime] = None
     usuario_modifico: Optional[str] = None
     fecha_modificacion: Optional[datetime] = None
+    tipo_documento: Optional[TipoDocumentosBase] = None  # 🔥 CLAVE
 
     model_config = ConfigDict(from_attributes=True)

@@ -1,14 +1,15 @@
 # app/models/clientes.py
-from sqlalchemy import Column, Integer, String, Date, DateTime, Boolean, DECIMAL
+from sqlalchemy import Column, Integer, String, Date, DateTime, Boolean, DECIMAL,ForeignKey
 from app.database import Base
 from sqlalchemy.orm import relationship
+from app.models.tipodocumentos import TipoDocumento
 
 class Terceros(Base):
     __tablename__ = "terceros"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     tipo_persona = Column(String(1), nullable=True)
-    tipo_documento_id = Column(Integer,  nullable=True)
+    tipo_documento_id = Column(Integer, ForeignKey("tiposdocumento.id"), nullable=True)
     documento = Column(String(20), nullable=False)
     dv = Column(String(1), nullable=True)
     nombre = Column(String(150), nullable=True)
@@ -50,4 +51,5 @@ class Terceros(Base):
     tipotercero = Column(String(100), nullable=True)
 
     facturas = relationship("Factura", back_populates="tercero")
+    tipo_documento = relationship(TipoDocumento)  # 🔹 relación
     

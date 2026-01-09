@@ -4,11 +4,20 @@ from datetime import datetime
 from decimal import Decimal
 from app.schemas.factura_detalle_schema import FacturaDetalleSchema
 
+class TipoDocumentoResponse(BaseModel):
+    id: int
+    codigo: str
+    descripcion: str
+
+    class Config:
+        orm_mode = True
+
 # Schema para el cliente/tercero
 class TerceroResponse(BaseModel):
     id: int
     nombre: Optional[str]
     documento: Optional[str]
+    tipo_documento: Optional[TipoDocumentoResponse] = None  # 🔥 AQUÍ
 
     class Config:
         orm_mode = True  # Muy importante para relaciones SQLAlchemy
@@ -48,3 +57,4 @@ class FacturaResponse(FacturaSchema):
 
     class Config:
         orm_mode = True  # Muy importante
+

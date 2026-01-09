@@ -43,6 +43,13 @@ export interface Tercero {
   id: number;
   nombre: string;
   documento:string;
+  tipo_documento?: TipoDocumento; // 🔹 relación
+}
+
+export interface TipoDocumento {
+  id: number;
+  codigo: string;
+  descripcion: string;
 }
 
 
@@ -56,14 +63,22 @@ export default function FacturasTable({ facturas, onView, onDelete }: Props) {
 
   const columns = useMemo<ColumnDef<Factura>[]>(() => [
     { accessorKey: "numero_completo", header: "Número" },
-    { accessorKey: "fecha", header: "Fecha" },
-    { accessorKey: "tercero_id", header: "idtercero" },
+    { accessorKey: "fecha", header: "Fecha" },   
+    {
+      header: "T.Doc.",
+      accessorFn: (row) => row.tercero?.tipo_documento?.codigo ?? "-",
+      id: "tipodoc",      
+    },    
+    {
+      header: "Documento",
+      accessorFn: (row) => row.tercero?.documento ?? "-",
+      id: "documento",      
+    },
     {
       header: "Cliente",
       accessorFn: (row) => row.tercero?.nombre ?? "-",
       id: "cliente",      
-    },
-    
+    },    
     {
       accessorKey: "total",
       header: "Total",
@@ -119,6 +134,10 @@ export default function FacturasTable({ facturas, onView, onDelete }: Props) {
       ),
     },
   ], [onView, onDelete]);
+
+  useEffect(() => {
+  console.log("FACTURAS:", facturas);
+}, [facturas]);
 
   const table = useReactTable({
     data: facturas,

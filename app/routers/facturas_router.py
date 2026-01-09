@@ -13,6 +13,7 @@ from app.models.empresa import Empresa
 
 from app.models.facturas import Factura
 from app.models.factura_detalle import FacturaDetalle
+from app.models.terceros import Terceros
 from app.schemas.facturas_schema import FacturaSchema, FacturaResponse
 from app.models.resoluciones import ResolucionDian
 from app.models.configuracionesdian import ConfiguracionDian
@@ -159,11 +160,14 @@ def listar_facturas(
     facturas = (
         db.query(Factura)
         .order_by(desc(Factura.fecha))
-        .options(joinedload(Factura.tercero))
+        .options(            
+            joinedload(Factura.tercero).joinedload(Terceros.tipo_documento)
+        )
         .offset(skip)
         .limit(limit)
         .all()
     )
+    
     return facturas
 
 
