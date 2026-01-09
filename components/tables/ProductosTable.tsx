@@ -8,6 +8,7 @@ import {
   getFilteredRowModel,
   flexRender,
   ColumnDef,
+  ColumnFiltersState 
 } from "@tanstack/react-table";
 import { Pencil, Trash2} from "lucide-react";
 import Button from "@/components/ui/button";
@@ -49,17 +50,19 @@ export default function ProductoTable({ productos, onEdit, onDelete,onSaved }: P
   const [pageIndex, setPageIndex] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
  
-   const [productoEdit, setProductoEdit] = useState<any | null>(null);
-
-   
+  const [productoEdit, setProductoEdit] = useState<any | null>(null);
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [showColumnFilters, setShowColumnFilters] = useState(false);
 
   const columns = useMemo<ColumnDef<Producto>[]>(() => [    
-    { accessorKey: "codigo", header: "Código" },
-    { accessorKey: "nombre", header: "Nombre" },
+    { accessorKey: "codigo", header: "Código" , enableColumnFilter: true},
+    { accessorKey: "nombre", header: "Nombre", enableColumnFilter: true },
     { accessorKey: "descripcion", header: "Descripción" },
     {
       header: "Categoría",
-      accessorFn: (row) => row.categoria?.nombre ?? "-"
+      accessorFn: (row) => row.categoria?.nombre ?? "-",
+      id: "categoria",
+      enableColumnFilter: true,
     },        
     {
       accessorKey: "activo",
@@ -99,8 +102,9 @@ export default function ProductoTable({ productos, onEdit, onDelete,onSaved }: P
   const table = useReactTable({
     data: productos,
     columns,
-    state: { globalFilter: filter, pagination: { pageIndex, pageSize } },
+    state: { globalFilter: filter,columnFilters, pagination: { pageIndex, pageSize } },
     onGlobalFilterChange: setFilter,
+    onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -156,6 +160,20 @@ export default function ProductoTable({ productos, onEdit, onDelete,onSaved }: P
           className="border px-3 py-2 rounded-lg shadow-sm w-1/3 border border-gray-600"
         />
 
+       <Button
+        onClick={() => {
+          setShowColumnFilters(prev => {
+            if (prev) setColumnFilters([]); // 👈 limpia filtros al ocultar
+            return !prev;
+          });
+        }}
+        className={`${
+          showColumnFilters ? "bg-red-600 hover:bg-red-700" : "bg-blue-600 hover:bg-blue-700"
+        } text-white`}
+      >
+        {showColumnFilters ? "🟢 Ocultar filtros" : "🔴Activar filtros"}
+      </Button>
+
          {/* Crear Cliente */}
         <Button
           onClick={() => setIsOpen(true)} // <-- Aquí podrías abrir modal o ir a formulario          
@@ -191,9 +209,6 @@ export default function ProductoTable({ productos, onEdit, onDelete,onSaved }: P
             />
           </Modal>
 
-
-        
-
         {/* Exportar */}
         <div className="flex gap-3">
           <Button onClick={exportToExcel}  title="Exportar Excel ">
@@ -212,15 +227,33 @@ export default function ProductoTable({ productos, onEdit, onDelete,onSaved }: P
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
-                <th
-                  key={header.id}
-                  className="p-2 cursor-pointer hover:bg-blue-700 transition"
+                
+                <th key={header.id} className="p-2 text-center">
+                <div
+                  className="cursor-pointer hover:bg-blue-700 transition"
                   onClick={header.column.getToggleSortingHandler()}
                 >
                   {flexRender(header.column.columnDef.header, header.getContext())}
                   {header.column.getIsSorted() === "asc" && " ▲"}
                   {header.column.getIsSorted() === "desc" && " ▼"}
+                </div>
+
+                  {/* 🔎 Filtro por columna */}
+                  {showColumnFilters && header.column.getCanFilter() && (
+                  <input
+                    value={(header.column.getFilterValue() ?? "") as string}
+                    onChange={(e) => {
+                      header.column.setFilterValue(e.target.value);
+                      setPageIndex(0);
+                    }}
+                    placeholder="Filtrar..."
+                    className="mt-1 w-full rounded border px-2 py-1 text-sm text-white"
+                    onClick={(e) => e.stopPropagation()}
+                  />
+                )}
+
                 </th>
+
               ))}
             </tr>
           ))}
