@@ -25,6 +25,7 @@ from app.routers import roles_router
 from app.routers import permisos_router
 from app.routers import configuracionimpresora_router
 from app.routers import movimientos_router
+from app.routers import documentos_tipo_router
 
 
 from fastapi.middleware.cors import CORSMiddleware
@@ -69,6 +70,8 @@ app.include_router(roles_router.router)
 app.include_router(permisos_router.router)
 app.include_router(configuracionimpresora_router.router)
 app.include_router(movimientos_router.router)
+app.include_router(documentos_tipo_router.router)
+
 
 
 @app.get("/")

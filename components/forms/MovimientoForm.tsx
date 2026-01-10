@@ -13,6 +13,12 @@ import {
 } from "@/lib/api/productos";
 
 import {
+  DocumentosTipo,
+  obtenerDocumentosTipo,  
+} from "@/lib/api/documentosTipo";
+
+
+import {
   Producto,
   ProductoPresentacion,
   ProductoVariante,
@@ -20,6 +26,7 @@ import {
 
 import SelectSearch from "@/components/ui/selectSearch";
 import Button from "@/components/ui/button";
+
 
 /* ===========================
    Tipado fila con ID interno
@@ -46,6 +53,10 @@ export default function MovimientoInventarioForm() {
     documento_id: 0,
   });
 
+
+    const [documentos_tipo, setDocumentosTipo] = useState<DocumentosTipo[]>([]);
+    const [documentos_tipoId, setDocumentosTipoId] = useState<number | null>(null);
+
   /* ===========================
      Estados
   =========================== */
@@ -71,6 +82,16 @@ export default function MovimientoInventarioForm() {
     obtenerProductosActivos()
       .then(setProductos)
       .catch(console.error);
+  }, []);
+
+
+  // ⚡ Traer documentos tipo al cargar el componente
+  useEffect(() => {
+    const cargarDocumentos = async () => {
+      const docs = await obtenerDocumentosTipo();
+      setDocumentosTipo(docs);
+    };
+    cargarDocumentos();
   }, []);
 
   /* ===========================
@@ -222,6 +243,20 @@ export default function MovimientoInventarioForm() {
     <form onSubmit={handleSubmit} className="space-y-6">
 
         <div className="grid grid-cols-3 gap-4 max-w-3xl font-bold">
+       
+        <SelectSearch
+           items={documentos_tipo.map(doc => ({
+              id: doc.id,
+              nombre: doc.descripcion, // ⚡ mapear descripcion a nombre
+            }))}
+            value={documentos_tipoId}
+            onChange={(value) => {
+              setDocumentosTipoId(value);              
+            }}
+            className="w-full border rounded p-2"
+         />
+         
+
         <select
           value={movimientos[0].tipo_movimiento}
           onChange={(e) =>
@@ -240,23 +275,6 @@ export default function MovimientoInventarioForm() {
           <option value="SALIDA">Salida</option>
         </select>
 
-        <select
-          value={movimientos[0].documento_tipo}
-          onChange={(e) =>
-            setMovimientos(
-              movimientos.map((m) => ({
-                ...m,
-                documento_tipo: e.target.value,
-              }))
-            )
-          }
-          className="border p-2"
-          required
-        >
-          <option value="">Tipo documento</option>
-          <option value="COMPRA">Compra</option>
-          <option value="AJUSTE">Ajuste</option>
-        </select>
 
       </div>
 
