@@ -255,22 +255,23 @@ export default function MovimientoInventarioForm() {
             onChange={(value) => {
               setDocumentosTipoId(value); 
               // Aquí asignamos el tipo de movimiento que corresponde al documento seleccionado
-              const tipoMovimientoDelDoc = documentos_tipo.find(doc => doc.id === value)?.tipo_movimiento || '';
+              const docSeleccionado  = documentos_tipo.find(doc => doc.id === value)?.tipo_movimiento || '';
+
+              const tipoMovimientoDelDoc = docSeleccionado
+              ? docSeleccionado === 'E'
+                ? 'ENTRADA'
+                : docSeleccionado === 'S'
+                ? 'SALIDA'
+                : 'NEUTRO'
+              : 'NEUTRO';             
               setMovimientos(movimientos.map(m => ({
                 ...m,
                 tipo_movimiento: tipoMovimientoDelDoc,
-              })));
-              alert(tipoMovimientoDelDoc)
+              })));             
               setTipoMovimiento(tipoMovimientoDelDoc); // si quieres actualizar el input también    
             }}
            
          />
-
-        <Input       
-          value={tipomovimiento}
-          onChange={(e) => setTipoMovimiento(e.target.value)}
-          required
-        />
 
         <select
           value={movimientos[0].tipo_movimiento}
@@ -284,10 +285,12 @@ export default function MovimientoInventarioForm() {
           }
           className="border p-2"
           required
+          disabled
         >
           <option value="">Tipo movimiento</option>
-          <option value="ENTRADA">Entrada</option>
-          <option value="SALIDA">Salida</option>
+          <option value="ENTRADA">ENTRADA</option>
+          <option value="SALIDA">SALIDA</option>
+          <option value="NEUTRO">NEUTRO</option>          
         </select>
 
 
