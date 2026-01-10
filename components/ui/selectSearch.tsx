@@ -42,7 +42,7 @@ export default function SelectSearch({
   const [open, setOpen] = useState(false);
 
   return (
-    <label className={cn("flex flex-col text-xs w-full", className)}>
+    <label className={cn("flex flex-col text-md w-full", className)}>
       {label && (
         <span className="mb-1 font-semibold text-gray-700">
           {label}
@@ -54,8 +54,8 @@ export default function SelectSearch({
           <button
             type="button"
             className={cn(
-              "border rounded px-2 py-1.5 text-xs w-full flex justify-between items-center",
-              "bg-white hover:bg-gray-50 transition"
+              "text-md w-full flex justify-between items-center",
+              "bg-white hover:bg-gray-50 transition border px-2 py-1.5 rounded-lg focus:outline-none focus:ring focus:ring-blue-300 border-gray-400"
             )}
           >
             <span className="truncate text-left">

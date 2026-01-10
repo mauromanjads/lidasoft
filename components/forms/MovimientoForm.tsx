@@ -245,6 +245,7 @@ export default function MovimientoInventarioForm() {
         <div className="grid grid-cols-3 gap-4 max-w-3xl font-bold">
        
         <SelectSearch
+        label="Tipo Documento"
            items={documentos_tipo.map(doc => ({
               id: doc.id,
               nombre: doc.descripcion, // ⚡ mapear descripcion a nombre
@@ -253,7 +254,7 @@ export default function MovimientoInventarioForm() {
             onChange={(value) => {
               setDocumentosTipoId(value);              
             }}
-            className="w-full border rounded p-2"
+           
          />
          
 
@@ -309,7 +310,7 @@ export default function MovimientoInventarioForm() {
                     onChange={(value) => {
                       onProductoChange(mov.row_id, Number(value));
                     }}
-                    className="w-full border rounded p-2"
+                    
                   />
 
                   </td>
