@@ -1,6 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from sqlalchemy.orm import Session
 from sqlalchemy import or_
+from app.models.documentos_tipo import DocumentosTipo
+from app.models.consecutivos_documentos import ConsecutivosDocumentos
 
 from app.dependencias.empresa import get_empresa_db
 from app.models.sucursales import Sucursal
@@ -14,34 +16,51 @@ router = APIRouter(prefix="/sucursales", tags=["sucursales"])
 
 
 # 👉 Crear sucursal
+
 @router.post("/", response_model=SucursalResponse)
 def crear_sucursal(
     request: Request,
     data: SucursalCreate,
     db: Session = Depends(get_empresa_db)
-):
-    usuario_logueado = request.cookies.get("usuario")
+):    
 
-    # Validar duplicado por código o nombre
+    # 🔹 Validar duplicado por nombre
     existe = db.query(Sucursal).filter(
-        or_(            
-            Sucursal.nombre == data.nombre
-        )
+        Sucursal.nombre == data.nombre
     ).first()
 
     if existe:
         raise HTTPException(
             status_code=409,
-            detail="Ya existe una sucursal con ese código o nombre"
+            detail="Ya existe una sucursal con ese nombre"
         )
 
+    # 🔹 Crear la sucursal
     db_sucursal = Sucursal(
-        **data.model_dump(),
+        **data.model_dump()
     )
-
+    
     db.add(db_sucursal)
+    db.flush()  # 🔑 Necesario para obtener el id antes del commit
+    sucursal_id = db_sucursal.id
+
+    # 🔹 Crear consecutivos de documentos iniciales (ultimo_numero = 0)
+    tipos_documento = db.query(DocumentosTipo).filter(DocumentosTipo.activo == True).all()
+
+    print("Tipos de documento encontrados:", tipos_documento)
+
+    for doc_tipo in tipos_documento:
+        consecutivo = ConsecutivosDocumentos(
+            tipo_documento=doc_tipo.codigo,
+            id_sucursal=sucursal_id,
+            ultimo_numero=0
+        )
+        db.add(consecutivo)
+
+    # 🔹 Commit final
     db.commit()
     db.refresh(db_sucursal)
+
     return db_sucursal
 
 
