@@ -6,6 +6,7 @@ export interface DocumentosTipo {
   id: number;
   codigo: string;
   descripcion: string;
+  tipo_movimiento: string;
 }
 
 export const obtenerDocumentosTipo = async (): Promise<DocumentosTipo[]> => {

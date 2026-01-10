@@ -25,6 +25,7 @@ import {
 } from "@/app/types";
 
 import SelectSearch from "@/components/ui/selectSearch";
+import Input from "@/components/ui/input";
 import Button from "@/components/ui/button";
 
 
@@ -56,7 +57,8 @@ export default function MovimientoInventarioForm() {
 
     const [documentos_tipo, setDocumentosTipo] = useState<DocumentosTipo[]>([]);
     const [documentos_tipoId, setDocumentosTipoId] = useState<number | null>(null);
-
+   
+    const [tipomovimiento, setTipoMovimiento] = useState("");
   /* ===========================
      Estados
   =========================== */
@@ -242,21 +244,33 @@ export default function MovimientoInventarioForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
 
-        <div className="grid grid-cols-3 gap-4 max-w-3xl font-bold">
+        <div className="grid grid-cols-3 gap-4 max-w-3xl ">
        
-        <SelectSearch
-        label="Tipo Documento"
+        <SelectSearch           
            items={documentos_tipo.map(doc => ({
               id: doc.id,
               nombre: doc.descripcion, // ⚡ mapear descripcion a nombre
             }))}
             value={documentos_tipoId}
             onChange={(value) => {
-              setDocumentosTipoId(value);              
+              setDocumentosTipoId(value); 
+              // Aquí asignamos el tipo de movimiento que corresponde al documento seleccionado
+              const tipoMovimientoDelDoc = documentos_tipo.find(doc => doc.id === value)?.tipo_movimiento || '';
+              setMovimientos(movimientos.map(m => ({
+                ...m,
+                tipo_movimiento: tipoMovimientoDelDoc,
+              })));
+              alert(tipoMovimientoDelDoc)
+              setTipoMovimiento(tipoMovimientoDelDoc); // si quieres actualizar el input también    
             }}
            
          />
-         
+
+        <Input       
+          value={tipomovimiento}
+          onChange={(e) => setTipoMovimiento(e.target.value)}
+          required
+        />
 
         <select
           value={movimientos[0].tipo_movimiento}

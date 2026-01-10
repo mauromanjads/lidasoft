@@ -55,7 +55,7 @@ export default function SelectSearch({
             type="button"
             className={cn(
               "text-md w-full flex justify-between items-center",
-              "bg-white hover:bg-gray-50 transition border px-2 py-1.5 rounded-lg focus:outline-none focus:ring focus:ring-blue-300 border-gray-400"
+              "bg-white hover:bg-gray-50 transition border px-2 py-2 rounded-lg focus:outline-none focus:ring focus:ring-blue-300 border-gray-400"
             )}
           >
             <span className="truncate text-left">
