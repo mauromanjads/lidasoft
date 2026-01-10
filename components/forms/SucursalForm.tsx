@@ -157,6 +157,23 @@ export default function SucursalForm({
           />
         </div>
 
+         {/* Activo */}
+        <div className="flex flex-col w-full">
+          <label className="text-sm font-semibold mb-1 text-gray-700">
+            Estado
+          </label>
+          <select
+            name="estado"
+            value={formData.estado ?? false}
+            onChange={handleChange}
+            className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            required
+          >
+            <option value="true">Activo</option>
+            <option value="false">Inactivo</option>
+          </select>
+        </div>
+
         {/* Dirección */}
         <div className="flex flex-col w-full md:col-span-2">
           <label className="text-sm font-semibold mb-1 text-gray-700">
@@ -170,8 +187,8 @@ export default function SucursalForm({
           />
         </div>
 
-        {/* Dirección */}
-        <div className="flex flex-col w-full md:col-span-2">
+        {/* Correo */}
+        <div className="flex flex-col w-full">
           <label className="text-sm font-semibold mb-1 text-gray-700">
             Correo
           </label>
@@ -197,22 +214,7 @@ export default function SucursalForm({
           />
         </div>
 
-        {/* Activo */}
-        <div className="flex flex-col w-full">
-          <label className="text-sm font-semibold mb-1 text-gray-700">
-            Estado
-          </label>
-          <select
-            name="estado"
-            value={formData.estado ?? false}
-            onChange={handleChange}
-            className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            required
-          >
-            <option value="true">Activo</option>
-            <option value="false">Inactivo</option>
-          </select>
-        </div>
+       
       </div>
 
       {/* ⚠️ ERRORES */}
