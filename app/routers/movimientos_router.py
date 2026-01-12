@@ -15,7 +15,8 @@ from app.schemas.movimientos_schema import MovimientoInventarioLote, MovimientoI
 from app.dependencias.empresa import get_empresa_db
 
 from app.services.inventario_service import (
-    actualizar_inventario,    
+    actualizar_inventario,
+    actualizar_inventario_encabezado,
 )
 
 router = APIRouter(
@@ -58,17 +59,17 @@ def crear_movimientos_lote(
 
                 movimiento = actualizar_inventario(
                     db=db,
+                    documento_inventario_id = 1,
                     producto_id=mov.producto_id,
                     presentacion_id=mov.presentacion_id,
                     variante_id=mov.variante_id,
-                    cantidad=mov.cantidad,
-                    documento_tipo=mov.documento_tipo,
+                    cantidad=mov.cantidad,                    
                     tipo_movimiento=mov.tipo_movimiento,
-                    documento_id=mov.documento_id,
                     nombre_producto="",
                     controla_inventario=controla_inventario,
                     id_sucursal=mov.id_sucursal,
                     id_usuario=mov.id_usuario,
+                    precio_unitario=1
                 )
 
                 movimientos_creados.append(movimiento)

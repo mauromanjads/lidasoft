@@ -8,7 +8,7 @@ class MovimientoInventarioBase(BaseModel):
     presentacion_id: int
     variante_id: Optional[int] = None
     cantidad: int
-    tipo_movimiento: str
+    tipo_movimiento: Optional[str] = None
     documento_tipo: Optional[str] = None
     documento_id: Optional[int] = None
     id_sucursal: int
