@@ -25,6 +25,7 @@ from app.database_master import get_db_master
 
 from app.services.inventario_service import (
     actualizar_inventario,
+    actualizar_inventario_encabezado,
     InventarioError
 )
 
@@ -121,20 +122,41 @@ def crear_factura(
             db.add(factura)
 
             db.flush()
+
+            tiene_productos_con_inventario = any(
+                item.producto.control_inventario == "S"
+                for item in factura.detalles
+            )
+            if not tiene_productos_con_inventario:
+                # ❌ No crear documento de inventario
+                return
+
+            movimiento = actualizar_inventario_encabezado(
+                db=db,                                 
+                documento_tipo="SAL_INV",
+                tipo_movimiento="SALIDA",                                                    
+                id_sucursal=factura.id_sucursal,
+                id_usuario=factura.id_usuario,
+                origen_tipo = "FACTURA",
+                origen_id = factura.id,
+                costo_total = total_total
+
+            )         
+
             for det in factura.detalles:
                 actualizar_inventario( 
-                    db=db,                 
+                    db=db, 
+                    documento_inventario_id=movimiento.id,   
                     producto_id=det.producto_id,
                     presentacion_id=det.presentacion_id,
                     variante_id=det.variante_id,
-                    cantidad=det.cantidad,
-                    documento_tipo="FACTURA",
-                    tipo_movimiento="SALIDA",
-                    documento_id=factura.id,
+                    cantidad=det.cantidad,                    
+                    tipo_movimiento="SALIDA",                    
                     nombre_producto=det.descripcion,
                     controla_inventario=det.producto.control_inventario,
                     id_sucursal=factura.id_sucursal,
-                    id_usuario=factura.id_usuario,
+                    id_usuario=factura.id_usuario,                    
+                    precio_unitario= det.precio_unitario
                 )
 
             # 6️⃣ Actualizar consecutivo en resolución

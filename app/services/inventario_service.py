@@ -1,25 +1,78 @@
 from sqlalchemy.orm import Session
 from app.models.inventario import Inventario
 from app.models.movimientos import MovimientoInventario
+from app.models.documentos_inventario import DocumentosInventario
+from app.models.consecutivos_documentos import ConsecutivosDocumentos
 
 
 class InventarioError(Exception):
     pass
 
+def actualizar_inventario_encabezado(
+    db: Session,    
+    documento_tipo: str, #INV_INI, ENT_INV, SAL_INV
+    tipo_movimiento: str,  # "ENTRADA" o "SALIDA"           
+    id_sucursal: int,
+    id_usuario: int,
+    origen_tipo = str,
+    origen_id = int,
+    costo_total = float
+
+):
+    """Función genérica para ingresar o descontar inventario según tipo_movimiento."""
+
+    
+    consecutivo = (
+        db.query(ConsecutivosDocumentos)
+        .filter(
+            ConsecutivosDocumentos.tipo_documento == documento_tipo,
+            ConsecutivosDocumentos.id_sucursal == id_sucursal
+        )
+        .with_for_update()  # 🔒 bloqueo de fila
+        .first()
+    )
+
+    if not consecutivo:
+        raise InventarioError(
+            status_code=400,
+            detail="No existe consecutivo configurado para SAL_INV"
+        )
+
+    nuevo_numero = consecutivo.ultimo_numero + 1
+
+# 🧾 Registrar movimiento 
+    movimiento = DocumentosInventario(        
+        tipo_documento=documento_tipo,
+        numero = nuevo_numero,        
+        costo_total = costo_total,
+        id_sucursal=id_sucursal,
+        id_usuario=id_usuario,
+        origen_tipo = origen_tipo,
+        origen_id = origen_id,        
+    )
+
+    db.add(movimiento)
+
+    consecutivo.ultimo_numero = nuevo_numero
+    
+    db.flush()
+
+    return movimiento
 
 def actualizar_inventario(
     db: Session,
+    documento_inventario_id: int,
     producto_id: int,
     presentacion_id: int,
     variante_id: int | None,
-    cantidad: int,
-    documento_tipo: str,
-    tipo_movimiento: str,  # "ENTRADA" o "SALIDA"
-    documento_id: int,
+    cantidad: int,    
+    tipo_movimiento: str,  # "ENTRADA" o "SALIDA"   
     nombre_producto: str,
     controla_inventario: str,
     id_sucursal: int,
-    id_usuario: int,
+    id_usuario: int,   
+    precio_unitario = float,
+
 ):
     """Función genérica para ingresar o descontar inventario según tipo_movimiento."""
     
@@ -69,18 +122,19 @@ def actualizar_inventario(
     else:
         raise InventarioError(f"Tipo de movimiento inválido: {tipo_movimiento}")
 
-    # 🧾 Registrar movimiento
-    movimiento = MovimientoInventario(
+    
+    # 🧾 Registrar movimiento detalle
+    movimiento_detalle = MovimientoInventario(
         producto_id=producto_id,
         presentacion_id=presentacion_id,
         variante_id=variante_id,
-        cantidad=cantidad,
-        tipo_movimiento=tipo_movimiento,
-        documento_tipo=documento_tipo,
-        documento_id=documento_id,
+        cantidad=cantidad,                  
         id_sucursal=id_sucursal,
         id_usuario=id_usuario,
+        documento_id = documento_inventario_id,
+        costo_unitario = precio_unitario,
+        costo_total = precio_unitario * cantidad
     )
-    db.add(movimiento)
+    db.add(movimiento_detalle)
     db.flush()
-    return movimiento
+    return movimiento_detalle

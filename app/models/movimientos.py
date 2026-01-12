@@ -10,12 +10,13 @@ class MovimientoInventario(Base):
     producto_id = Column(Integer, ForeignKey("productos.id"), nullable=False)
     presentacion_id = Column(Integer, ForeignKey("productos_presentaciones.id"), nullable=False)
     variante_id = Column(Integer, ForeignKey("productos_variantes.id"), nullable=True)
-    cantidad = Column(Integer, nullable=False)
-    tipo_movimiento = Column(String(50), nullable=False)
-    documento_tipo = Column(String(50), nullable=True)
+    cantidad = Column(Integer, nullable=False)        
     documento_id = Column(Integer, nullable=True)
     fecha = Column(DateTime, nullable=False, server_default=func.now())
     id_sucursal = Column(Integer, nullable=False)
     id_usuario = Column(Integer, nullable=False)
+    costo_unitario = Column(Numeric(14, 4), nullable=False, default=0)
+    costo_total = Column(Numeric(14, 4), nullable=False, default=0)
+
 
 
