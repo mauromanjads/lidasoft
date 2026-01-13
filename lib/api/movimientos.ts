@@ -15,6 +15,8 @@ export interface MovimientoaData {
     tipo_movimiento: string
     documento_tipo: string
     documento_id: number
+    costo_unitario:number | null
+    costo_total:number | null
 }
 
 export type MovimientoLoteData = MovimientoaData[];

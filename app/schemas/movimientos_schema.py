@@ -13,6 +13,8 @@ class MovimientoInventarioBase(BaseModel):
     documento_id: Optional[int] = None
     id_sucursal: int
     id_usuario: int
+    costo_unitario : Optional[float] = None
+    costo_total : Optional[float] = None
 
 class MovimientoInventarioCreate(MovimientoInventarioBase):
     pass

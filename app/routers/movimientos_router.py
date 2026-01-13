@@ -69,7 +69,7 @@ def crear_movimientos_lote(
                     controla_inventario=controla_inventario,
                     id_sucursal=mov.id_sucursal,
                     id_usuario=mov.id_usuario,
-                    precio_unitario=1
+                    precio_unitario=mov.costo_unitario
                 )
 
                 movimientos_creados.append(movimiento)

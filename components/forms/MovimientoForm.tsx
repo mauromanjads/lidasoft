@@ -52,6 +52,8 @@ export default function MovimientoInventarioForm() {
     tipo_movimiento: "",
     documento_tipo: "",
     documento_id: 0,
+    costo_unitario:0,
+    costo_total:0
   });
 
 
@@ -68,6 +70,15 @@ export default function MovimientoInventarioForm() {
 
   const [productos, setProductos] = useState<Producto[]>([]);  
   
+  const recalcularFila = (mov: MovimientoFila): MovimientoFila => {
+  const cantidad = mov.cantidad ?? 0;
+  const costoUnitario = mov.costo_unitario ?? 0;
+
+  return {
+    ...mov,
+    costo_total: Number((cantidad * costoUnitario).toFixed(2)),
+  };
+};
 
   const [presentacionesPorFila, setPresentacionesPorFila] = useState<
     Record<number, ProductoPresentacion[]>
@@ -100,16 +111,26 @@ export default function MovimientoInventarioForm() {
      Helpers
   =========================== */
   const handleChange = (
-    rowId: number,
-    field: keyof MovimientoaData,
-    value: any
-  ) => {
-    setMovimientos((prev) =>
-      prev.map((m) =>
-        m.row_id === rowId ? { ...m, [field]: value } : m
-      )
-    );
-  };
+  rowId: number,
+  field: keyof MovimientoaData,
+  value: any
+) => {
+  setMovimientos((prev) =>
+    prev.map((m) => {
+      if (m.row_id !== rowId) return m;
+
+      const actualizado = { ...m, [field]: value } as MovimientoFila;
+
+      // 🔁 Recalcular total si cambia cantidad o costo
+      if (field === "cantidad" || field === "costo_unitario") {
+        return recalcularFila(actualizado);
+      }
+
+      return actualizado;
+    })
+  );
+};
+
 
   const agregarFila = () => {
     setMovimientos((prev) => [...prev, nuevaFila()]);
@@ -238,6 +259,11 @@ export default function MovimientoInventarioForm() {
 
   };
 
+  const totalGeneral = movimientos.reduce(
+    (acc, m) => acc + (m.costo_total ?? 0),
+    0
+  );
+
   /* ===========================
      Render
   =========================== */
@@ -305,6 +331,8 @@ export default function MovimientoInventarioForm() {
               <th className="border p-2 sticky top-0  bg-[#1d4e89]">Presentación</th>
               <th className="border p-2 sticky top-0  bg-[#1d4e89]">Variante</th>
               <th className="border p-2 sticky top-0  bg-[#1d4e89]">Cantidad</th>
+              <th className="border p-2 sticky top-0  bg-[#1d4e89]">Costo Unitario</th>
+              <th className="border p-2 sticky top-0  bg-[#1d4e89]">Total</th>
               <th className="border p-2 sticky top-0  bg-[#1d4e89]"></th>
             </tr>
           </thead>
@@ -394,6 +422,28 @@ export default function MovimientoInventarioForm() {
                   />
                 </td>
 
+                {/* Costo Unitario */}
+
+                <td className="p-1">
+                  <input
+                    type="number"
+                    min={1}
+                    value={mov.costo_unitario ?? 0 }  
+                    onChange={(e) =>
+                      handleChange(
+                        mov.row_id,
+                        "costo_unitario",
+                        Number(e.target.value)
+                      )
+                    }
+                    className="border p-1 w-full"
+                  />
+                </td>
+                
+                 {/* Total */}
+                <td className="p-1 text-right font-semibold">  ${ (mov.costo_total ?? 0).toLocaleString("es-CO")}</td>
+
+
                 <td className="text-center">
                   {movimientos.length > 1 && (
                     <button
@@ -409,6 +459,11 @@ export default function MovimientoInventarioForm() {
             ))}
           </tbody>
         </table>
+
+        <div className="text-right font-bold text-lg">
+            Total movimiento: ${totalGeneral.toLocaleString("es-CO")}
+        </div>
+
       </div>
       {/* Acciones */}
       <div className="flex gap-3">
