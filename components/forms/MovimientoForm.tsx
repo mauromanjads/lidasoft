@@ -7,7 +7,7 @@ import {
 } from "@/lib/api/movimientos";
 
 import {
-  obtenerProductosActivos,
+  obtenerProductosActivosMov,
   listarPresentaciones,
   listarVariantes,
 } from "@/lib/api/productos";
@@ -92,7 +92,7 @@ export default function MovimientoInventarioForm() {
      Cargar productos
   =========================== */
   useEffect(() => {
-    obtenerProductosActivos()
+    obtenerProductosActivosMov()
       .then(setProductos)
       .catch(console.error);
   }, []);
@@ -205,7 +205,8 @@ export default function MovimientoInventarioForm() {
         (m) =>
           !m.producto_id ||
           !m.presentacion_id ||
-          m.cantidad <= 0
+          m.cantidad <= 0 ||
+          (m.costo_unitario ?? 0) <= 0 
       )
     ) {      
 
@@ -239,6 +240,7 @@ export default function MovimientoInventarioForm() {
       setMovimientos([nuevaFila()]);
       setPresentacionesPorFila({});
       setVariantesPorFila({});
+      setDocumentosTipoId(null);      
     } catch (error: any) {
       console.error(error);
       
@@ -252,11 +254,7 @@ export default function MovimientoInventarioForm() {
           timer: 4000,
           timerProgressBar: true,
         });
-
-      
-
     }
-
   };
 
   const totalGeneral = movimientos.reduce(
@@ -272,32 +270,36 @@ export default function MovimientoInventarioForm() {
 
         <div className="grid grid-cols-3 gap-4 max-w-3xl ">
        
-        <SelectSearch           
-           items={documentos_tipo.map(doc => ({
-              id: doc.id,
-              nombre: doc.descripcion, // ⚡ mapear descripcion a nombre
-            }))}
-            value={documentos_tipoId}
-            onChange={(value) => {
-              setDocumentosTipoId(value); 
-              // Aquí asignamos el tipo de movimiento que corresponde al documento seleccionado
-              const docSeleccionado  = documentos_tipo.find(doc => doc.id === value)?.tipo_movimiento || '';
+       <SelectSearch
+          items={documentos_tipo.map(doc => ({
+            id: doc.id,
+            nombre: doc.descripcion,
+          }))}
+          value={documentos_tipoId}
+          onChange={(value) => {
+            setDocumentosTipoId(value);
 
-              const tipoMovimientoDelDoc = docSeleccionado
-              ? docSeleccionado === 'E'
-                ? 'ENTRADA'
-                : docSeleccionado === 'S'
-                ? 'SALIDA'
-                : 'NEUTRO'
-              : 'NEUTRO';             
-              setMovimientos(movimientos.map(m => ({
+            const docSeleccionado = documentos_tipo.find(doc => doc.id === value);
+
+            const tipoMovimientoDelDoc =
+              docSeleccionado?.tipo_movimiento === "E"
+                ? "ENTRADA"
+                : docSeleccionado?.tipo_movimiento === "S"
+                ? "SALIDA"
+                : "NEUTRO";
+
+            setMovimientos(prev =>
+              prev.map(m => ({
                 ...m,
-                tipo_movimiento: tipoMovimientoDelDoc,
-              })));             
-              setTipoMovimiento(tipoMovimientoDelDoc); // si quieres actualizar el input también    
-            }}
-           
-         />
+                documento_tipo: docSeleccionado?.codigo ?? "", // 🔥 ENT_INV
+                tipo_movimiento: tipoMovimientoDelDoc,              // 🔥 ENTRADA / SALIDA
+              }))
+            );
+
+            setTipoMovimiento(tipoMovimientoDelDoc);
+          }}
+        />
+
 
         <select
           value={movimientos[0].tipo_movimiento}

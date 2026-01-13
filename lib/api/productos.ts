@@ -28,6 +28,15 @@ export const obtenerProductosActivos = async (): Promise<Producto[]> => {
   return productos.filter(producto => producto.activo);
 };
 
+// ===================== PRODUCTOS ACTIVOS =====================
+export const obtenerProductosActivosMov = async (): Promise<Producto[]> => {
+  const productos = await fetchAPI<Producto[]>(`${API_URL}/productos`  ,{
+      headers: authHeaders(),
+    });
+  return productos.filter(producto => producto.activo && producto.control_inventario ==="S");
+};
+
+
 export const crearProducto = (data: Partial<Producto>): Promise<Producto> => {
   
   return fetchAPI<Producto>(`${API_URL}/productos`, {
