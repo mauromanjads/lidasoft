@@ -39,7 +39,11 @@ def crear_movimientos_lote(
         movimientos_creados = []
 
         with db.begin():  # 🔐 TRANSACCIÓN ATÓMICA
-        
+            valortotal = 0
+            for mov in data.movimientos:
+               valortotal = valortotal + (mov.cantidad * mov.costo_unitario)
+
+
             movimiento_enc = actualizar_inventario_encabezado(
                 db=db,                                 
                 documento_tipo=data.movimientos[0].documento_tipo,     
@@ -48,7 +52,7 @@ def crear_movimientos_lote(
                 id_usuario=data.movimientos[0].id_usuario,
                 origen_tipo = "",
                 origen_id = 0,
-                costo_total = 0
+                costo_total = valortotal
             )         
 
             for mov in data.movimientos:
