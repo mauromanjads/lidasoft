@@ -58,7 +58,7 @@ def crear_factura(
                 raise HTTPException(status_code=404, detail="Resolución no encontrada")
 
             # 2️⃣ Calcular nuevo consecutivo
-            nuevo_consecutivo = resolucion.rango_actual + 1
+            nuevo_consecutivo = resolucion.rango_actual
 
             # 3️⃣ Calcular totales
             subtotal_total = Decimal(0)
@@ -160,7 +160,7 @@ def crear_factura(
                 )
 
             # 6️⃣ Actualizar consecutivo en resolución
-            resolucion.rango_actual = nuevo_consecutivo
+            resolucion.rango_actual = nuevo_consecutivo + 1            
 
         # 🔁 commit automático si todo salió bien
         db.refresh(factura)
