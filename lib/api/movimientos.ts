@@ -25,7 +25,7 @@ export type MovimientoLoteData = MovimientoaData[];
 export async function actualizarInventario(movimientos: MovimientoLoteData) {
   try {
     // Mostramos lo que vamos a enviar para depuración
-    console.log("Enviando al servidor:", JSON.stringify(movimientos, null, 2));
+   // console.log("Enviando al servidor:", JSON.stringify(movimientos, null, 2));
     
       // Capturar usuario y sucursal del localStorage
     const user = JSON.parse(localStorage.getItem("usuario") || "{}");
