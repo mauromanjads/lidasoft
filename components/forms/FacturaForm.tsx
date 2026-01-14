@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import Button from "@/components/ui/button";
+import Buttonsec from "@/components/ui/buttonsec";
 import Input from "@/components/ui/input";
 import SelectSearch from "@/components/ui/selectSearch";
 import { FacturaForm, FacturaDetalleForm } from "@/app/types/factura";
@@ -623,12 +624,22 @@ const cargarResolucionPorTipo = async (tipoDocumento?: string,predeterminado?: s
 
        </div>
 
-      <Button
-        type="button"
-        onClick={agregarDetalle} className="mb-4"
-      >
-        Agregar Producto
-      </Button>
+     <div className="flex justify-between items-center mb-4 pt-6">
+        <Buttonsec type="button" onClick={agregarDetalle}>
+          <div className="flex items-center gap-2">
+            <img src="/icons/plus.png" alt="Agregar" className="w-6 h-6" />
+            <span>Agregar Producto</span>
+          </div>
+        </Buttonsec>
+
+        <Button type="button">
+          <div className="flex items-center gap-2">
+            <img src="/icons/plus.png" alt="Guardar" className="w-6 h-6" />
+            <span>Guardar Factura</span>
+          </div>
+        </Button>
+      </div>
+
 
       {/* Totales */}
       <div className="text-right space-y-1 mb-4">
@@ -638,9 +649,7 @@ const cargarResolucionPorTipo = async (tipoDocumento?: string,predeterminado?: s
         <div className="font-bold">Total: {formatCOP(totales.total)}</div>
       </div>
 
-     <Button type="submit" className="w-full">
-        Guardar Factura
-      </Button>
+      
     </div>
    </form>
   );
