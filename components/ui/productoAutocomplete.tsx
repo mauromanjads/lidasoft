@@ -5,6 +5,8 @@ import { createPortal } from "react-dom";
 import Input from "./input";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
+import Button from "@/components/ui/button";
+
 import {
   obtenerProductosActivos,
   listarPresentaciones,
@@ -230,73 +232,116 @@ const ProductWithPresentation: React.FC<Props> = ({
      Modal opciones
   ======================= */
 
-  const abrirModalOpciones = (
-    producto: Producto,
-    opciones: OpcionVenta[]
-  ) => {
-    ReactSwal.fire({
-      title: producto.nombre,
-      width: 1000,
-      html: (
-        <div className="max-h-[65vh] overflow-y-auto">
-          <table className="w-full text-sm border">
-            <thead className="bg-gray-100">
-              <tr>
-                <th>Producto</th>
-                <th>Variante</th>
-                <th>Presentación</th>
-                <th>Inventario</th>
-                <th>Precio</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              {opciones.map((o, i) => {
-                const sinStock =
-                  o.control_inventario === "S" && o.stock <= 0;
+const abrirModalOpciones = (
+  producto: Producto,
+  opciones: OpcionVenta[]
+) => {
+  ReactSwal.fire({
+    title: producto.nombre,
+    width: 1000,
+    html: (
+      <div className="max-h-[65vh] overflow-y-auto rounded-lg">
+        <table className="w-full text-sm border border-gray-200 rounded-lg overflow-hidden">
+          <thead className="bg-gray-50 sticky top-0 z-10">
+            <tr className="text-gray-600 uppercase text-xs">
+              <th className="px-3 py-2 text-left">Producto</th>
+              <th className="px-3 py-2 text-left">Variante</th>
+              <th className="px-3 py-2 text-left">Presentación</th>
+              <th className="px-3 py-2 text-center">Stock</th>
+              <th className="px-3 py-2 text-right">Precio</th>
+              <th className="px-3 py-2 text-center"></th>
+            </tr>
+          </thead>
 
-                return (
-                  <tr key={i} className={sinStock ? "opacity-40" : ""}>
-                    <td>{o.producto_nombre}</td>
-                    <td>{o.variante_nombre ?? "-"}</td>
-                    <td>{o.presentacion_nombre}</td>
-                    <td className="text-center">
-                      {o.control_inventario === "N" ? "∞" : o.stock}
-                    </td>
-                    <td className="text-right font-semibold">
-                      ${o.precio_unitario.toLocaleString()}
-                    </td>
-                    <td>
-                      <button
-                        disabled={sinStock}
-                        className="px-3 py-1 bg-blue-600 text-white rounded disabled:bg-gray-300"
-                        onClick={() => {
-                          ReactSwal.close();
-                          onSelect({
-                            producto_id: o.producto_id,
-                            variante_id: o.variante_id,
-                            presentacion_id: o.presentacion_id,
-                            descripcion: o.variante_nombre
-                              ? `${o.variante_nombre} - ${o.presentacion_nombre}`
-                              : o.presentacion_nombre,
-                            precio_unitario: o.precio_unitario,
-                            presentacion_nombre: o.presentacion_nombre,
-                          });
-                        }}
+          <tbody>
+            {opciones.map((o, i) => {
+              const sinStock =
+                o.control_inventario === "S" && o.stock <= 0;
+
+              return (
+                <tr
+                  key={i}
+                  className={`
+                    border-t
+                    ${sinStock ? "opacity-40 bg-gray-50" : "hover:bg-blue-50"}
+                  `}
+                >
+                  <td className="px-3 py-2 font-medium">
+                    {o.producto_nombre}
+                  </td>
+
+                  <td className="px-3 py-2">
+                    {o.variante_nombre ?? (
+                      <span className="text-gray-400 italic">Sin variante</span>
+                    )}
+                  </td>
+
+                  <td className="px-3 py-2">
+                    <span className="inline-block px-2 py-0.5 rounded bg-gray-100">
+                      {o.presentacion_nombre}
+                    </span>
+                  </td>
+
+                  <td className="px-3 py-2 text-center font-semibold">
+                    {o.control_inventario === "N" ? (
+                      <span className="text-green-600">∞</span>
+                    ) : (
+                      <span
+                        className={
+                          o.stock <= 5 ? "text-red-600" : "text-gray-800"
+                        }
                       >
-                        Agregar
-                      </button>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      ),
-      showConfirmButton: false,
-    });
-  };
+                        {o.stock}
+                      </span>
+                    )}
+                  </td>
+
+                  <td className="px-3 py-2 text-right font-bold text-blue-700">
+                    ${o.precio_unitario.toLocaleString()}
+                  </td>
+
+                  <td className="px-3 py-2 text-center">
+                    <Button
+                      disabled={sinStock}
+                      className="
+                        px-3 py-1.5
+                        text-xs font-semibold
+                        rounded-md
+                        bg-blue-600 text-white
+                        hover:bg-blue-700
+                        disabled:bg-gray-300
+                        disabled:cursor-not-allowed
+                      "
+                      onClick={() => {
+                        ReactSwal.close();
+                        onSelect({
+                          producto_id: o.producto_id,
+                          variante_id: o.variante_id,
+                          presentacion_id: o.presentacion_id,
+                          descripcion: o.variante_nombre
+                            ? `${o.variante_nombre} - ${o.presentacion_nombre}`
+                            : o.presentacion_nombre,
+                          precio_unitario: o.precio_unitario,
+                          presentacion_nombre: o.presentacion_nombre,
+                        });
+                      }}
+                    >
+                     <div className="flex items-center gap-2">
+                        <img src="/icons/plus.png" alt="Pdf" className="w-6 h-6" />
+                        <span> Agregar</span>
+                      </div>
+                    </Button>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    ),
+    showConfirmButton: false,
+  });
+};
 
   /* =======================
      Render
