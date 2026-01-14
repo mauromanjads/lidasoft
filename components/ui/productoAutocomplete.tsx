@@ -157,63 +157,74 @@ const ProductWithPresentation: React.FC<Props> = ({
      Construir opciones
   ======================= */
 
-  function construirOpciones(
-    producto: Producto,
-    variantes: Variante[],
-    presentaciones: Presentacion[]
-  ): OpcionVenta[] {
-    const opciones: OpcionVenta[] = [];
+ function construirOpciones(
+  producto: Producto,
+  variantes: Variante[],
+  presentaciones: Presentacion[]
+): OpcionVenta[] {
+  const opciones: OpcionVenta[] = [];
 
-    if (variantes.length === 0) {
-      presentaciones.forEach((p) => {
-        opciones.push({
-          producto_id: producto.id,
-          producto_nombre: producto.nombre,
-          variante_id: null,
-          variante_nombre: null,
-          presentacion_id: p.id,
-          presentacion_nombre: p.tipo_presentacion,
-          stock: p.stock_actual,
-          control_inventario: p.control_inventario,
-          precio_unitario: p.precio_venta ?? 0,
-        });
-      });
-    }
-
-   
-    console.log("VARIANTES:", variantes);
-    console.log("PRESENTACIONES:", presentaciones);
-
-    variantes.forEach((v) => {
-      console.log("Variante actual:", v);
-      
-      presentaciones.forEach((p) => {
-        console.log("  Presentación actual:", p);
-
-        const stock =
-          v.control_inventario === "S"
-            ? p.id === v.presentacion_id_inv
-              ? v.stock_actual
-              : 0
-            : p.stock_actual;
-
-        opciones.push({
-          producto_id: producto.id,
-          producto_nombre: producto.nombre,
-          variante_id: v.id,
-          variante_nombre: v.descripcion,
-          presentacion_id: p.id,
-          presentacion_nombre: p.tipo_presentacion,
-          stock: stock,
-          control_inventario: v.control_inventario,
-          precio_unitario: (v.precio_venta ?? 0) * (p.cantidad_equivalente ?? 1),
-        });
+  /* =========================
+     Producto SIN variantes
+  ========================== */
+  if (variantes.length === 0) {
+    presentaciones.forEach((p) => {
+      opciones.push({
+        producto_id: producto.id,
+        producto_nombre: producto.nombre,
+        variante_id: null,
+        variante_nombre: null,
+        presentacion_id: p.id,
+        presentacion_nombre: p.tipo_presentacion,
+        stock: p.stock_actual,
+        control_inventario: p.control_inventario,
+        precio_unitario: p.precio_venta ?? 0,
       });
     });
 
-
     return opciones;
   }
+
+  /* =========================
+     Producto CON variantes
+  ========================== */
+
+  variantes.forEach((v) => {
+    // 🔑 Presentaciones válidas para esta variante
+    const presentacionesValidas =
+      v.control_inventario === "S"
+        ? presentaciones.filter(
+            (p) => p.id === v.presentacion_id_inv
+          )
+        : presentaciones;
+
+    presentacionesValidas.forEach((p) => {
+      opciones.push({
+        producto_id: producto.id,
+        producto_nombre: producto.nombre,
+
+        variante_id: v.id,
+        variante_nombre: v.descripcion,
+
+        presentacion_id: p.id,
+        presentacion_nombre: p.tipo_presentacion,
+
+        stock:
+          v.control_inventario === "S"
+            ? v.stock_actual
+            : p.stock_actual,
+
+        control_inventario: v.control_inventario,
+
+        precio_unitario:
+          (v.precio_venta ?? 0) * (p.cantidad_equivalente ?? 1),
+      });
+    });
+  });
+
+  return opciones;
+}
+
 
   /* =======================
      Modal opciones
@@ -356,7 +367,7 @@ const ProductWithPresentation: React.FC<Props> = ({
                     control_inventario:
                       v.control_inventario === "S" ? "S" : "N",
                   }));
-                  console.table(variantes);
+                 // console.table(variantes);
                   const presentaciones: Presentacion[] = presRaw.map(
                     (p) => ({
                       id: p.id!,
@@ -370,7 +381,7 @@ const ProductWithPresentation: React.FC<Props> = ({
                         p.control_inventario === "S" ? "S" : "N",
                     })
                   );
-
+                 // console.table(presentaciones);
                   const opciones = construirOpciones(
                     p,
                     variantes,

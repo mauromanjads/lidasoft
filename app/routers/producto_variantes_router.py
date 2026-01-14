@@ -64,13 +64,13 @@ def listar_variantes_producto(
         })
         
     # 🔹 Mostrar en consola lo que se va a devolver
-    for v in resultado:
-        print({                  
-            "stock_actual": v["stock_actual"] ,
-            "control_inventario":v["control_inventario"]  ,
-            "presentacion_id_inv": v["presentacion_id_inv"],
-            "descripcion_variante": v["descripcion_variante"],
-        })
+    #for v in resultado:
+    #    print({                  
+    #        "stock_actual": v["stock_actual"] ,
+    #        "control_inventario":v["control_inventario"]  ,
+    #        "presentacion_id_inv": v["presentacion_id_inv"],
+    #        "descripcion_variante": v["descripcion_variante"],
+    #    })
 
     return resultado
 
