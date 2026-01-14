@@ -120,14 +120,19 @@ export const listarVariantes = (
   const params = new URLSearchParams();
 
   if (options?.con_stock) params.append("con_stock", "true");
-  if (options?.id_sucursal) params.append("id_sucursal", options.id_sucursal.toString());
+  if (options?.id_sucursal)
+    params.append("id_sucursal", options.id_sucursal.toString());
 
   const url = `${API_URL}/productos/${producto_id}/variantes?${params.toString()}`;
 
-  return fetchAPI<ProductoVariante[]>(url, {
+   return fetchAPI<ProductoVariante[]>(url, {
     headers: authHeaders(),
+  }).then((data) => {
+    
+    return data;
   });
 };
+
 
 
 export const obtenerVariante = (

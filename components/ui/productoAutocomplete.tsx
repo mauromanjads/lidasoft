@@ -44,6 +44,7 @@ interface Variante {
   stock_actual: number;
   activo: boolean;
   control_inventario: ControlInventario;
+  presentacion_id_inv?: number;
 }
 
 interface Props {
@@ -180,6 +181,13 @@ const ProductWithPresentation: React.FC<Props> = ({
 
     variantes.forEach((v) => {
       presentaciones.forEach((p) => {
+
+        const stock =
+        v.control_inventario === "S"
+        ? p.id === v.presentacion_id_inv
+          ? v.stock_actual
+          : 0
+        : p.stock_actual;        
         opciones.push({
           producto_id: producto.id,
           producto_nombre: producto.nombre,
@@ -187,10 +195,7 @@ const ProductWithPresentation: React.FC<Props> = ({
           variante_nombre: v.descripcion,
           presentacion_id: p.id,
           presentacion_nombre: p.tipo_presentacion,
-          stock:
-            v.control_inventario === "S"
-              ? v.stock_actual
-              : p.stock_actual,
+          stock:stock,
           control_inventario: v.control_inventario,
           precio_unitario:
             (v.precio_venta ?? 0) *
@@ -337,6 +342,7 @@ const ProductWithPresentation: React.FC<Props> = ({
                     descripcion: v.descripcion,
                     precio_venta: v.precio_venta ?? 0,
                     stock_actual: v.stock_actual ?? 0,
+                    presentacion_id_inv: v.presentacion_id_inv ?? 0,
                     activo: v.activo ?? true,
                     control_inventario:
                       v.control_inventario === "S" ? "S" : "N",
@@ -347,7 +353,7 @@ const ProductWithPresentation: React.FC<Props> = ({
                       id: p.id!,
                       tipo_presentacion: p.tipo_presentacion || "",
                       cantidad_equivalente:
-                        p.cantidad_equivalente ?? 1,
+                      p.cantidad_equivalente ?? 1,
                       precio_venta: p.precio_venta ?? 0,
                       stock_actual: p.stock_actual ?? 0,
                       activo: p.activo ?? true,

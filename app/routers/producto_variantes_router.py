@@ -31,33 +31,29 @@ def listar_variantes_producto(
     query = (
         db.query(
             ProductoVariante,
-            func.coalesce(Inventario.stock_actual, 0).label("stock_actual"),
-            Producto.control_inventario.label("control_inventario")
+            func.coalesce(Inventario.stock_actual, 0).label("stock_actual"),           
+            Producto.control_inventario.label("control_inventario"),
+            Inventario.presentacion_id.label("presentacion_id_inv"),
         )
-        .join(Producto, Producto.id == ProductoVariante.producto_id)
+        .join(Producto, Producto.id == ProductoVariante.producto_id)   
+        .outerjoin(
+        Inventario,
+        (Inventario.variante_id == ProductoVariante.id) &
+        (Inventario.id_sucursal == id_sucursal)
+    )     
         .filter(ProductoVariante.producto_id == producto_id)
         .order_by(ProductoVariante.id.asc())
     )
 
-    # JOIN dinámico de inventario
-    if id_sucursal is not None:
-        query = query.outerjoin(
-            Inventario,
-            (Inventario.variante_id == ProductoVariante.id)
-            & (Inventario.id_sucursal == id_sucursal)
-        )
-    else:
-        query = query.outerjoin(
-            Inventario,
-            Inventario.variante_id == ProductoVariante.id
-        )
-
+   
     variantes = query.all()
 
     resultado = []
-    for variante, stock_actual, control_inventario in variantes:
+    for variante, stock_actual, control_inventario, presentacion_id_inv in variantes:
+       
         variante.stock_actual = stock_actual
         variante.control_inventario = control_inventario
+        variante.presentacion_id_inv = presentacion_id_inv
         resultado.append(variante)
 
     return resultado
