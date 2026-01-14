@@ -176,24 +176,29 @@ export default function ProductoForm({
     }
   }, [producto,categorias],);
 
-  useEffect(() => {
-    if (!productoId) return;
+useEffect(() => {
+  if (!productoId) return;
 
-    listarVariantes(productoId)
-      .then((data) => {
-        setVariantes(
-          data.map(v => ({
-            id: v.id,
-            sku: v.sku,
-            parametros: v.parametros ?? {},
-            precio_venta: v.precio_venta ?? 0,
-            precio_compra: v.precio_compra ?? 0,
-            activo: v.activo ?? true,
-          }))
-        );
+  listarVariantes(productoId).then((data) => {
+    console.log("🔹 data cruda de listarVariantes:", data);
+
+    setVariantes(
+      data.map((v, i) => {
+        console.log(`➡️ Variante ${i}:`, v);
+
+        return {
+          id: v.id,
+          sku: v.sku,
+          parametros: v.parametros ?? {},
+          precio_venta: v.precio_venta ?? 0,
+          precio_compra: v.precio_compra ?? 0,
+          activo: v.activo ?? true,
+        };
       })
-      .catch(console.error);
-  }, [productoId]);
+    );
+  });
+}, [productoId]);
+
 
   useEffect(() => {
   if (!categoriaId || categorias.length === 0) return;

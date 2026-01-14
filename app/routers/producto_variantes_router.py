@@ -60,6 +60,7 @@ def listar_variantes_producto(
             "control_inventario": control_inventario,
             "presentacion_id_inv": presentacion_id_inv,
             "precio_venta": variante.precio_venta,
+            "parametros": variante.parametros, 
         })
         
     # 🔹 Mostrar en consola lo que se va a devolver
