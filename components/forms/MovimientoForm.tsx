@@ -268,8 +268,12 @@ export default function MovimientoInventarioForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
 
-        <div className="grid grid-cols-3 gap-4 max-w-3xl ">
-       
+<h1 className="flex items-center gap-2 text-lg font-semibold">
+            📤 Movimientos de Inventario
+          </h1>
+
+       <div className="grid grid-cols-3 gap-4 max-w-3xl ">
+     
        <SelectSearch
           items={documentos_tipo.map(doc => ({
             id: doc.id,

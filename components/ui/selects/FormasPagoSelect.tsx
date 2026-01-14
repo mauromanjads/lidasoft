@@ -26,12 +26,12 @@ export default function FormasPagoSelect({ formData, handleChange }: Props) {
   return (
     <div>
       <label className="block mb-1 font-medium">Formas de Pago</label>
-      <select
+      <select       
         name="forma_pago_id"
         value={formData.forma_pago_id ?? ""}
         onChange={handleChange}
         required
-        className="w-full border rounded-md p-2"
+        className="w-full border rounded-md p-2 border-gray-400 "
       >
         <option value="">Seleccione...</option>
         {formaspago.map((td) => (

@@ -44,7 +44,7 @@ export default function SelectSearch({
   return (
     <label className={cn("flex flex-col text-md w-full", className)}>
       {label && (
-        <span className="mb-1 font-semibold text-gray-700">
+        <span className="block mb-1 font-medium"> 
           {label}
         </span>
       )}

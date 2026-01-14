@@ -31,7 +31,7 @@ export default function CiiuSelect({ formData, handleChange }: Props) {
         value={formData.ciiu_id ?? ""}
         onChange={handleChange}
         required
-        className="w-full border rounded-md p-2"
+        className="w-full border rounded-md p-2 border-gray-400"
       >
         <option value="">Seleccione...</option>
         {ciiu.map((td) => (

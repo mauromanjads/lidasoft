@@ -31,7 +31,7 @@ export default function TipoDocumentoSelect({ formData, handleChange }: Props) {
         value={formData.tipo_documento_id ?? ""}
         onChange={handleChange}
         required
-        className="w-full border rounded-md p-2"
+        className="w-full border rounded-md p-2 border-gray-400"
       >
         <option value="">Seleccione...</option>
         {tiposDocumento.map((td) => (

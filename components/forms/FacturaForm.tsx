@@ -470,25 +470,28 @@ const cargarResolucionPorTipo = async (tipoDocumento?: string,predeterminado?: s
   // ------------------------
   return (
 
-   <form onSubmit={handleSubmit} className="space-y-4 ">
+   <form onSubmit={handleSubmit} >
 
-    <div className="max-w-7xl mx-auto p-1 bg-white shadow-lg rounded-lg">
-      <h2 className="text-2xl font-bold mb-4">Factura de Venta</h2>
-  
+    <h1 className="flex items-center gap-2 text-lg font-semibold pb-2">
+      🛍️ Factura de venta
+    </h1>
+    
+   <div>
       {/* Información general */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
 
         {/* Columna 1: Cliente */}
-        <div className="space-y-2">
-          <label className="font-semibold block">Cliente</label>
+        <div>
+          
           <SelectSearch
+            label="Cliente"
             items={clientes}
             value={clienteId}
             onChange={(value) => {
               setClienteId(value);
               setFormData(prev => ({ ...prev, tercero_id: Number(value) }));
             }}
-            className="w-full border rounded p-2"
+           
           />
 
           {clienteId && (() => {
@@ -496,7 +499,7 @@ const cargarResolucionPorTipo = async (tipoDocumento?: string,predeterminado?: s
             if (!c) return null;
 
             return (
-              <div className="p-2 border rounded bg-gray-50 text-sm space-y-1">
+             <div className="p-3 border border-blue-200 rounded bg-blue-50">
                 <div className="flex items-center gap-2"><FaIdCard className="text-gray-500" /> <span><b>Documento:</b> {c.documento}</span></div>
                 <div className="flex items-center gap-2"><FaMapMarkerAlt className="text-gray-500" /> <span><b>Dirección:</b> {c.direccion || "---"}</span></div>
                 <div className="flex items-center gap-2"><FaPhone className="text-gray-500" /> <span><b>Teléfono:</b> {c.telefono || "---"}</span></div>
@@ -508,17 +511,17 @@ const cargarResolucionPorTipo = async (tipoDocumento?: string,predeterminado?: s
         </div>
 
         {/* Columna 2: Vendedor / Fecha / Prefijo */}
-        <div className="space-y-2">
-          <div>
-            <label className="font-semibold block">Vendedor</label>
+        <div>
+          <div>            
             <SelectSearch
+            label="Vendedor"
             items={vendedores}
             value={vendedorId}
             onChange={(value) => {
               setVendedorId(value);
               setFormData(prev => ({ ...prev, vendedor_id: value }));
             }}
-            className="w-full border rounded p-2"
+           
           />
           </div>
 
@@ -562,9 +565,7 @@ const cargarResolucionPorTipo = async (tipoDocumento?: string,predeterminado?: s
 
           <div> <SelectMedioPago formData ={formData} handleChange={handleChange} /> </div>
           
-         <div>
-            
-
+         <div>            
             <div className="grid grid-cols-2 gap-2">
              
               <Input
@@ -590,14 +591,23 @@ const cargarResolucionPorTipo = async (tipoDocumento?: string,predeterminado?: s
 
         </div>
 
-        {/* Columna 4: Notas */}
-        <div className="flex flex-col">
-          <label className="font-semibold mb-1 block">Notas</label>
+       {/* Columna 4: Notas */}
+        <div className="p-3 border border-blue-200 rounded-lg bg-blue-50 flex flex-col">
+          <label className="block mb-1 font-medium">Observaciones</label>
+            
+        
+
           <textarea
             name="notas"
             value={formData.notas}
             onChange={handleChange}
-            className="w-full border rounded p-2 flex-1 min-h-[140px]"
+            placeholder="Escribe observaciones o comentarios..."
+            className="
+              w-full flex-1 resize-none
+              border border-blue-300 rounded-md
+              p-2 text-sm
+              focus:outline-none focus:ring-2 focus:ring-blue-300
+            "
           />
         </div>
 
