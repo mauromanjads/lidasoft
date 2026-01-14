@@ -51,6 +51,7 @@ def listar_variantes_producto(
     for variante, stock_actual, control_inventario, presentacion_id_inv in variantes:
          resultado.append({           
             "id": variante.id,
+            "descripcion_variante": variante.sku,
             "sku": variante.sku,
             "producto_id": variante.producto_id,
             "created_at": variante.created_at,
@@ -58,6 +59,7 @@ def listar_variantes_producto(
             "stock_actual": stock_actual,
             "control_inventario": control_inventario,
             "presentacion_id_inv": presentacion_id_inv,
+            "precio_venta": variante.precio_venta,
         })
         
     # 🔹 Mostrar en consola lo que se va a devolver
@@ -66,6 +68,7 @@ def listar_variantes_producto(
             "stock_actual": v["stock_actual"] ,
             "control_inventario":v["control_inventario"]  ,
             "presentacion_id_inv": v["presentacion_id_inv"],
+            "descripcion_variante": v["descripcion_variante"],
         })
 
     return resultado

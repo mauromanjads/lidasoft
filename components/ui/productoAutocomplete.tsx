@@ -40,6 +40,7 @@ interface Presentacion {
 interface Variante {
   id: number;
   descripcion: string;
+  descripcion_variante?: string;
   precio_venta: number;
   stock_actual: number;
   activo: boolean;
@@ -339,6 +340,7 @@ const ProductWithPresentation: React.FC<Props> = ({
                     id_sucursal: Number(sucursal.id || 0),
                   });
 
+                  
                   const presRaw = await listarPresentaciones(p.id, {
                     con_stock: true,
                     id_sucursal: Number(sucursal.id || 0),
@@ -346,7 +348,7 @@ const ProductWithPresentation: React.FC<Props> = ({
 
                   const variantes: Variante[] = variantesRaw.map((v) => ({
                     id: v.id!,
-                    descripcion: v.descripcion,
+                    descripcion: v.sku,
                     precio_venta: v.precio_venta ?? 0,
                     stock_actual: v.stock_actual ?? 0,
                     presentacion_id_inv: v.presentacion_id_inv ?? 0,
@@ -354,7 +356,7 @@ const ProductWithPresentation: React.FC<Props> = ({
                     control_inventario:
                       v.control_inventario === "S" ? "S" : "N",
                   }));
-
+                  console.table(variantes);
                   const presentaciones: Presentacion[] = presRaw.map(
                     (p) => ({
                       id: p.id!,

@@ -127,8 +127,7 @@ export const listarVariantes = (
 
   return fetchAPI<ProductoVariante[]>(url, {
     headers: authHeaders(),
-  }).then((data) => {
-    console.log("LISTAR VARIANTES DATA:", data); // 🔹 aquí ves lo que devuelve
+  }).then((data) => {    
     return data;
   });
 };
