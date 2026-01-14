@@ -31,7 +31,7 @@ export default function RegimenesSelect({ formData, handleChange }: Props) {
         value={formData.regimen_id ?? ""}
         onChange={handleChange}
         required
-        className="w-full border rounded-md p-2"
+        className="w-full border rounded-md p-2 border-gray-400"
       >
         <option value="">Seleccione...</option>
         {regimenes.map((td) => (
