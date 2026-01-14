@@ -179,15 +179,23 @@ const ProductWithPresentation: React.FC<Props> = ({
       });
     }
 
+   
+    console.log("VARIANTES:", variantes);
+    console.log("PRESENTACIONES:", presentaciones);
+
     variantes.forEach((v) => {
+      console.log("Variante actual:", v);
+      
       presentaciones.forEach((p) => {
+        console.log("  Presentación actual:", p);
 
         const stock =
-        v.control_inventario === "S"
-        ? p.id === v.presentacion_id_inv
-          ? v.stock_actual
-          : 0
-        : p.stock_actual;        
+          v.control_inventario === "S"
+            ? p.id === v.presentacion_id_inv
+              ? v.stock_actual
+              : 0
+            : p.stock_actual;
+
         opciones.push({
           producto_id: producto.id,
           producto_nombre: producto.nombre,
@@ -195,14 +203,13 @@ const ProductWithPresentation: React.FC<Props> = ({
           variante_nombre: v.descripcion,
           presentacion_id: p.id,
           presentacion_nombre: p.tipo_presentacion,
-          stock:stock,
+          stock: stock,
           control_inventario: v.control_inventario,
-          precio_unitario:
-            (v.precio_venta ?? 0) *
-            (p.cantidad_equivalente ?? 1),
+          precio_unitario: (v.precio_venta ?? 0) * (p.cantidad_equivalente ?? 1),
         });
       });
     });
+
 
     return opciones;
   }

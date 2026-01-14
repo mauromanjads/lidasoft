@@ -125,13 +125,14 @@ export const listarVariantes = (
 
   const url = `${API_URL}/productos/${producto_id}/variantes?${params.toString()}`;
 
-   return fetchAPI<ProductoVariante[]>(url, {
+  return fetchAPI<ProductoVariante[]>(url, {
     headers: authHeaders(),
   }).then((data) => {
-    
+    console.log("LISTAR VARIANTES DATA:", data); // 🔹 aquí ves lo que devuelve
     return data;
   });
 };
+
 
 
 

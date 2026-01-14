@@ -37,26 +37,39 @@ def listar_variantes_producto(
         )
         .join(Producto, Producto.id == ProductoVariante.producto_id)   
         .outerjoin(
-        Inventario,
-        (Inventario.variante_id == ProductoVariante.id) &
-        (Inventario.id_sucursal == id_sucursal)
-    )     
+            Inventario,
+            (Inventario.variante_id == ProductoVariante.id) &
+            (Inventario.id_sucursal == id_sucursal)
+        )     
         .filter(ProductoVariante.producto_id == producto_id)
         .order_by(ProductoVariante.id.asc())
     )
 
-   
     variantes = query.all()
 
     resultado = []
     for variante, stock_actual, control_inventario, presentacion_id_inv in variantes:
-       
-        variante.stock_actual = stock_actual
-        variante.control_inventario = control_inventario
-        variante.presentacion_id_inv = presentacion_id_inv
-        resultado.append(variante)
+         resultado.append({           
+            "id": variante.id,
+            "sku": variante.sku,
+            "producto_id": variante.producto_id,
+            "created_at": variante.created_at,
+            "updated_at": variante.updated_at,
+            "stock_actual": stock_actual,
+            "control_inventario": control_inventario,
+            "presentacion_id_inv": presentacion_id_inv,
+        })
+        
+    # 🔹 Mostrar en consola lo que se va a devolver
+    for v in resultado:
+        print({                  
+            "stock_actual": v["stock_actual"] ,
+            "control_inventario":v["control_inventario"]  ,
+            "presentacion_id_inv": v["presentacion_id_inv"],
+        })
 
     return resultado
+
 
 # 🔥 CREAR variante
 @router.post("/", response_model=ProductoVarianteResponse)
