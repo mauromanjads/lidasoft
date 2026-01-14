@@ -8,6 +8,7 @@ interface CurrencyInputProps {
   label?: string;
   placeholder?: string;
   title?: string;
+  readOnly?: boolean;
 }
 
 const formatCurrency = (value: number) => {
@@ -30,6 +31,7 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
   label,
   placeholder,
   title,
+  readOnly
 }) => {
   const [displayValue, setDisplayValue] = useState("");
   const isFocused = useRef(false);
@@ -93,6 +95,7 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
         onFocus={handleFocus}
         onBlur={handleBlur}
         title={title}
+        readOnly={readOnly}
       />
     </div>
   );

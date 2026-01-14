@@ -52,6 +52,8 @@ interface Variante {
 
 interface Props {
   valueProductoId: number | null;
+  valuePresentacionId : number | null;
+  valueVarianteId :number | null;
   onSelect: (detalle: {
     producto_id: number;
     presentacion_id: number;

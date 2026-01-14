@@ -114,7 +114,7 @@ export default function DetalleVentaGrid({
             className="detalle-grid row"
             style={{ gridTemplateColumns: gridTemplate }}
           >
-            <div>
+            <div className="pl-1">
               <ProductoConPresentacion
                 valueProductoId={det.producto_id ?? null}
                 valuePresentacionId={det.presentacion_id ?? null}
@@ -133,9 +133,9 @@ export default function DetalleVentaGrid({
               />
             </div>
 
-            <div className="text-sm  mb-1 text-gray-700">{det.descripcion || "-"}</div>
+            <div className="text-sm  mb-1  pl-2">{det.descripcion || "-"}</div>
 
-            <div>
+            <div className="pl-1">
               <Input
                 type="number"
                 value={det.cantidad}
@@ -146,29 +146,31 @@ export default function DetalleVentaGrid({
               />
             </div>
 
-            <div>
-              <CurrencyInput                
+           <div className="pl-1">
+              <CurrencyInput                    
                 value={det.precio_unitario}
+                readOnly            
                 onChange={(e) =>
-                  onChange(i, "precio_unitario", Number(e))
-                }
+                  onChange(i, "precio_unitario", Number(e))                  
+                }                
                 className="right"
               />
             </div>
 
-            <div>
+           <div className="pl-1">
               <CurrencyInput              
                 value={det.descuento}
                 onChange={(val) =>                  
                   onChange(i, "descuento", val)
                 }
-                className="right"
+                className="right "
               />
             </div>
 
-            <div>
+            <div className="pl-1">
               <Input
                 type="number"
+                readOnly
                 value={det.iva}
                 onChange={(e) =>
                   onChange(i, "iva", Number(e.target.value))
