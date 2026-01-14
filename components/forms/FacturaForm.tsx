@@ -478,7 +478,7 @@ const cargarResolucionPorTipo = async (tipoDocumento?: string,predeterminado?: s
     
    <div>
       {/* Información general */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
 
         {/* Columna 1: Cliente */}
         <div>
@@ -525,19 +525,18 @@ const cargarResolucionPorTipo = async (tipoDocumento?: string,predeterminado?: s
           />
           </div>
 
-          <div>
-            <label className="font-semibold block">Fecha</label>
+          <div className="pt-3">            
             <Input
+              label="Fecha"
               type="date"
               name="fecha"
               value={formData.fecha || ""}
-              onChange={handleChange}
-              className="w-full border rounded p-2"
+              onChange={handleChange}              
             />
           </div>
           
           <div>
-            <label className="font-semibold block">Tipo de documento</label>
+            
             <select
                 value={formData.tipo_documento}
                 onChange={(e) => {
@@ -550,6 +549,7 @@ const cargarResolucionPorTipo = async (tipoDocumento?: string,predeterminado?: s
 
                   cargarResolucionPorTipo(tipo);
                 }}
+                className="w-full border rounded-md p-2 border-gray-400"
               >
                 <option value="FE">Factura Electrónica</option>
                 <option value="DE">Documento Equivalente</option>
@@ -592,24 +592,22 @@ const cargarResolucionPorTipo = async (tipoDocumento?: string,predeterminado?: s
         </div>
 
        {/* Columna 4: Notas */}
-        <div className="p-3 border border-blue-200 rounded-lg bg-blue-50 flex flex-col">
+        <div className="flex flex-col max-h-[200px]">
           <label className="block mb-1 font-medium">Observaciones</label>
-            
-        
-
           <textarea
-            name="notas"
-            value={formData.notas}
-            onChange={handleChange}
-            placeholder="Escribe observaciones o comentarios..."
-            className="
-              w-full flex-1 resize-none
-              border border-blue-300 rounded-md
-              p-2 text-sm
-              focus:outline-none focus:ring-2 focus:ring-blue-300
-            "
-          />
-        </div>
+              name="notas"
+              value={formData.notas}
+              onChange={handleChange}
+              placeholder="Escribe observaciones o comentarios..."
+              className=" w-full 
+                  rounded-md border border-gray-400
+                  px-3 py-2
+                  text-sm text-gray-800
+                  placeholder-gray-400
+                  shadow-sm
+                  h-full"
+              />
+       </div>
 
       </div>
       {/* Tabla de detalles */}
