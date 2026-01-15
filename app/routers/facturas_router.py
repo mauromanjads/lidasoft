@@ -291,9 +291,11 @@ def eliminar_factura(factura_id: int, db: Session = Depends(get_empresa_db)):
 @router.post("/{factura_id}/xml")
 def generar_xml_factura(
     factura_id: int,
-    db: Session = Depends(get_empresa_db)
+    id_empresa: int,
+    db: Session = Depends(get_empresa_db),
+    db_master: Session = Depends(get_db_master)
 ):
-    factura_json = construir_factura_json(db, factura_id)
+    factura_json = construir_factura_json(db, factura_id,id_empresa,db_master)
 
     configdian = db.query(ConfiguracionDian).first()
   
