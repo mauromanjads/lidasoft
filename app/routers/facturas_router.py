@@ -343,9 +343,6 @@ from jinja2 import Environment, FileSystemLoader
 from weasyprint import HTML
 import qrcode
 
-PDF_FOLDER = "invoices"
-os.makedirs(PDF_FOLDER, exist_ok=True)
-
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 TEMPLATES_DIR = os.path.join(BASE_DIR, "..", "templates")
 
@@ -364,9 +361,25 @@ def generar_factura(
 ): 
     factura = construir_factura_json(db, factura_id)
   
+    empresa = db_master.query(Empresa).filter(Empresa.id == id_empresa).first()
+
+    BASE_INVOICES_FOLDER  = "invoices"
+    year = datetime.now().year
+
+    PDF_FOLDER = os.path.join(
+        BASE_INVOICES_FOLDER,
+        str(empresa.subdominio),
+        str(year)
+    )
+
+    os.makedirs(PDF_FOLDER, exist_ok=True)
 
     # Generar QR
-    qr_img_path = f"invoices/qr_{factura_id}.png"
+    qr_img_path = os.path.join(
+        PDF_FOLDER,
+        f"qr_{factura['numero']}.png"
+    )
+    
     qr_data = f"Pago factura {factura['numero']} total ${factura['total_con_impuesto']}"
     qr = qrcode.QRCode(box_size=4, border=2)
     qr.add_data(qr_data)
@@ -381,7 +394,7 @@ def generar_factura(
    
     BASE_API_URL = os.getenv("NEXT_PUBLIC_API_URL")  
 
-    empresa = db_master.query(Empresa).filter(Empresa.id == id_empresa).first()
+   
 
     logo_url = (
         f"{BASE_API_URL}{empresa.logo_url}"
@@ -395,7 +408,7 @@ def generar_factura(
         logo_url=logo_url   
     )
 
-    pdf_file = os.path.join(PDF_FOLDER, f"factura_{factura_id}_{formato}.pdf")
+    pdf_file = os.path.join(PDF_FOLDER, f"factura_{factura['numero']}_{formato}.pdf")
 
     HTML(
         string=html_out,
