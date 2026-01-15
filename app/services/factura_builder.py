@@ -42,8 +42,10 @@ def construir_factura_json(db, factura_id: int) -> dict:
             "unidad": det.producto.unidad_medida.codigo,
             "precio_unitario": float(det.precio_unitario),
             "subtotal": float(det.subtotal),
-            "impuesto": float(det.iva),
-            "descuento": float(det.descuento)
+            "impuesto_porcentaje": float(det.iva_porcentaje),   
+            "impuesto": float(det.iva),          
+            "descuento": float(det.descuento),
+            "total": float(det.total)
         }
         for det in factura.detalles
     ]
@@ -70,6 +72,7 @@ def construir_factura_json(db, factura_id: int) -> dict:
             "items": items,
 
             "total_sin_impuesto": float(factura.subtotal),
+            "descuento": float(factura.descuento_total),
             "total_impuesto": float(factura.iva_total),
             "total_con_impuesto": float(factura.total),
             "moneda": "COP"
@@ -92,8 +95,10 @@ def construir_factura_json(db, factura_id: int) -> dict:
         "regimen": configdian.regimen,
 
         "total_sin_impuesto": float(factura.subtotal),
+        "descuento": float(factura.descuento_total),
         "total_impuesto": float(factura.iva_total),
         "total_con_impuesto": float(factura.total),
+        "moneda": "COP",
 
         "items": items
     }
