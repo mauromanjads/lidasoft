@@ -3,9 +3,7 @@
 <head>
 <meta charset="utf-8">
 <style>
-  * {
-    box-sizing: border-box;
-  }
+  * { box-sizing: border-box; }
 
   body {
     margin: 0;
@@ -16,21 +14,13 @@
   }
 
   .ticket {
-    width: 80mm;     /* 👉 cambiar a 58mm si aplica */
+    width: 80mm; /* cambiar a 58mm si aplica */
     padding: 4mm;
   }
 
-  .center {
-    text-align: center;
-  }
-
-  .bold {
-    font-weight: bold;
-  }
-
-  .small {
-    font-size: 9px;
-  }
+  .center { text-align: center; }
+  .bold { font-weight: bold; }
+  .small { font-size: 9px; }
 
   .line {
     border-top: 1px dashed #000;
@@ -44,11 +34,11 @@
   }
 
   .item {
-    margin-bottom: 2px;
+    margin-bottom: 3px;
   }
 
   .item-desc {
-    width: 100%;
+    font-weight: bold;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -60,89 +50,104 @@
     font-size: 9px;
   }
 
-  .totals .row {
-    margin: 2px 0;
-  }
+  .totals .row { margin: 2px 0; }
 
   .total-final {
     font-size: 11px;
     font-weight: bold;
   }
 
-  .qr {
-    margin-top: 6px;
-  }
-
-  .footer {
-    margin-top: 6px;
-    font-size: 9px;
-  }
+  .qr { margin-top: 6px; }
 </style>
 </head>
 
 <body>
-  <div class="ticket">
+<div class="ticket">
 
-    <!-- ENCABEZADO -->
-    <div class="center bold">
-      {{ "FACTURA ELECTRÓNICA" if factura.tipo_documento == "FE" else "DOCUMENTO EQUIVALENTE" }}
-    </div>
-
-    <div class="center">
-      No. {{ factura.numero }}
-    </div>
-
-    <div class="center small">
-      Cliente: {{ factura.cliente_nombre }}
-    </div>
-
-    <div class="line"></div>
-
-    <!-- ITEMS -->
-    {% for item in factura["items"] %}
-      <div class="item">
-        <div class="item-desc">
-          {{ item["descripcion"] }}
-        </div>
-        <div class="item-sub">
-          <span>{{ item["cantidad"] }} x {{ item["precio_unitario"] }}</span>
-          <span>{{ item["subtotal"] }}</span>
-        </div>
-      </div>
-    {% endfor %}
-
-    <div class="line"></div>
-
-    <!-- TOTALES -->
-    <div class="totals">
-      <div class="row">
-        <span>SUBTOTAL</span>
-        <span>${{ factura.total_sin_impuesto }}</span>
-      </div>
-      <div class="row">
-        <span>IMPUESTOS</span>
-        <span>${{ factura.total_impuesto }}</span>
-      </div>
-
-      <div class="row total-final">
-        <span>TOTAL</span>
-        <span>${{ factura.total_con_impuesto }}</span>
-      </div>
-    </div>
-
-    <!-- QR -->
-    {% if qr_path %}
-    <div class="qr center">
-      <img src="file:///{{ qr_path }}" width="85">
-    </div>
-    {% endif %}
-
-    <!-- PIE -->
-    <div class="footer center">
-      <p>Gracias por su compra</p>
-      <p class="small">Conserve este comprobante</p>
-    </div>
-
+  <!-- ENCABEZADO -->
+  <div class="center bold">
+    {{ "FACTURA ELECTRÓNICA" if factura.tipo_documento == "FE" else "DOCUMENTO EQUIVALENTE" }}
   </div>
+
+  <div class="center">
+    No. {{ factura.numero }}
+  </div>
+
+  <div class="center small">
+    Cliente: {{ factura.cliente_nombre }}
+  </div>
+
+  <div class="line"></div>
+
+  <!-- ITEMS -->
+  {% for item in factura["items"] %}
+    <div class="item">
+      <div class="item-desc">
+        {{ item["descripcion"] }}
+      </div>
+
+      <div class="item-sub">
+        <span>
+          {{ "{:.2f}".format(item["cantidad"]) }}
+          x ${{ "{:,.0f}".format(item["precio_unitario"]) }}
+        </span>
+        <span>
+          ${{ "{:,.0f}".format(item["total"]) }}
+        </span>
+      </div>
+
+      {% if item["descuento"] > 0 %}
+      <div class="item-sub">
+        <span>Desc.</span>
+        <span>- ${{ "{:,.0f}".format(item["descuento"]) }}</span>
+      </div>
+      {% endif %}
+
+      <div class="item-sub">
+        <span>IVA {{ "{:.0f}".format(item["impuesto_porcentaje"]) }}%</span>
+        <span>${{ "{:,.0f}".format(item["impuesto"]) }}</span>
+      </div>
+    </div>
+  {% endfor %}
+
+  <div class="line"></div>
+
+  <!-- TOTALES -->
+  <div class="totals">
+    <div class="row">
+      <span>SUBTOTAL</span>
+      <span>${{ "{:,.0f}".format(factura.total_sin_impuesto or 0) }}</span>
+    </div>
+
+    <div class="row">
+      <span>DESCUENTO</span>
+      <span>${{ "{:,.0f}".format(factura.descuento or 0) }}</span>
+    </div>
+
+    <div class="row">
+      <span>IVA</span>
+      <span>${{ "{:,.0f}".format(factura.total_impuesto or 0) }}</span>
+    </div>
+
+    <div class="row total-final">
+      <span>TOTAL</span>
+      <span>${{ "{:,.0f}".format(factura.total_con_impuesto or 0) }}</span>
+    </div>
+  </div>
+
+  <!-- QR -->
+  {% if qr_path %}
+  <div class="qr center">
+    <img src="file:///{{ qr_path }}" width="85">
+  </div>
+  {% endif %}
+
+  <!-- PIE -->
+  <div class="center small">
+    <p>Gracias por su compra</p>
+    <p>Conserve este comprobante</p>
+  </div>
+
+</div>
 </body>
 </html>
