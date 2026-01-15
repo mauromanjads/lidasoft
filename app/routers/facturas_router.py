@@ -1,4 +1,3 @@
-
 from fastapi import APIRouter, HTTPException, Depends,Response
 import requests
 from sqlalchemy.orm import Session
@@ -359,7 +358,7 @@ def generar_factura(
     db: Session = Depends(get_empresa_db),
     db_master: Session = Depends(get_db_master)
 ): 
-    factura = construir_factura_json(db, factura_id)
+    factura = construir_factura_json(db, factura_id, id_empresa,db_master)
   
     empresa = db_master.query(Empresa).filter(Empresa.id == id_empresa).first()
 

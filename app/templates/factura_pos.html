@@ -65,17 +65,27 @@
 <div class="ticket">
 
   <!-- ENCABEZADO -->
+
   <div class="center bold">
-    {{ "FACTURA ELECTRÓNICA" if factura.tipo_documento == "FE" else "DOCUMENTO EQUIVALENTE" }}
+    {{ factura.razon_social }}
+  </div>
+  <div class="center bold">
+   {{ factura.nit_empresa }}
+  </div>
+  <div class="center bold">
+    {{ "FACTURA ELECTRÓNICA DE VENTA" if factura.tipo_documento == "FE" else "DOCUMENTO EQUIVALENTE" }}
   </div>
 
   <div class="center">
     No. {{ factura.numero }}
   </div>
+  <div class="center">
+    Fecha: {{ factura.fecha }}
+  </div>
 
   <div class="center small">
-    Cliente: {{ factura.cliente_nombre }}
-  </div>
+    Cliente: {{ factura.cliente_nit }} - {{ factura.cliente_nombre }}
+  </div> 
 
   <div class="line"></div>
 
@@ -134,6 +144,15 @@
       <span>${{ "{:,.0f}".format(factura.total_con_impuesto or 0) }}</span>
     </div>
   </div>
+
+  <div>FORMA PAGO :  {{ factura.forma_pago }}</div>
+  <div>MEDIO DE PAGO:  {{ factura.metodo_pago }} -  {{ factura.metodo_pago_nombre }}</div>
+
+  {% if factura.tipo_codigo_fiscal == 'CUFE' %}
+  CUFE: {{ factura.codigo_fiscal }}
+  {% else %}
+  CUDE: {{ factura.codigo_fiscal }}
+  {% endif %}
 
   <!-- QR -->
   {% if qr_path %}

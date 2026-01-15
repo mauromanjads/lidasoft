@@ -30,5 +30,7 @@ class Factura(Base):
     fecha_modificacion = Column(DateTime, nullable=True)
     id_sucursal = Column(Integer, nullable=False)
     id_usuario = Column(Integer, nullable=False)
+    codigo_fiscal = Column(String, unique=True, nullable=False)
+    tipo_codigo_fiscal = Column(String, nullable=False)  # CUFE | CUDE
     
     detalles = relationship("FacturaDetalle", back_populates="factura", cascade="all, delete-orphan")
