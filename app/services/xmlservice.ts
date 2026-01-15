@@ -1,11 +1,14 @@
 import Swal from "sweetalert2";
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 import { authHeaders } from "@/lib/utils";
+import { getEmpresaFromStorage } from "@/app/dependencias/autenticacion";
 
 export  const generarXMLFactura = async (facturaId: number,facturaNumeroCompleto: string) => {
   try {
     
-    const response = await fetch(`${API_URL}/facturas/${facturaId}/xml` ,{
+     const id_empresa = getEmpresaFromStorage();
+
+    const response = await fetch(`${API_URL}/facturas/${facturaId}/xml?id_empresa=${id_empresa}` ,{
       method: "POST",
       headers: authHeaders(),
     });
