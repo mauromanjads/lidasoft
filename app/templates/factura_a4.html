@@ -2,71 +2,140 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <style>
-    body { font-family: sans-serif; font-size: 12px; }
-    .container { width: 595px; margin: 0 auto; }  /* A4 approx */
-    .header { text-align: center; }
-    .logo { max-width: 120px; margin-bottom: 10px; }
-    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-    .total { text-align: right; font-weight: bold; margin-top: 20px; font-size: 14px; }
-    .qr { text-align: center; margin-top: 20px; }
-  </style>
+ <style>
+      body {
+        font-family: sans-serif;
+        font-size: 12px;
+        margin: 0;
+        padding: 0;
+      }
+
+      .container {
+        width: 595px; /* A4 */
+        margin: 0 auto;
+        padding: 10px;
+      }
+
+      .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 10px;
+      }
+
+      .logo {
+        height: 80px;
+        object-fit: contain;
+      }
+
+      .header-info {
+        text-align: right;
+        font-size: 12px;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+      }
+
+      td, th {
+        border: 1px solid #ddd;
+        padding: 6px;
+      }
+
+      th {
+        text-align: center;
+      }
+
+      .derecha {
+        text-align: right;
+      }
+
+      .derechaNegrita {
+        text-align: right;
+        font-weight: bold;
+      }
+
+      .total {
+        text-align: right;
+        font-weight: bold;
+        margin-top: 4px;
+        font-size: 12px;
+      }
+
+      .total-final {
+        font-size: 14px;
+        border-top: 1px solid #000;
+        padding-top: 6px;
+      }
+
+      .qr {
+        text-align: center;
+        margin-top: 10px;
+      }
+    </style>
+
+ 
+
 </head>
 <body>
   <div class="container">
-    <div class="header">
-   
-      {% if logo_url %}
-        <div style="text-align:center; margin-bottom:10px;">
-          <img
-            src="{{ logo_url }}"
-            alt="Logo empresa"
-            style="height:120px; object-fit:contain;"
-          >
+     <div class="header">
+
+        {% if logo_url %}
+          <div>
+            <img src="{{ logo_url }}" alt="Logo empresa" class="logo">
+          </div>
+        {% endif %}
+
+        <div class="header-info">
+          <h3 style="margin:0;">
+            {{ "Factura" if factura.tipo_documento == "FE" else "Documento equivalente" }}
+          </h3>
+          <div><strong>N°:</strong> {{ factura.numero }}</div>
+          <div><strong>Cliente:</strong> {{ factura.cliente_nombre }}</div>
         </div>
-      {% endif %}
+
+      </div>
 
 
-     <h2>
-        {{ "Factura" if factura.tipo_documento == "FE" else "Documento equivalente" }}
-        {{ factura.numero }}
-     </h2>
-     <p>Cliente: {{ factura.cliente_nombre }}</p>
-    </div>
     <table>
       <thead>
         <tr>
           <th>Producto</th>
           <th>Cantidad</th>
-          <th>Precio</th>        
+          <th>Precio</th>
           <th>Descuento</th>
-           <th>%Iva</th>
+          <th>%Iva</th>
           <th>Iva</th>
           <th>Total</th>
         </tr>
       </thead>
+
       
-       <tbody>
-          {% for item in factura["items"] %}
-          <tr>
-            <td>{{ item["descripcion"] }}</td>
-            <td>{{ item["cantidad"] }}</td>
-            <td>{{ item["precio_unitario"] }}</td>           
-            <td>{{ item["descuento"] }}</td>
-            <td>{{ item["impuesto_porcentaje"] }}</td>
-            <td>{{ item["impuesto"] }}</td>
-            <td>{{ item["total"] }}</td>
-          </tr>
-          {% endfor %}
-       </tbody>
+      <tbody>
+        {% for item in factura["items"] %}
+        <tr>
+          <td>{{ item["descripcion"] }}</td>
+          <td class="derecha">{{ "{:.2f}".format(item["cantidad"]) }}</td>
+          <td class="derecha"> {{ "{:,.0f}".format(item["precio_unitario"]) }}  </td>
+         <td class="derecha"> {{ "{:,.0f}".format(item["descuento"]) }} </td>
+          <td class="derecha"> {{ "{:.0f}".format(item["impuesto_porcentaje"]) }} %  </td>
+          <td class="derecha"> {{ "{:,.0f}".format(item["impuesto"]) }} </td>          
+          <td class="derechaNegrita"> {{ "{:,.0f}".format(item["total"]) }} </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+
 
     </table>
+    <div  class="total" style="padding-top: 20px;"></div>
+   <div class="total">  Subtotal: ${{ "{:,.0f}".format(factura.total_sin_impuesto or 0) }}</div>
+   <div class="total"> Descuento: ${{ "{:,.0f}".format(factura.descuento or 0) }}</div>
+   <div class="total"> Iva: ${{ "{:,.0f}".format(factura.total_impuesto or 0) }}</div>
+   <div class="total total-final"> Total: ${{ "{:,.0f}".format(factura.total_con_impuesto or 0) }}</p>
 
-    <p class="total">Subtotal: ${{ factura.total_sin_impuesto }}</p>
-    <p class="total">Descuento: ${{factura.descuento }}</p>    
-    <p class="total">Iva: ${{ factura.total_impuesto }}</p>    
-    <p class="total">Total: ${{ factura.total_con_impuesto }}</p>  
 
      {% if qr_path %}
       <div class="qr">
