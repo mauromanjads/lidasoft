@@ -39,7 +39,10 @@
         <tr>
           <th>Producto</th>
           <th>Cantidad</th>
-          <th>Precio Unitario</th>
+          <th>Precio</th>
+          <th>Subtotal</th>
+          <th>Descuento</th>
+          <th>Iva</th>
           <th>Total</th>
         </tr>
       </thead>
@@ -51,14 +54,17 @@
             <td>{{ item["cantidad"] }}</td>
             <td>{{ item["precio_unitario"] }}</td>
             <td>{{ item["subtotal"] }}</td>
+             <td>{{ item["descuento"] }}</td>
+             <td>{{ item["impuesto"] }}</td>
+            <td>{{ item["subtotal"] }}</td>
           </tr>
           {% endfor %}
        </tbody>
 
     </table>
 
-    <p class="total">Total: ${{ factura.total_sin_impuesto }}</p>
-    <p class="total">Total: ${{ factura.total_impuesto }}</p>
+    <p class="total">Subtotal: ${{ factura.total_sin_impuesto }}</p>
+    <p class="total">Iva: ${{ factura.total_impuesto }}</p>
     <p class="total">Total: ${{ factura.total_con_impuesto }}</p>  
 
      {% if qr_path %}
