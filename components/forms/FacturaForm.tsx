@@ -84,7 +84,7 @@ const cargarResolucionPorTipo = async (tipoDocumento?: string,predeterminado?: s
   if (res?.length > 0) {
     const r = res[0];
 
-    const next = (r.rango_actual ?? 0) + 1;
+    const next = (r.rango_actual ?? 0) ;
 
     // 🚨 Validación de rango DIAN
     if (next > r.rango_final) {
@@ -422,7 +422,7 @@ const cargarResolucionPorTipo = async (tipoDocumento?: string,predeterminado?: s
       if (res?.length > 0) {
         const r = res[0];
         prefijo = r.prefijo;
-        consecutivo = (r.rango_actual ?? 0) + 1;
+        consecutivo = (r.rango_actual ?? 0) ;
         resolucion_id = r.id;
         tipo_documento = r.tipo_documento;
       }
