@@ -632,7 +632,7 @@ const cargarResolucionPorTipo = async (tipoDocumento?: string,predeterminado?: s
           </div>
         </Buttonsec>
 
-        <Button type="button">
+        <Button type="submit">
           <div className="flex items-center gap-2">
             <img src="/icons/plus.png" alt="Guardar" className="w-6 h-6" />
             <span>Guardar Factura</span>
