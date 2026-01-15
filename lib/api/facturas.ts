@@ -98,7 +98,7 @@ export const obtenerFactura = async (id: number): Promise<Factura | null> => {
 export async function crearFactura(data: FacturaData) {
   try {
     
-    console.log("➡️ DATA QUE LLEGA A crearFactura:", data)
+    //console.log("➡️ DATA QUE LLEGA A crearFactura:", data)
     
     // Capturar usuario y sucursal del localStorage
     const user = JSON.parse(localStorage.getItem("usuario") || "{}");

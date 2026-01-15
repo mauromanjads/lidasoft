@@ -88,6 +88,7 @@ def crear_factura(
                         cantidad=det.cantidad,
                         precio_unitario=det.precio_unitario,
                         descuento=det.descuento,
+                        iva_porcentaje=det.iva,
                         iva=detalle_iva,
                         subtotal=detalle_subtotal,
                         total=detalle_total

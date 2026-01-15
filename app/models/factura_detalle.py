@@ -16,6 +16,7 @@ class FacturaDetalle(Base):
     precio_unitario = Column(Numeric(14,2), nullable=False)
     descuento = Column(Numeric(14,2), nullable=False, default=0)
     iva = Column(Numeric(14,2), nullable=False)
+    iva_porcentaje = Column(Numeric(5, 2), nullable=False, default=0)
     subtotal = Column(Numeric(14,2), nullable=False)
     total = Column(Numeric(14,2), nullable=False)
 
