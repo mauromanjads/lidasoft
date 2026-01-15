@@ -27,6 +27,7 @@ interface Producto {
   codigo: string;
   activo: boolean;
   tiene_variantes?: boolean;
+   iva?: number;
 }
 
 interface Presentacion {
@@ -61,6 +62,7 @@ interface Props {
     descripcion: string;
     precio_unitario: number;
     presentacion_nombre: string;
+    iva:number | null;
   }) => void;
   placeholder?: string;
   resetKey?: any;
@@ -79,6 +81,7 @@ type OpcionVenta = {
 
   presentacion_id: number;
   presentacion_nombre: string;
+  iva:number | null;
 
   stock: number;
   control_inventario: ControlInventario;
@@ -121,6 +124,7 @@ const ProductWithPresentation: React.FC<Props> = ({
         nombre: p.nombre || "",
         codigo: p.codigo || "",
         activo: p.activo ?? true,
+        iva: typeof p.iva === "number" ? p.iva : 0,
         tiene_variantes: p.tiene_variantes ?? false,
       }));
 
@@ -183,6 +187,7 @@ const ProductWithPresentation: React.FC<Props> = ({
         stock: p.stock_actual,
         control_inventario: p.control_inventario,
         precio_unitario: p.precio_venta ?? 0,
+        iva:producto.iva ?? 0
       });
     });
 
@@ -222,6 +227,7 @@ const ProductWithPresentation: React.FC<Props> = ({
 
         precio_unitario:
           (v.precio_venta ?? 0) * (p.cantidad_equivalente ?? 1),
+          iva: producto.iva ?? 0 
       });
     });
   });
@@ -325,6 +331,7 @@ const abrirModalOpciones = (
                             : o.presentacion_nombre,
                           precio_unitario: o.precio_unitario,
                           presentacion_nombre: o.presentacion_nombre,
+                          iva:o.iva
                         });
                       }}
                     >
@@ -446,6 +453,7 @@ const abrirModalOpciones = (
                         : o.presentacion_nombre,
                       precio_unitario: o.precio_unitario,
                       presentacion_nombre: o.presentacion_nombre,
+                      iva: o.iva
                     });
                     return;
                   }

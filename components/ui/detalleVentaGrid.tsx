@@ -124,6 +124,7 @@ export default function DetalleVentaGrid({
                   onChange(i, "presentacion_id", d.presentacion_id);
                   onChange(i, "variante_id", d.variante_id ?? null);
                   onChange(i, "precio_unitario", d.precio_unitario);
+                  onChange(i, "iva", d.iva);
                   onChange(i, "descripcion", d.descripcion);
 
                   const cantidad = det.cantidad || 1;
