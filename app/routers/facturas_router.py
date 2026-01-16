@@ -324,8 +324,31 @@ def generar_xml_factura(
             detail=f"XMLService error: {response.text}"
         )
 
-    xml = response.text
+    xml = response.text      
+
+    cufecude = extraer_cufe_o_cude(xml)
+
+    if not cufecude:
+        raise HTTPException(
+            status_code=500,
+            detail="No se pudo extraer CUFE/CUDE del XML DIAN"
+        )
+
+    # 🔹 Guardar en base de datos
+    factura = db.query(Factura).filter(Factura.id == factura_id).first()
     
+    resolucion = db.query(ResolucionDian).filter(
+        ResolucionDian.id == factura.resolucion_id
+    ).first()
+        
+    if resolucion.tipo_documento == "FE": factura.tipo_codigo_fiscal ="CUFE"    
+    if resolucion.tipo_documento == "DE": factura.tipo_codigo_fiscal ="CUDE"
+        
+    factura.codigo_fiscal = cufecude
+
+    db.commit()
+
+
     return Response(
         content=xml,
         media_type="application/xml",
@@ -422,6 +445,22 @@ def generar_factura(
         filename=os.path.basename(pdf_file)
     )
 
-   
+
+import xml.etree.ElementTree as ET
+
+def extraer_cufe_o_cude(xml_string: str) -> str | None:
+    namespaces = {
+        "cbc": "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2"
+    }
+
+    root = ET.fromstring(xml_string)
+
+    uuid = root.find(".//cbc:UUID", namespaces)
+
+    if uuid is not None:
+        return uuid.text.strip()
+
+    return None
+
     
 
