@@ -444,6 +444,18 @@ const abrirModalOpciones = (
 
                   if (opciones.length === 1) {
                     const o = opciones[0];
+                    
+                     // 🔐 VALIDACIÓN CRÍTICA
+                    if (o.control_inventario === "S" && o.stock <= 0) {
+                      Swal.fire({
+                        icon: "warning",
+                        title: "Sin inventario",
+                        text: "Este producto no tiene stock disponible",
+                      });
+                      return;
+                    }
+
+
                     onSelect({
                       producto_id: o.producto_id,
                       variante_id: o.variante_id,
