@@ -1,4 +1,4 @@
-import { Producto, ProductoPresentacion, UnidadMedida, Categoria, ProductoVariante,Existencia } from "@/app/types";
+import { Producto, ProductoPresentacion, UnidadMedida, Categoria, ProductoVariante,Existencia, KardexMovimiento } from "@/app/types";
 import { authHeaders } from "@/lib/utils";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
@@ -218,6 +218,27 @@ export const obtenerExistencias = async (): Promise<Existencia[] | null> => {
 
   } catch (error) {
     console.error("Error obteniendo existencias:", error);
+    return null;
+  }
+};
+
+/* ============================================
+   OBTENER KARDEX DE INVENTARIO
+============================================ */
+export const obtenerKardex = async (): Promise<KardexMovimiento[] | null> => {
+  try {
+    const res = await fetch(`${API_URL}/productos/inventario/kardex`, {
+      headers: authHeaders(),
+    });
+
+    if (!res.ok) {
+      throw new Error(`Error al cargar kardex: ${res.status}`);
+    }
+
+    return await res.json();
+
+  } catch (error) {
+    console.error("Error obteniendo kardex:", error);
     return null;
   }
 };

@@ -80,3 +80,33 @@ export interface Existencia {
   existencias: number;
   sucursal: string;
 }
+
+// ===================== KARDEX DE INVENTARIO =====================
+export interface KardexMovimiento {
+  id: number;
+  fecha: string; // ISO date (YYYY-MM-DD o datetime)
+
+  // Documento
+  tipo_documento: string;
+  tipo_doc_desc: string;
+  tipo_movimiento: 'E' | 'S';
+
+  // Producto
+  producto: string;
+  categoria: string;
+  presentacion: string;
+  sku?: string;
+  atributos?: string;
+
+  // Ubicación
+  sucursal: string;
+
+  // Movimiento
+  cantidad_movimiento: number;
+  costo_unitario: number;
+  costo_movimiento: number;
+
+  // Saldos
+  saldo_cantidad: number;
+  saldo_costo: number;
+}

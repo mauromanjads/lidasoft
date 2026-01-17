@@ -97,3 +97,78 @@ def listar_existencias(db: Session = Depends(get_empresa_db)):
 
     result = db.execute(sql).mappings().all()
     return result
+
+@router.get("/inventario/kardex")
+def listar_kardex(db: Session = Depends(get_empresa_db)):
+
+    sql = text("""
+       SELECT 
+        inv.id,
+        inv.fecha,
+        doc_inv.tipo_documento,
+        tipo.descripcion AS tipo_doc_desc,
+        tipo.tipo_movimiento,
+
+        pr.nombre AS producto,
+        categ.nombre AS categoria,
+        prpre.tipo_presentacion AS presentacion,
+        prvar.sku,
+        attrs.atributos,
+        suc.nombre AS sucursal,
+
+        -- Movimiento
+        CASE 
+            WHEN tipo.tipo_movimiento = 'E' THEN inv.cantidad
+            WHEN tipo.tipo_movimiento = 'S' THEN -inv.cantidad
+        END AS cantidad_movimiento,
+
+        inv.costo_unitario,
+
+        CASE 
+            WHEN tipo.tipo_movimiento = 'E' 
+                THEN inv.cantidad * inv.costo_unitario
+            WHEN tipo.tipo_movimiento = 'S'
+                THEN -(inv.cantidad * inv.costo_unitario)
+        END AS costo_movimiento,
+
+        -- Saldos
+        SUM(
+            CASE 
+                WHEN tipo.tipo_movimiento = 'E' THEN inv.cantidad
+                WHEN tipo.tipo_movimiento = 'S' THEN -inv.cantidad
+            END
+        ) OVER (
+            PARTITION BY inv.producto_id, inv.id_sucursal
+            ORDER BY inv.fecha, inv.id
+        ) AS saldo_cantidad,
+
+        SUM(
+            CASE 
+                WHEN tipo.tipo_movimiento = 'E'
+                    THEN inv.cantidad * inv.costo_unitario
+                WHEN tipo.tipo_movimiento = 'S'
+                    THEN -(inv.cantidad * inv.costo_unitario)
+            END
+        ) OVER (
+            PARTITION BY inv.producto_id, inv.id_sucursal
+            ORDER BY inv.fecha, inv.id
+        ) AS saldo_costo
+
+    FROM movimientos_inventario inv
+    INNER JOIN documentos_inventario doc_inv ON inv.documento_id = doc_inv.id
+    INNER JOIN documentos_tipo tipo ON doc_inv.tipo_documento = tipo.codigo
+    INNER JOIN productos pr ON inv.producto_id = pr.id 
+    INNER JOIN productos_presentaciones prpre ON inv.presentacion_id = prpre.id 
+    LEFT JOIN productos_variantes prvar ON inv.variante_id = prvar.id 
+    INNER JOIN sucursales suc ON inv.id_sucursal = suc.id 
+    INNER JOIN categorias categ ON pr.categoria_id = categ.id
+    LEFT JOIN LATERAL (
+        SELECT string_agg(key || ': ' || value, ' | ' ORDER BY key) AS atributos
+        FROM jsonb_each_text(prvar.parametros)
+    ) attrs ON true
+    ORDER BY inv.fecha, inv.id;
+
+    """)
+
+    result = db.execute(sql).mappings().all()
+    return result
