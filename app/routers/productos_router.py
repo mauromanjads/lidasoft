@@ -66,9 +66,8 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from sqlalchemy import text
 
-router = APIRouter()
 
-@router.get("/existencias")
+@router.get("/inventario/existencias")
 def listar_existencias(db: Session = Depends(get_empresa_db)):
 
     sql = text("""

@@ -206,7 +206,7 @@ export const eliminarPresentacion = (
 ============================================ */
 export const obtenerExistencias = async (): Promise<Existencia[] | null> => {
   try {
-    const res = await fetch(`${API_URL}/existencias`, {
+    const res = await fetch(`${API_URL}/productos/inventario/existencias`, {
       headers: authHeaders(),
     });
 
