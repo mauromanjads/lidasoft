@@ -68,3 +68,15 @@ export interface ProductoVariante {
 export interface ProductoConVariantes extends Producto {
   variantes: ProductoVariante[];
 }
+
+// =====================EXISTENCIAS DE PRODUCTOS=====================
+export interface Existencia {
+  id: number;
+  producto: string;
+  categoria: string;
+  presentacion: string;
+  sku: string;
+  atributos?: string;
+  existencias: number;
+  sucursal: string;
+}

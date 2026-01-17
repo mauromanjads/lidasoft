@@ -151,12 +151,7 @@ export default function Sidebar() {
                       exit={{ height: 0, opacity: 0 }}
                       className="pl-4 mt-2 space-y-2"
                     >
-                      <a
-                        href="/dashboard/invproductos"
-                        className="sidebar-item"
-                      >
-                        🛒 Productos
-                      </a>
+                     
                       <a
                         href="/dashboard/existencias"
                         className="sidebar-item"

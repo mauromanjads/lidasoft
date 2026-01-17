@@ -60,3 +60,41 @@ def eliminar_producto(id: int, db: Session = Depends(get_empresa_db)):
     db.delete(producto)
     db.commit()
     return {"mensaje": "Producto eliminado"}
+
+
+from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
+from sqlalchemy import text
+
+router = APIRouter()
+
+@router.get("/existencias")
+def listar_existencias(db: Session = Depends(get_empresa_db)):
+
+    sql = text("""
+        SELECT 
+            inv.id,
+            pr.nombre AS producto,
+            categ.nombre AS categoria,
+            prpre.tipo_presentacion AS presentacion,
+            prvar.sku AS sku,
+            attrs.atributos,
+            inv.stock_actual AS existencias,
+            suc.nombre AS sucursal
+
+        FROM inventario inv
+        INNER JOIN productos pr ON inv.producto_id = pr.id 
+        INNER JOIN productos_presentaciones prpre ON inv.presentacion_id = prpre.id 
+        INNER JOIN productos_variantes prvar ON inv.variante_id = prvar.id 
+        INNER JOIN sucursales suc ON inv.id_sucursal = suc.id 
+        INNER JOIN categorias categ ON pr.categoria_id = categ.id
+
+        LEFT JOIN LATERAL (
+            SELECT string_agg(key || ': ' || value, ' | ' ORDER BY key) AS atributos
+            FROM jsonb_each_text(prvar.parametros)
+        ) attrs ON true
+        ORDER BY pr.nombre
+    """)
+
+    result = db.execute(sql).mappings().all()
+    return result

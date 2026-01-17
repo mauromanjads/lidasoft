@@ -1,4 +1,4 @@
-import { Producto, ProductoPresentacion, UnidadMedida, Categoria, ProductoVariante } from "@/app/types";
+import { Producto, ProductoPresentacion, UnidadMedida, Categoria, ProductoVariante,Existencia } from "@/app/types";
 import { authHeaders } from "@/lib/utils";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
@@ -199,4 +199,25 @@ export const eliminarPresentacion = (
       headers: authHeaders(),  
     }
   );
+};
+
+/* ============================================
+   OBTENER EXISTENCIAS
+============================================ */
+export const obtenerExistencias = async (): Promise<Existencia[] | null> => {
+  try {
+    const res = await fetch(`${API_URL}/existencias`, {
+      headers: authHeaders(),
+    });
+
+    if (!res.ok) {
+      throw new Error(`Error al cargar existencias: ${res.status}`);
+    }
+
+    return await res.json();
+
+  } catch (error) {
+    console.error("Error obteniendo existencias:", error);
+    return null;
+  }
 };
