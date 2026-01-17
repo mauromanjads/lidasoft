@@ -145,11 +145,14 @@ export default function ExistenciasTable({ existencias }: Props) {
             });
           }}
           className={`${
-            showColumnFilters ? "bg-red-600" : "bg-blue-600"
+            showColumnFilters
+              ? "bg-red-600 hover:bg-red-700"
+              : "bg-blue-600 hover:bg-blue-700"
           } text-white`}
         >
-          {showColumnFilters ? "Ocultar filtros" : "Activar filtros"}
+          {showColumnFilters ? "🟢 Ocultar filtros" : "🔴 Activar filtros"}
         </Button>
+
 
         <div className="flex gap-2">
           <Button onClick={exportToExcel}>
@@ -179,9 +182,14 @@ export default function ExistenciasTable({ existencias }: Props) {
 
                   {showColumnFilters && h.column.getCanFilter() && (
                     <input
-                      value={(h.column.getFilterValue() ?? "") as string}
-                      onChange={e => h.column.setFilterValue(e.target.value)}
-                      className="mt-1 w-full rounded px-2 py-1 text-sm text-black"
+                        value={(h.column.getFilterValue() ?? "") as string}
+                        onChange={(e) => {
+                          h.column.setFilterValue(e.target.value);
+                          setPageIndex(0);
+                        }}
+                        placeholder="Filtrar..."
+                        className="mt-1 w-full rounded border px-2 py-1 text-sm text-white"
+                        onClick={(e) => e.stopPropagation()}
                     />
                   )}
                 </th>
