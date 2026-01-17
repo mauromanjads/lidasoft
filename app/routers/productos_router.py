@@ -84,7 +84,7 @@ def listar_existencias(db: Session = Depends(get_empresa_db)):
         FROM inventario inv
         INNER JOIN productos pr ON inv.producto_id = pr.id 
         INNER JOIN productos_presentaciones prpre ON inv.presentacion_id = prpre.id 
-        INNER JOIN productos_variantes prvar ON inv.variante_id = prvar.id 
+        LEFT JOIN productos_variantes prvar ON inv.variante_id = prvar.id 
         INNER JOIN sucursales suc ON inv.id_sucursal = suc.id 
         INNER JOIN categorias categ ON pr.categoria_id = categ.id
 
