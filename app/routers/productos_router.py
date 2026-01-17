@@ -102,7 +102,7 @@ def listar_existencias(db: Session = Depends(get_empresa_db)):
 def listar_kardex(db: Session = Depends(get_empresa_db)):
 
     sql = text("""
-       SELECT 
+      SELECT 
         inv.id,
         inv.fecha,
         doc_inv.tipo_documento,
@@ -131,17 +131,22 @@ def listar_kardex(db: Session = Depends(get_empresa_db)):
                 THEN -(inv.cantidad * inv.costo_unitario)
         END AS costo_movimiento,
 
-        -- Saldos
+        -- ✅ SALDO DE CANTIDAD (CORREGIDO)
         SUM(
             CASE 
                 WHEN tipo.tipo_movimiento = 'E' THEN inv.cantidad
                 WHEN tipo.tipo_movimiento = 'S' THEN -inv.cantidad
             END
         ) OVER (
-            PARTITION BY inv.producto_id, inv.id_sucursal
+            PARTITION BY 
+                inv.producto_id,
+                inv.presentacion_id,
+                COALESCE(inv.variante_id, 0),
+                inv.id_sucursal
             ORDER BY inv.fecha, inv.id
         ) AS saldo_cantidad,
 
+        -- ✅ SALDO DE COSTO (CORREGIDO)
         SUM(
             CASE 
                 WHEN tipo.tipo_movimiento = 'E'
@@ -150,7 +155,11 @@ def listar_kardex(db: Session = Depends(get_empresa_db)):
                     THEN -(inv.cantidad * inv.costo_unitario)
             END
         ) OVER (
-            PARTITION BY inv.producto_id, inv.id_sucursal
+            PARTITION BY 
+                inv.producto_id,
+                inv.presentacion_id,
+                COALESCE(inv.variante_id, 0),
+                inv.id_sucursal
             ORDER BY inv.fecha, inv.id
         ) AS saldo_costo
 
@@ -167,6 +176,7 @@ def listar_kardex(db: Session = Depends(get_empresa_db)):
         FROM jsonb_each_text(prvar.parametros)
     ) attrs ON true
     ORDER BY inv.fecha, inv.id;
+
 
     """)
 
