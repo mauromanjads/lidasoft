@@ -34,7 +34,20 @@ export default function KardexTable({ movimientos }: Props) {
      COLUMNAS
   ========================= */
   const columns = useMemo<ColumnDef<KardexMovimiento>[]>(() => [
-    { accessorKey: "fecha", header: "Fecha" },
+    {
+      accessorKey: "fecha",
+      header: "Fecha",
+      cell: ({ getValue }) => {
+        const value = getValue() as string;
+        if (!value) return "-";
+
+        return new Date(value).toLocaleDateString("es-CO", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+        });
+      },
+    },
     { accessorKey: "producto", header: "Producto" },
     { accessorKey: "presentacion", header: "Presentación" },
     { accessorKey: "sku", header: "SKU" },
