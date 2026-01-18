@@ -28,40 +28,49 @@ export default function KardexPage() {
     fetchKardex();
   }, []);
 
-  const kardexFiltrado = useMemo(() => {
-    if (!dateFilter) return kardex;
+    const normalizeDate = (value: string | Date) => {
+      const d = new Date(value);
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, "0");
+      const day = String(d.getDate()).padStart(2, "0");
+      return `${y}-${m}-${day}`;
+    };
 
-    return kardex.filter(m => {
-      const fecha = m.fecha.slice(0, 10); // YYYY-MM-DD
 
-      switch (dateFilter.mode) {
-        case "day":
-          return fecha === dateFilter.from;
+const kardexFiltrado = useMemo(() => {
+  if (!dateFilter) return kardex;
 
-        case "range":
-        case "quick":
-          return (
-            fecha >= dateFilter.from! &&
-            fecha <= dateFilter.to!
-          );
+  return kardex.filter(m => {
+    const fechaMovimiento = normalizeDate(m.fecha);
 
-        case "month":
-          return fecha.startsWith(dateFilter.from!); // YYYY-MM
+    switch (dateFilter.mode) {
+      case "day":
+        return fechaMovimiento === normalizeDate(dateFilter.from!);
 
-        case "week": {
-          const start = new Date(dateFilter.from!);
-          const end = new Date(start);
-          end.setDate(start.getDate() + 6);
-
-          const fDate = new Date(fecha);
-          return fDate >= start && fDate <= end;
-        }
-
-        default:
-          return true;
+      case "quick":
+      case "range": {
+        const from = normalizeDate(dateFilter.from!);
+        const to = normalizeDate(dateFilter.to!);
+        return fechaMovimiento >= from && fechaMovimiento <= to;
       }
-    });
-  }, [kardex, dateFilter]);
+
+      case "month":
+        return fechaMovimiento.startsWith(dateFilter.from!); // YYYY-MM
+
+      case "week": {
+        const start = new Date(dateFilter.from!);
+        const end = new Date(start);
+        end.setDate(start.getDate() + 6);
+
+        const fDate = new Date(fechaMovimiento);
+        return fDate >= start && fDate <= end;
+      }
+
+      default:
+        return true;
+    }
+  });
+}, [kardex, dateFilter]);
 
 
 

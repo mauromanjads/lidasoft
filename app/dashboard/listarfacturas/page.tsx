@@ -6,8 +6,6 @@ import FacturasTable from "@/components/tables/FacturasTable";
 import { obtenerFacturas } from "@/lib/api/facturas";
 import DateFilter, { DateFilterValue } from "@/components/ui/DateFilter";
 
-
-
 // 👉 Interfaz que consume la tabla
 interface Factura {
   id: number;
@@ -40,36 +38,49 @@ export default function FacturasPage() {
     fetchFacturas();
   }, []);
 
-  const facturasFiltradas = useMemo(() => {
-  if (!dateFilter) return facturas;
+    const normalizeDate = (value: string | Date) => {
+      const d = new Date(value);
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, "0");
+      const day = String(d.getDate()).padStart(2, "0");
+      return `${y}-${m}-${day}`;
+    };
 
-  return facturas.filter(f => {
-    const fecha = f.fecha_creacion.slice(0, 10);
 
-    switch (dateFilter.mode) {
-      case "day":
-        return fecha === dateFilter.from;
+    const facturasFiltradas = useMemo(() => {
+      if (!dateFilter) return facturas;
 
-      case "range":
-      case "quick":
-        return fecha >= dateFilter.from! && fecha <= dateFilter.to!;
+      return facturas.filter(f => {
+        const fechaFactura = normalizeDate(f.fecha_creacion);
 
-      case "month":
-        return fecha.startsWith(dateFilter.from!);
+        switch (dateFilter.mode) {
+          case "day":
+            return fechaFactura === normalizeDate(dateFilter.from!);
 
-      case "week": {
-        const start = new Date(dateFilter.from!);
-        const end = new Date(start);
-        end.setDate(start.getDate() + 6);
-        const fDate = new Date(fecha);
-        return fDate >= start && fDate <= end;
-      }
+          case "quick":
+          case "range": {
+            const from = normalizeDate(dateFilter.from!);
+            const to = normalizeDate(dateFilter.to!);
+            return fechaFactura >= from && fechaFactura <= to;
+          }
 
-      default:
-        return true;
-    }
-  });
-}, [facturas, dateFilter]);
+          case "month":
+            return fechaFactura.startsWith(dateFilter.from!);
+
+          case "week": {
+            const start = new Date(dateFilter.from!);
+            const end = new Date(start);
+            end.setDate(start.getDate() + 6);
+            const fDate = new Date(fechaFactura);
+            return fDate >= start && fDate <= end;
+          }
+
+          default:
+            return true;
+        }
+      });
+    }, [facturas, dateFilter]);
+
 
 
  return (
