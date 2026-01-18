@@ -86,9 +86,10 @@ export default function ProductoForm({
       activo: true,
     },
   ]);
-  const [variantes, setVariantes] = useState<VarianteForm[]>([
-    { id: null, sku: "", parametros: {}, precio_venta: 0, precio_compra: 0, activo: true }
-  ]);
+  //const [variantes, setVariantes] = useState<VarianteForm[]>([
+  //  { id: null, sku: "", parametros: {}, precio_venta: 0, precio_compra: 0, activo: true }
+  //]);
+  const [variantes, setVariantes] = useState<VarianteForm[]>([]);
 
    const [activeTab, setActiveTab] = useState("producto");
 
