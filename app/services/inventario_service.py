@@ -108,10 +108,16 @@ def actualizar_inventario(
 
     # 🔒 Buscar inventario con bloqueo
     query = db.query(Inventario).filter(
-        Inventario.producto_id == producto_id,
-        Inventario.id_sucursal == id_sucursal
+        Inventario.producto_id == producto_id,        
+        Inventario.id_sucursal == id_sucursal,        
     )
     
+    if variante_id is not None:
+        query = query.filter(Inventario.variante_id == variante_id)
+    else:
+        query = query.filter(Inventario.variante_id.is_(None))
+        
+
     inventario = query.with_for_update().first()
 
     # ➕ Si no existe inventario y es ENTRADA, creamos
