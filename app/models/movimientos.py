@@ -17,6 +17,7 @@ class MovimientoInventario(Base):
     id_usuario = Column(Integer, nullable=False)
     costo_unitario = Column(Numeric(14, 4), nullable=False, default=0)
     costo_total = Column(Numeric(14, 4), nullable=False, default=0)
-
+    unidades_base = Column(Integer, nullable=True,default=0)      
+    
 
 

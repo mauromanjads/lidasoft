@@ -38,3 +38,5 @@ class ProductoVariante(Base):
     # Timestamps
     created_at = Column(DateTime(timezone=False), server_default=func.now())
     updated_at = Column(DateTime(timezone=False), server_default=func.now(), onupdate=func.now())
+
+    cantidad_equivalente = Column(Numeric(14, 2), default=1)
