@@ -1,8 +1,12 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from app.dependencias.empresa import get_empresa_db
+from sqlalchemy import func, cast, Integer
 
 from app.models.productos import Producto
+
+from app.dependencias.empresa import get_empresa_db
+
+
 
 from app.schemas.productopresentacion_schema import (
     ProductoPresentacionCreate,
@@ -30,7 +34,13 @@ def listar_presentaciones_producto(
     query = (
         db.query(
             ProductoPresentacion,
-           func.coalesce(func.sum(Inventario.stock_actual), 0).label("stock_actual"),
+            cast(
+                func.floor(
+                    func.coalesce(func.sum(Inventario.stock_actual), 0)
+                    / ProductoPresentacion.cantidad_equivalente
+                ),
+                Integer
+            ).label("stock_actual"),
             Producto.control_inventario.label("control_inventario")
         )
         .join(Producto, Producto.id == ProductoPresentacion.producto_id)
@@ -41,13 +51,13 @@ def listar_presentaciones_producto(
     if id_sucursal is not None:
         query = query.outerjoin(
             Inventario,
-            (Inventario.presentacion_id == ProductoPresentacion.id)
+            (Inventario.producto_id == Producto.id)
             & (Inventario.id_sucursal == id_sucursal)
         )
     else:
         query = query.outerjoin(
             Inventario,
-            Inventario.presentacion_id == ProductoPresentacion.id
+            Inventario.producto_id == Producto.id
         )
 
     # 🔑 GROUP BY obligatorio (una fila por presentación)
