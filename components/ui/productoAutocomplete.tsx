@@ -203,7 +203,7 @@ const ProductWithPresentation: React.FC<Props> = ({
     const presentacionesValidas =
       v.control_inventario === "S"
         ? presentaciones.filter(
-            (p) => p.id === v.presentacion_id_inv
+            (p) => p.id > 0 
           )
         : presentaciones;
 
@@ -220,7 +220,7 @@ const ProductWithPresentation: React.FC<Props> = ({
 
         stock:
           v.control_inventario === "S"
-            ? v.stock_actual
+            ? Math.floor(v.stock_actual / p.cantidad_equivalente)
             : p.stock_actual,
 
         control_inventario: v.control_inventario,
