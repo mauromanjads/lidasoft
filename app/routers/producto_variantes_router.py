@@ -38,7 +38,7 @@ def listar_variantes_producto(
         .join(Producto, Producto.id == ProductoVariante.producto_id)   
         .outerjoin(
             Inventario,
-            (Inventario.variante_id == ProductoVariante.id) &
+            (Inventario.producto_id == Producto.id) &
             (Inventario.id_sucursal == id_sucursal)
         )     
         .filter(ProductoVariante.producto_id == producto_id)
