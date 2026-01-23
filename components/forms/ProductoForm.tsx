@@ -488,7 +488,7 @@ useEffect(() => {
   <form 
     onSubmit={handleSubmit}           
   >
-    <div className="flex space-x-3 border-b  text-sm">
+    <div className="flex space-x-3 text-sm">
 
       {/* Código */}
       <div className="flex flex-col w-full">        
@@ -539,49 +539,34 @@ useEffect(() => {
     <div className="max-w-5xl mx-auto p-2">
       
       {/* === NAV TABS === */}
-      <div className="flex space-x-3 border-b mb-3 text-sm">
-        <button
-            type="button"
-            onClick={() => setActiveTab("producto")}
-            className={`
-              flex items-center gap-2 px-4 py-2 text-sm font-medium
-              transition-colors relative
-              ${activeTab === "producto"
-                ? "text-[#1d4e89] border-b-2 border-[#1d4e89] font-semibold"
-                : "text-gray-600 hover:text-[#1d4e89]"}
-            `}
-          >
-          🛒Datos básicos
-        </button>
+      <div className="flex gap-2 border-b border-gray-600 mb-4 ">
+        {[
+          { key: "producto", label: "Datos básicos", icon: "🛒" },
+          { key: "presentaciones", label: "Presentaciones", icon: "⚖️" },
+          { key: "variantes", label: "Variantes", icon: "🎨" },
+        ].map((tab) => {
+          const active = activeTab === tab.key
 
-        <button
+          return (
+            <button
+              key={tab.key}
               type="button"
-              onClick={() => setActiveTab("presentaciones")}
+              onClick={() => setActiveTab(tab.key)}
               className={`
-                flex items-center gap-2 px-4 py-2 text-sm font-medium
-                transition-colors relative
-                ${activeTab === "presentaciones"
-                  ? "text-[#1d4e89] border-b-2 border-[#1d4e89] font-semibold"
-                  : "text-gray-600 hover:text-[#1d4e89]"}
+                relative flex items-center gap-2 
+                px-5 py-3 text-base font-medium
+                transition-all duration-200 ease-in-out
+                rounded-t-md
+                ${active
+                  ? "text-[green] border-b-2 border-[green] bg-white font-semibold"
+                  : "text-gray-600 hover:text-[green] hover:bg-gray-50"}
               `}
             >
-          ⚖️ Presentaciones
-        </button>
-
-        <button
-              type="button"
-              onClick={() => setActiveTab("variantes")}
-              className={`
-                flex items-center gap-2 px-4 py-2 text-sm font-medium
-                transition-colors relative
-                ${activeTab === "variantes"
-                  ? "text-[#1d4e89] border-b-2 border-[#1d4e89] font-semibold"
-                  : "text-gray-600 hover:text-[#1d4e89]"}
-              `}
-            >
-          🎨 Variantes
-        </button>
-
+              <span className="text-lg ">{tab.icon}</span>
+              <span>{tab.label}</span>
+            </button>
+          )
+        })}
       </div>
 
        {/* === TAB PRODUCTO === */}
@@ -590,7 +575,7 @@ useEffect(() => {
           
               {/* GRID GENERAL */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-2 
-                border border-gray-300 rounded-lg 
+                border border-gray-800 rounded-lg 
                 bg-gray-50 p-3 shadow-sm">
             
                 {/* Código de barras */}
@@ -648,11 +633,11 @@ useEffect(() => {
 
                 {/* Tipo impuesto */}
                 <div className="flex flex-col w-full">
-                  <label className="text-sm font-semibold mb-1 text-gray-700">
+                  <label className="text-md font-semibold mb-1 text-gray-700">
                     Tipo Impuesto:
                   </label>
                   <select
-                    className="border p-1.5 rounded text-sm"
+                    className="w-full border rounded-md p-2 border-gray-400"
                     value={tipoImpuesto}
                     onChange={(e) => setTipoImpuesto(e.target.value)}
                   >
@@ -666,11 +651,11 @@ useEffect(() => {
 
                 {/* Control inventario */}
                 <div className="flex flex-col w-full">
-                  <label className="text-sm font-semibold mb-1 text-gray-700">
+                  <label className="text-md font-semibold mb-1 text-gray-700">
                     Inventario:
                   </label>
                   <select
-                    className="border p-1.5 rounded text-sm"
+                   className="w-full border rounded-md p-2 border-gray-400"
                     value={controlInventario}
                     onChange={(e) => setControlInventario(e.target.value)}
                   >
@@ -682,11 +667,11 @@ useEffect(() => {
                 {/* Descripción */}
                
                     <div className="flex flex-col w-full md:col-span-3">
-                      <label className="text-sm font-semibold mb-1 text-gray-700">
+                      <label className="text-md font-semibold mb-1 text-gray-700">
                         Descripción:
                       </label>
                       <textarea
-                        className="border p-1.5 rounded text-sm"
+                        className="border p-1.5 border-gray-400 rounded text-sm"
                         rows={2}
                         value={descripcion}
                         onChange={(e) => setDescripcion(e.target.value)}
@@ -707,7 +692,7 @@ useEffect(() => {
           {/* Contenedor principal con flex-col */}        
 
           {/* Contenedor con scroll */}
-          <div className="flex-1 overflow-y-auto max-h-[400px] border rounded-xl">
+          <div className="flex-1 overflow-y-auto max-h-[400px] border rounded-xl border-gray-800">
 
               <table className="w-full border-collapse">
                 
@@ -718,10 +703,7 @@ useEffect(() => {
                     </th>
                     <th className="border p-2 w-[80px] sticky top-0 z-20 bg-[#1d4e89]">
                       Equivalencia
-                    </th>
-                    <th className="border p-2 w-[120px] sticky top-0 z-20 bg-[#1d4e89]">
-                      Unidad
-                    </th>
+                    </th>                   
                     <th className="border p-2 w-[150px] sticky top-0 z-20 bg-[#1d4e89]">
                       Precio Venta
                     </th>
@@ -764,17 +746,7 @@ useEffect(() => {
                             )
                           }
                         />
-                      </td>
-
-                      <td className="p-2">
-                        <SelectSearch
-                          items={unidades}
-                          value={pres.unidad_medida_id}
-                          onChange={(newValue) =>
-                            handlePresentacionChange(index, "unidad_medida_id", Number(newValue))
-                          }
-                        />
-                      </td>
+                      </td>               
 
                       <td className="p-2">
                         <CurrencyInput
@@ -832,7 +804,7 @@ useEffect(() => {
             
             {/* Contenedor principal con flex-col */}
           
-            <div className="flex-1 overflow-y-auto max-h-[400px] border rounded-xl">
+            <div className="flex-1 overflow-y-auto max-h-[400px] border rounded-xl border-gray-800">
 
               <table className="w-full border-collapse">
 

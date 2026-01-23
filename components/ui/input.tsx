@@ -7,7 +7,7 @@ interface Props extends React.InputHTMLAttributes<HTMLInputElement> {
 const Input = React.forwardRef<HTMLInputElement, Props>(
   ({ label, className, ...props }, ref) => {
     return (
-      <div className="flex flex-col mb-2">
+      <div className="flex flex-col mb-0">
         {label && (
           <label className="text-sm font-medium mb-1">
             {label}
