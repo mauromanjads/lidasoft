@@ -7,10 +7,10 @@ import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import Button from "@/components/ui/button";
 
-import {
-  obtenerProductosActivos,
+import {  
   listarPresentaciones,
   listarVariantes,
+  obtenerProductosExistencias,
 } from "@/lib/api/productos";
 
 const ReactSwal = withReactContent(Swal);
@@ -120,7 +120,7 @@ const ProductWithPresentation: React.FC<Props> = ({
 
   useEffect(() => {
     async function load() {
-      const raw = await obtenerProductosActivos();
+      const raw = await obtenerProductosExistencias();
       const mapped: Producto[] = raw.map((p) => ({
         id: p.id!,
         nombre: p.nombre || "",

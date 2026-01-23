@@ -28,6 +28,13 @@ export const obtenerProductosActivos = async (): Promise<Producto[]> => {
   return productos.filter(producto => producto.activo);
 };
 
+export const obtenerProductosExistencias = async (): Promise<Producto[]> => {
+  const productos = await fetchAPI<Producto[]>(`${API_URL}/productos/productosexistencias`  ,{
+      headers: authHeaders(),
+    });
+  return productos.filter(producto => producto.activo);
+};
+
 // ===================== PRODUCTOS ACTIVOS =====================
 export const obtenerProductosActivosMov = async (): Promise<Producto[]> => {
   const productos = await fetchAPI<Producto[]>(`${API_URL}/productos`  ,{

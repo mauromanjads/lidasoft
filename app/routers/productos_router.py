@@ -20,6 +20,16 @@ def listar_productos(db: Session = Depends(get_empresa_db)):
     )
 
 
+@router.get("/productosexistencias", response_model=list[ProductoOut])
+def listar_productos(db: Session = Depends(get_empresa_db)):
+    return (
+        db.query(Producto)
+        .options(joinedload(Producto.categoria))
+        .order_by(Producto.nombre.asc())
+        .all()
+    )
+
+
 @router.post("/", response_model=ProductoOut)
 def crear_producto(data: ProductoCreate, db: Session = Depends(get_empresa_db)):
     nuevo = Producto(**data.model_dump())
