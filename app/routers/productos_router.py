@@ -109,7 +109,6 @@ def listar_kardex(db: Session = Depends(get_empresa_db)):
         doc_inv.tipo_documento,
         tipo.descripcion AS tipo_doc_desc,
         tipo.tipo_movimiento,
-
         pr.nombre AS producto,
         categ.nombre AS categoria,
         u.nombre AS presentacion,
@@ -119,29 +118,28 @@ def listar_kardex(db: Session = Depends(get_empresa_db)):
 
         -- Movimiento
         CASE 
-            WHEN tipo.tipo_movimiento = 'E' THEN inv.cantidad
-            WHEN tipo.tipo_movimiento = 'S' THEN -inv.cantidad
+            WHEN tipo.tipo_movimiento = 'E' THEN inv.unidades_base
+            WHEN tipo.tipo_movimiento = 'S' THEN -inv.unidades_base
         END AS cantidad_movimiento,
 
         inv.costo_unitario,
 
         CASE 
             WHEN tipo.tipo_movimiento = 'E' 
-                THEN inv.cantidad * inv.costo_unitario
+                THEN inv.unidades_base * inv.costo_unitario
             WHEN tipo.tipo_movimiento = 'S'
-                THEN -(inv.cantidad * inv.costo_unitario)
+                THEN -(inv.unidades_base * inv.costo_unitario)
         END AS costo_movimiento,
 
         -- ✅ SALDO DE CANTIDAD (CORREGIDO)
         SUM(
             CASE 
-                WHEN tipo.tipo_movimiento = 'E' THEN inv.cantidad
-                WHEN tipo.tipo_movimiento = 'S' THEN -inv.cantidad
+                WHEN tipo.tipo_movimiento = 'E' THEN inv.unidades_base
+                WHEN tipo.tipo_movimiento = 'S' THEN -inv.unidades_base
             END
         ) OVER (
             PARTITION BY 
-                inv.producto_id,
-                inv.presentacion_id,
+                inv.producto_id,                
                 COALESCE(inv.variante_id, 0),
                 inv.id_sucursal
             ORDER BY inv.fecha, inv.id
@@ -151,14 +149,13 @@ def listar_kardex(db: Session = Depends(get_empresa_db)):
         SUM(
             CASE 
                 WHEN tipo.tipo_movimiento = 'E'
-                    THEN inv.cantidad * inv.costo_unitario
+                    THEN inv.unidades_base * inv.costo_unitario
                 WHEN tipo.tipo_movimiento = 'S'
-                    THEN -(inv.cantidad * inv.costo_unitario)
+                    THEN -(inv.unidades_base * inv.costo_unitario)
             END
         ) OVER (
             PARTITION BY 
-                inv.producto_id,
-                inv.presentacion_id,
+                inv.producto_id,                
                 COALESCE(inv.variante_id, 0),
                 inv.id_sucursal
             ORDER BY inv.fecha, inv.id
