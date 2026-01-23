@@ -12,7 +12,7 @@ export default function Button({ children, ...props }: Props) {
       className="
             inline-flex items-center gap-2
             px-4 py-2
-            text-sm font-medium
+            text-md font-medium
             text-white
             bg-green-600
             rounded-lg

@@ -791,7 +791,7 @@ useEffect(() => {
           <div className="border-t bg-white p-3 sticky bottom-0">
             <Buttonsec type="button" onClick={agregarPresentacion}>
               <img src="/icons/plus.png" alt="Agregar" className="w-6 h-6" />
-              <span>Agregar Presentación</span>
+              <span>Agregar</span>
             </Buttonsec>
           </div>
        </div>
@@ -923,7 +923,7 @@ useEffect(() => {
             <div className="border-t bg-white p-3 sticky bottom-0">
               <Buttonsec type="button" onClick={agregarVariante}>
                 <img src="/icons/plus.png" alt="Agregar" className="w-6 h-6" />
-                <span>Agregar Variante</span>
+                <span>Agregar</span>
               </Buttonsec>
             </div>
           </div>
