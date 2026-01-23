@@ -75,7 +75,7 @@ def listar_existencias(db: Session = Depends(get_empresa_db)):
             inv.id,
             pr.nombre AS producto,
             categ.nombre AS categoria,
-            prpre.tipo_presentacion AS presentacion,
+            u.nombre AS presentacion,
             prvar.sku AS sku,
             attrs.atributos,
             inv.stock_actual AS existencias,
@@ -87,6 +87,7 @@ def listar_existencias(db: Session = Depends(get_empresa_db)):
         LEFT JOIN productos_variantes prvar ON inv.variante_id = prvar.id 
         INNER JOIN sucursales suc ON inv.id_sucursal = suc.id 
         INNER JOIN categorias categ ON pr.categoria_id = categ.id
+        INNER JOIN unidades_medida u ON pr.unidad_medida_id = u.id
 
         LEFT JOIN LATERAL (
             SELECT string_agg(key || ': ' || value, ' | ' ORDER BY key) AS atributos
