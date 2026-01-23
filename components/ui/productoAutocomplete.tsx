@@ -216,7 +216,7 @@ const ProductWithPresentation: React.FC<Props> = ({
         variante_nombre: v.descripcion,
 
         presentacion_id: p.id,
-        presentacion_nombre: p.tipo_presentacion,
+        presentacion_nombre: p.tipo_presentacion + " X " + p.cantidad_equivalente,
 
         stock:
           v.control_inventario === "S"
