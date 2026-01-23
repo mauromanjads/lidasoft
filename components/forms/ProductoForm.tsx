@@ -538,36 +538,38 @@ useEffect(() => {
     
     <div className="max-w-5xl mx-auto p-2">
       
-      {/* === NAV TABS === */}
-      <div className="flex gap-2 border-b border-gray-600 mb-4 ">
-        {[
-          { key: "producto", label: "Datos básicos", icon: "🛒" },
-          { key: "presentaciones", label: "Presentaciones", icon: "⚖️" },
-          { key: "variantes", label: "Variantes", icon: "🎨" },
-        ].map((tab) => {
-          const active = activeTab === tab.key
+{/* === NAV TABS === */}
+<div className="flex gap-2 border-b border-gray-300 mb-4">
+  {[
+    { key: "producto", label: "Datos básicos", icon: "🛒" },
+    { key: "presentaciones", label: "Presentaciones", icon: "⚖️" },
+    { key: "variantes", label: "Variantes", icon: "🎨" },
+  ].map((tab) => {
+    const active = activeTab === tab.key
 
-          return (
-            <button
-              key={tab.key}
-              type="button"
-              onClick={() => setActiveTab(tab.key)}
-              className={`
-                relative flex items-center gap-2 
-                px-5 py-3 text-base font-medium
-                transition-all duration-200 ease-in-out
-                rounded-t-md
-                ${active
-                  ? "text-[green] border-b-2 border-[green] bg-white font-semibold"
-                  : "text-gray-600 hover:text-[green] hover:bg-gray-50"}
-              `}
-            >
-              <span className="text-lg ">{tab.icon}</span>
-              <span>{tab.label}</span>
-            </button>
-          )
-        })}
-      </div>
+    return (
+      <button
+        key={tab.key}
+        type="button"
+        onClick={() => setActiveTab(tab.key)}
+        className={`
+          relative flex items-center gap-2
+          px-5 py-3 text-base font-medium
+          transition-colors duration-200
+          rounded-t-md
+          ${active
+            ? "bg-blue-50 text-blue-800 border-b-2 border-blue-600 font-semibold"
+            : "text-gray-600 hover:text-blue-800 hover:bg-gray-100"}
+        `}
+      >
+        <span className="text-lg opacity-80">{tab.icon}</span>
+        <span>{tab.label}</span>
+      </button>
+    )
+  })}
+</div>
+
+
 
        {/* === TAB PRODUCTO === */}
        {activeTab === "producto" && (
