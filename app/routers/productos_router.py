@@ -112,7 +112,7 @@ def listar_kardex(db: Session = Depends(get_empresa_db)):
 
         pr.nombre AS producto,
         categ.nombre AS categoria,
-        prpre.tipo_presentacion AS presentacion,
+        u.nombre AS presentacion,
         prvar.sku,
         attrs.atributos,
         suc.nombre AS sucursal,
@@ -169,6 +169,7 @@ def listar_kardex(db: Session = Depends(get_empresa_db)):
     INNER JOIN documentos_tipo tipo ON doc_inv.tipo_documento = tipo.codigo
     INNER JOIN productos pr ON inv.producto_id = pr.id 
     INNER JOIN productos_presentaciones prpre ON inv.presentacion_id = prpre.id 
+    INNER JOIN unidades_medida u ON pr.unidad_medida_id = u.id
     LEFT JOIN productos_variantes prvar ON inv.variante_id = prvar.id 
     INNER JOIN sucursales suc ON inv.id_sucursal = suc.id 
     INNER JOIN categorias categ ON pr.categoria_id = categ.id
