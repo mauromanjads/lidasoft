@@ -161,9 +161,7 @@ const ProductWithPresentation: React.FC<Props> = ({
     ? productos.filter(
         (p) =>
           p.nombre.toLowerCase().includes(query.toLowerCase()) ||
-          p.codigo.toLowerCase().includes(query.toLowerCase()) ||
-          p.control_inventario ||
-          p.stock_actual          
+          p.codigo.toLowerCase().includes(query.toLowerCase()) 
       )
     : productos;
 
