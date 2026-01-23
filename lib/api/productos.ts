@@ -32,6 +32,8 @@ export const obtenerProductosExistencias = async (): Promise<Producto[]> => {
   const productos = await fetchAPI<Producto[]>(`${API_URL}/productos/productosexistencias`  ,{
       headers: authHeaders(),
     });
+
+console.log("RAW response /productos/productosexistencias:", productos);
   return productos.filter(producto => producto.activo);
 };
 

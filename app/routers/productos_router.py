@@ -1,9 +1,13 @@
+from urllib import response
 from fastapi import APIRouter, Depends, HTTPException
+from pyparsing import Optional
 from sqlalchemy.orm import Session
 from app.dependencias.empresa import get_empresa_db
 
-from app.schemas.productos_schema import ProductoCreate, ProductoUpdate, ProductoOut
+from app.schemas.productos_schema import ProductoCreate, ProductoUpdate, ProductoOut,ProductoConStockOut
 from app.models.productos import Producto
+from app.models.inventario import Inventario
+from sqlalchemy import func
 from sqlalchemy.orm import joinedload
 
 router = APIRouter(prefix="/productos", tags=["Productos"])
@@ -20,14 +24,53 @@ def listar_productos(db: Session = Depends(get_empresa_db)):
     )
 
 
-@router.get("/productosexistencias", response_model=list[ProductoOut])
-def listar_productos(db: Session = Depends(get_empresa_db)):
-    return (
-        db.query(Producto)
-        .options(joinedload(Producto.categoria))
-        .order_by(Producto.nombre.asc())
-        .all()
+@router.get("/productosexistencias", response_model=list[ProductoConStockOut])
+def listar_productos_con_stock(db: Session = Depends(get_empresa_db)):
+   
+    # 🔹 Subquery: inventario agrupado por producto
+    subq_inventario = (
+        db.query(
+            Inventario.producto_id.label("producto_id"),
+            func.sum(Inventario.stock_actual).label("stock_actual"),
+        )
+        .group_by(Inventario.producto_id)
+        .subquery()
     )
+
+    # 🔹 Query principal: productos + stock
+    query = (
+        db.query(
+            Producto,
+            func.coalesce(subq_inventario.c.stock_actual, 0).label("stock_actual"),
+        )
+        .outerjoin(
+            subq_inventario,
+            subq_inventario.c.producto_id == Producto.id,
+        )
+    )
+
+    resultado = query.all()
+
+    response = []
+
+    for producto, stock_actual in resultado:
+        response.append({
+            "id": producto.id,
+            "nombre": producto.nombre,
+            "descripcion": producto.descripcion,
+            "codigo_barra": producto.codigo_barra,
+            "categoria_id": producto.categoria_id,
+            "codigo": producto.codigo,
+            "activo": producto.activo,
+            "iva": producto.iva,
+            "tipo_impuesto": producto.tipo_impuesto,   
+            "unidad_medida_id": producto.unidad_medida_id,             
+            "control_inventario": producto.control_inventario,
+            "stock_actual": stock_actual,
+        })
+
+
+    return response
 
 
 @router.post("/", response_model=ProductoOut)

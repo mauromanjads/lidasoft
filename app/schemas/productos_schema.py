@@ -27,3 +27,15 @@ class ProductoOut(ProductoBase):
     categoria: Optional[CategoriaResponse]
     
     model_config = ConfigDict(from_attributes=True)
+
+class ProductoConStockOut(BaseModel):
+    id: int
+    nombre: str
+    codigo: str
+    activo: bool
+    iva: Optional[float] = 0
+    control_inventario: Optional[str] = "S"
+    stock_actual: float
+
+    class Config:
+        from_attributes = True
