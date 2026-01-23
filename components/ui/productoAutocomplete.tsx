@@ -28,6 +28,8 @@ interface Producto {
   activo: boolean;
   tiene_variantes?: boolean;
    iva?: number;
+   control_inventario?: ControlInventario;
+   stock_actual?: number;
 }
 
 interface Presentacion {
@@ -126,6 +128,8 @@ const ProductWithPresentation: React.FC<Props> = ({
         activo: p.activo ?? true,
         iva: typeof p.iva === "number" ? p.iva : 0,
         tiene_variantes: p.tiene_variantes ?? false,
+        stock_actual: p.stock_actual ?? 0,
+        control_inventario: p.control_inventario === "S" ? "S" : "N",
       }));
 
       setProductos(mapped);
@@ -157,7 +161,9 @@ const ProductWithPresentation: React.FC<Props> = ({
     ? productos.filter(
         (p) =>
           p.nombre.toLowerCase().includes(query.toLowerCase()) ||
-          p.codigo.toLowerCase().includes(query.toLowerCase())
+          p.codigo.toLowerCase().includes(query.toLowerCase()) ||
+          p.control_inventario ||
+          p.stock_actual          
       )
     : productos;
 
@@ -391,7 +397,9 @@ const abrirModalOpciones = (
             {filteredProducts.map((p) => (
               <li
                 key={p.id}
-                className="p-2 hover:bg-gray-100 cursor-pointer"
+                className=" px-3 py-2 cursor-pointer
+                      hover:bg-gray-100
+                      flex items-center justify-between"
                 onClick={async () => {
                   setProductoSeleccionado(p);
                   setQuery("");
@@ -473,7 +481,35 @@ const abrirModalOpciones = (
                   abrirModalOpciones(p, opciones);
                 }}
               >
-                {p.nombre} ({p.codigo})
+                
+                {/* Info producto */}
+                <div>
+                  <div className="font-medium text-gray-800">
+                    {p.nombre}
+                  </div>
+                  <div className="text-md text-gray-500">
+                    Código: {p.codigo}
+                  </div>
+                </div>
+
+                {/* Stock */}
+                <div className="text-right">
+                  {p.control_inventario === "N" ? (
+                    <span className="text-green-600 font-semibold">∞</span>
+                  ) : (
+                    <span
+                      className={`text-sm font-semibold ${
+                        (p.stock_actual ?? 0) <= 5
+                          ? "text-red-600"
+                          : "text-gray-700"
+                      }`}
+                    >
+                     Stock: {p.stock_actual ?? 0}
+                    </span>
+                  )}
+                </div>
+                
+
               </li>
             ))}
           </ul>,

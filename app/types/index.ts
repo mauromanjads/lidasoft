@@ -27,6 +27,7 @@ export interface Producto {
   tipo_impuesto?: string;
   unidad_medida_id?: number;
   control_inventario?: string;
+  stock_actual?: number;
   tiene_variantes?: boolean;
 }
 
