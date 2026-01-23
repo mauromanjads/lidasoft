@@ -3,6 +3,7 @@
 import Button from "@/components/ui/button";
 import Buttonsec from "@/components/ui/buttonsec";
 import Input from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox"
 import CurrencyInput from "@/components/ui/currencyInput";
 import Swal from "sweetalert2";
 import SelectSearch from "@/components/ui/selectSearch";
@@ -487,15 +488,13 @@ useEffect(() => {
   <form 
     onSubmit={handleSubmit}           
   >
-    <div className="flex space-x-3 border-b mb-3 text-sm">
+    <div className="flex space-x-3 border-b  text-sm">
 
       {/* Código */}
-      <div className="flex flex-col w-full">
-        <label className="text-sm font-semibold mb-1 text-gray-700">
-          Código:
-        </label>
+      <div className="flex flex-col w-full">        
         <Input
-          className="border p-1.5 rounded text-sm font-bold"
+        label="Código"
+          className="font-bold"
           value={codigo}
           onChange={(e) => setCodigo(e.target.value)}
           required
@@ -503,12 +502,10 @@ useEffect(() => {
       </div>
 
       {/* Nombre */}
-      <div className="flex flex-col w-full">
-        <label className="text-sm font-semibold mb-1 text-gray-700">
-          Nombre:
-        </label>
+      <div className="flex flex-col w-full">     
         <Input
-          className="border p-1.5 rounded text-sm font-bold" 
+          label="Nombre"
+          className="font-bold" 
           value={nombre}
           onChange={(e) => setNombre(e.target.value)}
           required
@@ -517,23 +514,25 @@ useEffect(() => {
 
       {/* Estado */}
       <div className="flex flex-col w-full">
-        <label className="text-sm font-semibold mb-1 text-gray-700 text-center">
-          Estado:
-        </label>
-        <div className="flex items-center gap-2 justify-center">
-          <Input
-            type="checkbox"
-            className="w-4 h-4 accent-blue-600 border border-gray-300 rounded-md shadow-sm"
-            checked={activo}
-            onChange={(e) => setActivo(e.target.checked)}
-          />
-          <span
-            className={`font-semibold text-base ${activo ? "text-green-700" : "text-red-600"}`}
-          >
-            {activo ? "Activo" : "Inactivo"}
-          </span>
+          
+          <div className="flex items-center justify-center gap-3 pt-7">
+            
+            <Checkbox
+              checked={activo}
+              onChange={(e) => setActivo(e.target.checked)}
+            />
+
+            <span
+              className={`font-semibold text-base text-lg leading-none ${
+                activo ? "text-green-700" : "text-red-600"
+              }`}
+            >
+              {activo ? "Activo" : "Inactivo"}
+            </span>          
+          </div>
+
         </div>
-      </div>
+
     
     </div>
     
