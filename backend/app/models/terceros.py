@@ -1,0 +1,55 @@
+# app/models/clientes.py
+from sqlalchemy import Column, Integer, String, Date, DateTime, Boolean, DECIMAL,ForeignKey
+from app.database import Base
+from sqlalchemy.orm import relationship
+from app.models.tipodocumentos import TipoDocumento
+
+class Terceros(Base):
+    __tablename__ = "terceros"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    tipo_persona = Column(String(1), nullable=True)
+    tipo_documento_id = Column(Integer, ForeignKey("tiposdocumento.id"), nullable=True)
+    documento = Column(String(20), nullable=False)
+    dv = Column(String(1), nullable=True)
+    nombre = Column(String(150), nullable=True)
+    primer_nombre = Column(String(100), nullable=True)
+    segundo_nombre = Column(String(100), nullable=True)
+    primer_apellido = Column(String(100), nullable=True)
+    segundo_apellido = Column(String(100), nullable=True)
+    fecha_nacimiento = Column(Date, nullable=True)
+    genero_id = Column(Integer, nullable=True)
+    razon_social = Column(String(200), nullable=True)
+    nombre_comercial = Column(String(150), nullable=True)
+    regimen_id = Column(Integer, nullable=True)
+    tipo_responsable_id = Column(Integer, nullable=True)
+    gran_contribuyente = Column(Boolean, nullable=True)
+    autoretenedor = Column(Boolean, nullable=True)
+    ciiu_id = Column(Integer, nullable=True)
+    direccion = Column(String(200), nullable=True)
+    municipio_id = Column(Integer, nullable=True)
+    departamento_id = Column(Integer, nullable=True)
+    telefono = Column(String(50), nullable=True)
+    celular = Column(String(50), nullable=True)
+    whatsapp = Column(String(50), nullable=True)
+    correo = Column(String(150), nullable=True)
+    pagina_web = Column(String(150), nullable=True)
+    pais_id = Column(Integer, nullable=True)
+    lista_precio_id = Column(Integer, nullable=True)
+    vendedor_id = Column(Integer, nullable=True)
+    tiene_cupo = Column(Boolean, nullable=True)
+    cupo_credito = Column(DECIMAL(18, 2), nullable=True)
+    plazo_dias = Column(Integer, nullable=True)
+    acepta_factura_electronica = Column(Boolean, nullable=True)
+    recibe_correo = Column(Boolean, nullable=True)
+    estado = Column(String(1), nullable=True)
+    notas = Column(String(1000), nullable=True)
+    usuario_creacion = Column(String(100), nullable=True)
+    fecha_creacion = Column(DateTime, nullable=True)
+    usuario_modifico = Column(String(100), nullable=True)
+    fecha_modificacion = Column(DateTime, nullable=True)
+    tipotercero = Column(String(100), nullable=True)
+
+    facturas = relationship("Factura", back_populates="tercero")
+    tipo_documento = relationship(TipoDocumento)  # 🔹 relación
+    

@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: lidasoft-backend
+    env: docker
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11
+    healthCheckPath: /
+    memoryMB: 1024
