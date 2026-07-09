@@ -2,9 +2,19 @@
 # Node.js / Next.js
 # ============================================
 
+# Dependencias
 node_modules/
 **/node_modules/
 
+# Next.js
+.next/
+**/.next/
+
+# Exportaciones y compilación
+out/
+build/
+
+# Yarn / PnP
 .pnp
 .pnp.*
 .yarn/*
@@ -13,17 +23,16 @@ node_modules/
 !.yarn/releases
 !.yarn/versions
 
-.next/
-out/
-build/
-
+# Cobertura
 coverage/
 
+# Logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
+# TypeScript
 *.tsbuildinfo
 next-env.d.ts
 
@@ -59,7 +68,7 @@ env/
 .idea/
 
 # ============================================
-# Sistema operativo
+# Sistema Operativo
 # ============================================
 
 .DS_Store
@@ -70,6 +79,12 @@ Thumbs.db
 # ============================================
 
 *.pem
+
+# ============================================
+# Docker
+# ============================================
+
+*.log
 
 # ============================================
 # Despliegue
