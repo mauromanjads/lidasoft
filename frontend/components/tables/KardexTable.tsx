@@ -156,20 +156,24 @@ export default function KardexTable({ movimientos }: Props) {
     XLSX.writeFile(wb, "kardex.xlsx");
   };
 
-  const exportToPDF = () => {
-    const doc = new jsPDF();
-    autoTable(doc, {
-      head: [["Fecha", "Producto", "Mov", "Cant", "Saldo"]],
-      body: table.getFilteredRowModel().rows.map(r => [
-        r.original.fecha,
-        r.original.producto,
-        r.original.tipo_movimiento,
-        r.original.cantidad_movimiento,
-        r.original.saldo_cantidad,
-      ]),
-    });
-    doc.save("kardex.pdf");
-  };
+const exportToPDF = () => {
+  const doc = new jsPDF();
+
+  autoTable(doc, {
+    head: [["Fecha", "Producto", "Mov", "Cant", "Saldo"]],
+    body: table.getFilteredRowModel().rows.map(r => [
+      r.original.fecha
+        ? new Date(r.original.fecha).toLocaleDateString()
+        : "",
+      r.original.producto ?? "",
+      r.original.tipo_movimiento ?? "",
+      r.original.cantidad_movimiento ?? 0,
+      r.original.saldo_cantidad ?? 0,
+    ]),
+  });
+
+  doc.save("kardex.pdf");
+};
 
   /* =========================
      RENDER
