@@ -29,6 +29,7 @@ export interface Producto {
   codigo?: string;
   nombre?: string;
   descripcion?: string;
+  codigo_barra?: string | null;
   activo?: boolean;
   control_inventario?: string;
   sku?: string;
