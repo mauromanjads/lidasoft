@@ -47,11 +47,15 @@ export interface Producto {
 export interface ProductoPresentacion {
   id?: number;
   producto_id?: number;
-  descripcion?: string;
+  descripcion?: string | null;
   tipo_presentacion?: string;
+  cantidad_equivalente?: number;
+  unidad_medida_id?: number;
+  precio_venta?: number;
+  precio_compra?: number;
+  activo?: boolean;
   precio?: number;
   costo?: number;
-  unidad_medida_id?: number;
   [key: string]: unknown;
 }
 
@@ -60,6 +64,10 @@ export interface ProductoVariante {
   producto_id?: number;
   nombre?: string;
   sku?: string;
+  parametros?: Record<string, any>;
+  precio_venta?: number;
+  precio_compra?: number;
+  activo?: boolean;
   precio?: number;
   costo?: number;
   [key: string]: unknown;

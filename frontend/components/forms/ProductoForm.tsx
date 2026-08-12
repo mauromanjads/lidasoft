@@ -190,7 +190,7 @@ useEffect(() => {
 
         return {
           id: v.id,
-          sku: v.sku,
+          sku: v.sku ?? "",
           parametros: v.parametros ?? {},
           precio_venta: v.precio_venta ?? 0,
           precio_compra: v.precio_compra ?? 0,
@@ -600,10 +600,15 @@ useEffect(() => {
                   </label>
                   
                   <SelectSearch
-                    items={categorias}
-                    value={categoriaId}
-                    onChange={setCategoriaId}
-                  />
+                  items={categorias
+                    .filter((categoria): categoria is Categoria & { id: number } => categoria.id !== undefined)
+                    .map((categoria) => ({
+                      id: categoria.id,
+                      nombre: categoria.nombre ?? "",
+                    }))}
+                  value={categoriaId}
+                  onChange={setCategoriaId}
+                />
 
                 </div>
 
@@ -613,10 +618,15 @@ useEffect(() => {
                     Unidad de Medida:
                   </label>
                   <SelectSearch
-                    items={unidades}
-                    value={unidadMedidaId}
-                    onChange={setUnidadMedidaId}
-                  />
+                  items={unidades
+                    .filter((unidad): unidad is UnidadMedida & { id: number } => unidad.id !== undefined)
+                    .map((unidad) => ({
+                      id: unidad.id,
+                      nombre: unidad.nombre ?? "",
+                    }))}
+                  value={unidadMedidaId}
+                  onChange={setUnidadMedidaId}
+                />
                 </div>
 
                 {/* IVA */}
