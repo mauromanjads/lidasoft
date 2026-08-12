@@ -35,6 +35,7 @@ export interface Producto {
   sku?: string;
   unidad_medida_id?: number;
   categoria_id?: number;
+  iva?: number;
   precio?: number;
   costo?: number;
   presentaciones?: ProductoPresentacion[];
