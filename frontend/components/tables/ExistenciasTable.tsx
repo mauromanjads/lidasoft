@@ -107,18 +107,19 @@ export default function ExistenciasTable({ existencias }: Props) {
 
   const exportToPDF = () => {
     const doc = new jsPDF();
+
     autoTable(doc, {
       head: [["Producto", "SKU", "Existencias", "Sucursal"]],
       body: table.getFilteredRowModel().rows.map(r => [
-        r.original.producto,
-        r.original.sku,
-        r.original.existencias,
-        r.original.sucursal,
+        r.original.producto ?? "",
+        r.original.sku ?? "",
+        r.original.existencias ?? 0,
+        r.original.sucursal ?? "",
       ]),
     });
+
     doc.save("existencias.pdf");
   };
-
   /* =========================
      RENDER
   ========================= */
