@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import "@/styles/sidebar.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -17,7 +18,7 @@ export const metadata: Metadata = {
   description: "Software a medida",
   icons: {
     icon: `/favicon.png?v=${Date.now()}`,
-  }, 
+  },
 };
 
 export default function RootLayout({

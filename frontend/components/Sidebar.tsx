@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import "@/styles/sidebar.css";
 
 export default function Sidebar() {
   const [open, setOpen] = useState(false);

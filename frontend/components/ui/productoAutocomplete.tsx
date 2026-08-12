@@ -121,15 +121,23 @@ const ProductWithPresentation: React.FC<Props> = ({
   useEffect(() => {
     async function load() {
       const raw = await obtenerProductosExistencias();
+      
       const mapped: Producto[] = raw.map((p) => ({
         id: p.id!,
-        nombre: p.nombre || "",
-        codigo: p.codigo || "",
+        nombre: p.nombre ?? "",
+        codigo: p.codigo ?? "",
         activo: p.activo ?? true,
         iva: typeof p.iva === "number" ? p.iva : 0,
-        tiene_variantes: p.tiene_variantes ?? false,
-        stock_actual: p.stock_actual ?? 0,
-        control_inventario: p.control_inventario === "S" ? "S" : "N",
+        tiene_variantes:
+          typeof p.tiene_variantes === "boolean"
+            ? p.tiene_variantes
+            : false,
+        stock_actual:
+          typeof p.stock_actual === "number"
+            ? p.stock_actual
+            : 0,
+        control_inventario:
+          p.control_inventario === "S" ? "S" : "N",
       }));
 
       setProductos(mapped);
@@ -419,15 +427,20 @@ const abrirModalOpciones = (
 
                   const variantes: Variante[] = variantesRaw.map((v) => ({
                     id: v.id!,
-                    descripcion: v.sku,
+                    descripcion: v.sku ?? "",
                     precio_venta: v.precio_venta ?? 0,
-                    stock_actual: v.stock_actual ?? 0,
-                    presentacion_id_inv: v.presentacion_id_inv ?? 0,
+                    stock_actual:
+                      typeof v.stock_actual === "number" ? v.stock_actual : 0,
+                    presentacion_id_inv:
+                      typeof v.presentacion_id_inv === "number"
+                        ? v.presentacion_id_inv
+                        : 0,
                     activo: v.activo ?? true,
                     control_inventario:
                       v.control_inventario === "S" ? "S" : "N",
                   }));
-                 // console.table(variantes);
+        
+                  // console.table(variantes);
                   const presentaciones: Presentacion[] = presRaw.map(
                     (p) => ({
                       id: p.id!,
@@ -435,7 +448,7 @@ const abrirModalOpciones = (
                       cantidad_equivalente:
                       p.cantidad_equivalente ?? 1,
                       precio_venta: p.precio_venta ?? 0,
-                      stock_actual: p.stock_actual ?? 0,
+                     stock_actual: typeof p.stock_actual === "number" ? p.stock_actual : 0,
                       activo: p.activo ?? true,
                       control_inventario:
                         p.control_inventario === "S" ? "S" : "N",
