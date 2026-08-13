@@ -1,6 +1,6 @@
 from urllib import response
 from fastapi import APIRouter, Depends, HTTPException
-from pyparsing import Optional
+from typing import Optional
 from sqlalchemy.orm import Session
 from app.dependencias.empresa import get_empresa_db
 
