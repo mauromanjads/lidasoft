@@ -1,3 +1,5 @@
+import os
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 from sqlalchemy.pool import QueuePool
@@ -8,10 +10,12 @@ def get_db(empresa):
     para la base de datos de una empresa específica.
     """
 
+    sslmode = os.getenv("POSTGRES_SSLMODE", "disable")
+
     DATABASE_URL = (
         f"postgresql+psycopg2://{empresa.db_user}:{empresa.db_password}"
         f"@{empresa.db_host}:{empresa.db_port}/{empresa.db_name}"
-        "?sslmode=disable"
+        f"?sslmode={sslmode}"
     )
 
     engine = create_engine(
