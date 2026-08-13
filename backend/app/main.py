@@ -38,7 +38,10 @@ app.mount("/static", StaticFiles(directory=os.path.join(BASE_DIR, "../static")),
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],   # Luego lo cambiamos a tu dominio
+    allow_origins=[
+         "http://localhost:3000",
+        "https://lidasoft.vercel.app",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
