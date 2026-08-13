@@ -1,7 +1,7 @@
 # app/routers/resolucionesdian_router.py
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
-from pyparsing import Optional
+from typing import Optional
 from sqlalchemy.orm import Session
 from sqlalchemy import or_
 from datetime import datetime, timezone
